@@ -1,1 +1,63 @@
-/* You can add global styles to this file, and also import other style files */
+/* COLORS */
+:root {
+  --main-purple: #635fc7;
+  --main-purple-hover: #a8a4ff;
+  --black: #000112;
+  --very-dark-grey: #20212c;
+  --dark-grey: #2b2c37;
+  --lines-dark: #3e3f4e;
+  --medium-gray: #828fa3;
+  --lines-light: #e4ebfa;
+  --light-grey-light-bg: #f4f7fd;
+  --white: #fff;
+  --red: #ea5555;
+  --red-hover: #ff9898;
+}
+
+/* FONTS */
+@mixin heading-s {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 2.4px;
+}
+
+@mixin heading-m {
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+@mixin heading-l {
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+@mixin heading-xl {
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+@mixin body-m {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+@mixin body-l {
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 23px;
+}
+
+body {
+  font-family: Plus Jakarta Sans;
+}
