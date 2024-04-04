@@ -212,6 +212,106 @@
             }
         },
         {
+            "name": "CheckboxComponent",
+            "id": "component-CheckboxComponent-d1016901f5dbd15c0d8d1752ff3f6c609c03303d35ae07af746aaccd849c3652f8dfd73a85f78ad3b1165001f996e8606ca83b283716e8920388ca10e551cbac",
+            "file": "src/app/ui/checkbox/checkbox.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-checkbox",
+            "styleUrls": [],
+            "styles": [],
+            "templateUrl": [
+                "./checkbox.component.html"
+            ],
+            "viewProviders": [],
+            "hostDirectives": [],
+            "inputsClass": [
+                {
+                    "name": "control",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 17,
+                    "type": "FormControl",
+                    "decorators": []
+                },
+                {
+                    "name": "label",
+                    "defaultValue": "''",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "line": 16,
+                    "type": "string",
+                    "decorators": []
+                }
+            ],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "handleKeydown",
+                    "args": [
+                        {
+                            "name": "event",
+                            "type": "KeyboardEvent",
+                            "deprecated": false,
+                            "deprecationMessage": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 23,
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "jsdoctags": [
+                        {
+                            "name": "event",
+                            "type": "KeyboardEvent",
+                            "deprecated": false,
+                            "deprecationMessage": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "toggleCheckbox",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 19,
+                    "deprecated": false,
+                    "deprecationMessage": ""
+                }
+            ],
+            "deprecated": false,
+            "deprecationMessage": "",
+            "hostBindings": [],
+            "hostListeners": [],
+            "standalone": true,
+            "imports": [
+                {
+                    "name": "CommonModule",
+                    "type": "module"
+                }
+            ],
+            "description": "",
+            "rawdescription": "\n",
+            "type": "component",
+            "sourceCode": "import { CommonModule } from '@angular/common';\nimport { Component, Input } from '@angular/core';\nimport { FormControl } from '@angular/forms';\nimport { BrowserModule } from '@angular/platform-browser';\n\n@Component({\n  selector: 'app-checkbox',\n  standalone: true,\n  imports: [\n    CommonModule\n  ],\n  templateUrl: './checkbox.component.html',\n  styleUrl: './checkbox.component.scss'\n})\nexport class CheckboxComponent {\n  @Input() label: string = '';\n  @Input() control!: FormControl;\n\n  toggleCheckbox(): void {\n    this.control.setValue(!this.control.value);\n  }\n\n  handleKeydown(event: KeyboardEvent) {\n    if (event.key === ' ' || event.key === 'Enter') {\n      this.toggleCheckbox();\n      event.preventDefault();\n    }\n  }\n}\n",
+            "styleUrl": "./checkbox.component.scss",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "",
+            "extends": [],
+            "templateData": "<div class=\"checkbox\" role=\"checkbox\" [attr.aria-checked]=\"control.value ? 'true' : 'false'\" tabindex=\"0\"\n    (click)=\"toggleCheckbox()\" (keydown)=\"handleKeydown($event)\">\n    <div class=\"checkbox-visual-box\" [ngClass]=\"{'checked': control.value, 'unchecked': !control.value}\">\n        <svg class=\"icon-checkbox-checked\" width=\"10\" height=\"8\" viewBox=\"0 0 10 8\" fill=\"none\"\n            xmlns=\"http://www.w3.org/2000/svg\">\n            <path id=\"Path 2\" d=\"M1.27588 3.06593L4.03234 5.82239L9.03234 0.822388\" stroke=\"white\" stroke-width=\"2\" />\n        </svg>\n    </div>{{\n    label }}\n</div>"
+        },
+        {
             "name": "HeaderComponent",
             "id": "component-HeaderComponent-3d494fd89671305c6be07de00e019efdf08f2e36c2169e5fb75a5acdb2841da927e3ef3cbd21cc18f478373a784b1fb90e8b63b9df4b3498a75b652bd9c37b38",
             "file": "src/stories/header.component.ts",
@@ -287,44 +387,6 @@
             ],
             "stylesData": "",
             "extends": []
-        },
-        {
-            "name": "MummyComponent",
-            "id": "component-MummyComponent-d11fdb0cf95424251afe505576eeb590c499d3b18c1a7e8db238f7e48510c79a75405ec863ac399df1db14322c899b4d2ebba2f2744b0912cff650045738229b",
-            "file": "src/app/ui/mummy/mummy.component.ts",
-            "encapsulation": [],
-            "entryComponents": [],
-            "inputs": [],
-            "outputs": [],
-            "providers": [],
-            "selector": "app-mummy",
-            "styleUrls": [],
-            "styles": [],
-            "templateUrl": [
-                "./mummy.component.html"
-            ],
-            "viewProviders": [],
-            "hostDirectives": [],
-            "inputsClass": [],
-            "outputsClass": [],
-            "propertiesClass": [],
-            "methodsClass": [],
-            "deprecated": false,
-            "deprecationMessage": "",
-            "hostBindings": [],
-            "hostListeners": [],
-            "standalone": true,
-            "imports": [],
-            "description": "",
-            "rawdescription": "\n",
-            "type": "component",
-            "sourceCode": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-mummy',\n  standalone: true,\n  imports: [],\n  templateUrl: './mummy.component.html',\n  styleUrl: './mummy.component.scss'\n})\nexport class MummyComponent {\n\n}\n",
-            "styleUrl": "./mummy.component.scss",
-            "assetsDirs": [],
-            "styleUrlsData": "",
-            "stylesData": "",
-            "extends": [],
-            "templateData": "<p>mummy works!</p>\n"
         },
         {
             "name": "PageComponent",
@@ -435,16 +497,6 @@
                 "defaultValue": "{\n  args: {\n    size: 'large',\n    label: 'Button',\n  },\n}"
             },
             {
-                "name": "Large",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "src/app/ui/mummy/mummy.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Story",
-                "defaultValue": "{\n  args: {\n    size: 'large',\n    label: 'MummyComponent',\n  },\n}"
-            },
-            {
                 "name": "LoggedIn",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -518,11 +570,11 @@
                 "name": "meta",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/ui/mummy/mummy.stories.ts",
+                "file": "src/app/ui/checkbox/checkbox.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "Meta<MummyComponent>",
-                "defaultValue": "{\n  title: 'Example/MummyComponent',\n  component: MummyComponent,\n  tags: ['autodocs'],\n  render: (args: MummyComponent) => ({\n    props: {\n      backgroundColor: null,\n      ...args,\n    },\n  }),\n  argTypes: {\n    backgroundColor: {\n      control: 'color',\n    },\n  },\n}"
+                "type": "Meta<CheckboxComponent>",
+                "defaultValue": "{\n  title: 'Example/Checkbox',\n  component: CheckboxComponent,\n  tags: ['autodocs'],\n  decorators: [\n    moduleMetadata({\n      imports: [ReactiveFormsModule], // Needed to be able to use FormControls in the stories\n    }),\n  ],\n  render: (args: CheckboxComponent) => ({\n    props: {\n      backgroundColor: null,\n      ...args,\n    },\n  }),\n  argTypes: {\n    // backgroundColor: {\n    //   control: 'color',\n    // },\n  },\n}"
             },
             {
                 "name": "preview",
@@ -548,11 +600,11 @@
                 "name": "Primary",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/ui/mummy/mummy.stories.ts",
+                "file": "src/app/ui/checkbox/checkbox.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "Story",
-                "defaultValue": "{\n  args: {\n    primary: true,\n    label: 'MummyComponent',\n  },\n}"
+                "type": "StoryObj<CheckboxComponent>",
+                "defaultValue": "{\n  ...Template,\n  args: {\n    // Provide default arguments for the primary state\n    label: 'Checkbox',\n    control: new FormControl(false), // You can set default checked state here\n  },\n}"
             },
             {
                 "name": "Secondary",
@@ -565,16 +617,6 @@
                 "defaultValue": "{\n  args: {\n    label: 'Button',\n  },\n}"
             },
             {
-                "name": "Secondary",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "src/app/ui/mummy/mummy.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "type": "Story",
-                "defaultValue": "{\n  args: {\n    label: 'MummyComponent234',\n  },\n}"
-            },
-            {
                 "name": "Small",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -585,14 +627,14 @@
                 "defaultValue": "{\n  args: {\n    size: 'small',\n    label: 'Button',\n  },\n}"
             },
             {
-                "name": "Small",
+                "name": "Template",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "src/app/ui/mummy/mummy.stories.ts",
+                "file": "src/app/ui/checkbox/checkbox.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
-                "type": "Story",
-                "defaultValue": "{\n  args: {\n    size: 'small',\n    label: 'MummyComponent',\n  },\n}"
+                "type": "StoryObj<CheckboxComponent>",
+                "defaultValue": "{\n  render: (args: CheckboxComponent) => ({\n    props: {\n      ...args,\n      // Bind the form control to your component's input\n      control: args.control || new FormControl(false),\n    },\n  }),\n}"
             }
         ],
         "functions": [],
@@ -625,17 +667,6 @@
                 "subtype": "typealias",
                 "rawtype": "StoryObj<Page>",
                 "file": "src/stories/Page.stories.ts",
-                "deprecated": false,
-                "deprecationMessage": "",
-                "description": "",
-                "kind": 183
-            },
-            {
-                "name": "Story",
-                "ctype": "miscellaneous",
-                "subtype": "typealias",
-                "rawtype": "StoryObj<MummyComponent>",
-                "file": "src/app/ui/mummy/mummy.stories.ts",
                 "deprecated": false,
                 "deprecationMessage": "",
                 "description": "",
@@ -708,58 +739,6 @@
                     "defaultValue": "{\n  args: {\n    size: 'small',\n    label: 'Button',\n  },\n}"
                 }
             ],
-            "src/app/ui/mummy/mummy.stories.ts": [
-                {
-                    "name": "Large",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/app/ui/mummy/mummy.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  args: {\n    size: 'large',\n    label: 'MummyComponent',\n  },\n}"
-                },
-                {
-                    "name": "meta",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/app/ui/mummy/mummy.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Meta<MummyComponent>",
-                    "defaultValue": "{\n  title: 'Example/MummyComponent',\n  component: MummyComponent,\n  tags: ['autodocs'],\n  render: (args: MummyComponent) => ({\n    props: {\n      backgroundColor: null,\n      ...args,\n    },\n  }),\n  argTypes: {\n    backgroundColor: {\n      control: 'color',\n    },\n  },\n}"
-                },
-                {
-                    "name": "Primary",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/app/ui/mummy/mummy.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  args: {\n    primary: true,\n    label: 'MummyComponent',\n  },\n}"
-                },
-                {
-                    "name": "Secondary",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/app/ui/mummy/mummy.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  args: {\n    label: 'MummyComponent234',\n  },\n}"
-                },
-                {
-                    "name": "Small",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "src/app/ui/mummy/mummy.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "type": "Story",
-                    "defaultValue": "{\n  args: {\n    size: 'small',\n    label: 'MummyComponent',\n  },\n}"
-                }
-            ],
             "src/stories/Header.stories.ts": [
                 {
                     "name": "LoggedIn",
@@ -824,6 +803,38 @@
                     "defaultValue": "{\n  title: 'Example/Page',\n  component: Page,\n  parameters: {\n    // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout\n    layout: 'fullscreen',\n  },\n  decorators: [\n    moduleMetadata({\n      declarations: [Button, Header],\n      imports: [CommonModule],\n    }),\n  ],\n}"
                 }
             ],
+            "src/app/ui/checkbox/checkbox.stories.ts": [
+                {
+                    "name": "meta",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/ui/checkbox/checkbox.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "Meta<CheckboxComponent>",
+                    "defaultValue": "{\n  title: 'Example/Checkbox',\n  component: CheckboxComponent,\n  tags: ['autodocs'],\n  decorators: [\n    moduleMetadata({\n      imports: [ReactiveFormsModule], // Needed to be able to use FormControls in the stories\n    }),\n  ],\n  render: (args: CheckboxComponent) => ({\n    props: {\n      backgroundColor: null,\n      ...args,\n    },\n  }),\n  argTypes: {\n    // backgroundColor: {\n    //   control: 'color',\n    // },\n  },\n}"
+                },
+                {
+                    "name": "Primary",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/ui/checkbox/checkbox.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "StoryObj<CheckboxComponent>",
+                    "defaultValue": "{\n  ...Template,\n  args: {\n    // Provide default arguments for the primary state\n    label: 'Checkbox',\n    control: new FormControl(false), // You can set default checked state here\n  },\n}"
+                },
+                {
+                    "name": "Template",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/ui/checkbox/checkbox.stories.ts",
+                    "deprecated": false,
+                    "deprecationMessage": "",
+                    "type": "StoryObj<CheckboxComponent>",
+                    "defaultValue": "{\n  render: (args: CheckboxComponent) => ({\n    props: {\n      ...args,\n      // Bind the form control to your component's input\n      control: args.control || new FormControl(false),\n    },\n  }),\n}"
+                }
+            ],
             ".storybook/preview.ts": [
                 {
                     "name": "preview",
@@ -878,19 +889,6 @@
                     "description": "",
                     "kind": 183
                 }
-            ],
-            "src/app/ui/mummy/mummy.stories.ts": [
-                {
-                    "name": "Story",
-                    "ctype": "miscellaneous",
-                    "subtype": "typealias",
-                    "rawtype": "StoryObj<MummyComponent>",
-                    "file": "src/app/ui/mummy/mummy.stories.ts",
-                    "deprecated": false,
-                    "deprecationMessage": "",
-                    "description": "",
-                    "kind": 183
-                }
             ]
         }
     },
@@ -929,26 +927,16 @@
                 "status": "low"
             },
             {
-                "filePath": "src/app/ui/mummy/mummy.component.ts",
+                "filePath": "src/app/ui/checkbox/checkbox.component.ts",
                 "type": "component",
                 "linktype": "component",
-                "name": "MummyComponent",
+                "name": "CheckboxComponent",
                 "coveragePercent": 0,
-                "coverageCount": "0/1",
+                "coverageCount": "0/5",
                 "status": "low"
             },
             {
-                "filePath": "src/app/ui/mummy/mummy.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Large",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/app/ui/mummy/mummy.stories.ts",
+                "filePath": "src/app/ui/checkbox/checkbox.stories.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
@@ -958,7 +946,7 @@
                 "status": "low"
             },
             {
-                "filePath": "src/app/ui/mummy/mummy.stories.ts",
+                "filePath": "src/app/ui/checkbox/checkbox.stories.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
@@ -968,21 +956,11 @@
                 "status": "low"
             },
             {
-                "filePath": "src/app/ui/mummy/mummy.stories.ts",
+                "filePath": "src/app/ui/checkbox/checkbox.stories.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
-                "name": "Secondary",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "src/app/ui/mummy/mummy.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Small",
+                "name": "Template",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
                 "status": "low"

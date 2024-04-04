@@ -1,0 +1,42 @@
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--light-grey-light-bg);
+    padding: 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s;
+
+    &:hover, 
+    &:focus {
+        background-color: var(--main-purple-rgba);
+    }
+
+    .checkbox-visual-box {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1rem;
+        height: 1rem;
+        border: 1px solid var(--checkbox-border-color);
+        border-radius: 2px;
+        transition: background-color 0.15s, border-color 0.15s;
+
+        &.checked {
+            background-color: var(--main-purple);
+            border-color: transparent; // Hides border while ensuring the element keeps its height/width
+        }
+
+        &.unchecked {
+            background-color: #fff;
+        }
+
+        .icon-checkbox-checked {
+            padding-top: 2px; // For perfect centering
+            transform: scale(1.1);
+        }
+    }
+}

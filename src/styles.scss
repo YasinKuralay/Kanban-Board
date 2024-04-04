@@ -1,6 +1,7 @@
 /* COLORS */
 :root {
   --main-purple: #635fc7;
+  --main-purple-rgba: rgba(99, 95, 199, 0.25);
   --main-purple-hover: #a8a4ff;
   --black: #000112;
   --very-dark-grey: #20212c;
@@ -12,10 +13,11 @@
   --white: #fff;
   --red: #ea5555;
   --red-hover: #ff9898;
+  --checkbox-border-color: rgba(130, 143, 163, 0.249);
 }
 
 /* FONTS */
-@mixin heading-s {
+.font-heading-s {
   font-size: 12px;
   font-style: normal;
   font-weight: 700;
@@ -23,41 +25,42 @@
   letter-spacing: 2.4px;
 }
 
-@mixin heading-m {
+.font-heading-m {
   font-size: 15px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
 }
 
-@mixin heading-l {
+.font-heading-l {
   font-size: 18px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
 }
 
-@mixin heading-xl {
+.font-heading-xl {
   font-size: 24px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
 }
 
-@mixin body-m {
+.font-body-m {
   font-size: 12px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
 }
 
-@mixin body-l {
+.font-body-l {
   font-size: 13px;
   font-style: normal;
   font-weight: 500;
   line-height: 23px;
 }
 
+/* GLOBAL CSS */
 body {
-  font-family: Plus Jakarta Sans;
+  font-family: "Plus Jakarta Sans";
 }
