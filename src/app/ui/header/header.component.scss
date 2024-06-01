@@ -1,7 +1,7 @@
-header {
+@use '../../../styles.scss' as *;
+
+.mobile-header, .tablet-header {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
     background-color: var(--white);
     height: 64px;
     @media (min-width: 768px) {
@@ -20,12 +20,42 @@ header {
     display: flex;
 }
 
-div[role="button"] {
+div[role="button"], button {
     cursor: pointer;
+}
+
+.board-options-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.5rem;
+    margin-left: 0.5rem;
+    transition: filter var(--default-transition-speed);
+
+    &:not([disabled]):hover, &:not([disabled]):focus-visible {
+        filter: brightness(0.5);
+    }
+}
+
+.add-task-button {
+    background-color: var(--main-purple);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;;
+    flex-shrink: 0;
+    transition: background-color var(--default-transition-speed), border-radius var(--default-transition-speed);
+
+    &:not([disabled]):hover, &:not([disabled]):focus-visible {
+        background-color: var(--main-purple-hover);
+        border-radius: 0.75rem;
+    }
 }
 
 .mobile-header {
     padding: 0 0.5rem 0 1rem;
+    justify-content: space-between;
+    align-items: center;
 
     @media (min-width: 768px) {
         display: none
@@ -37,48 +67,73 @@ div[role="button"] {
     }
 
     .select-current-board {
+        @include font-heading-l;
         display: flex;
         align-items: center;
         gap: 0.4rem;
         color: var(--black);
-
-        svg {
-            margin-top: 2px; // To make it appear perfectly horizontally centered.
-        }
     }
 
     .add-task-button {
-        background-color: var(--main-purple);
         width: 3rem;
         height: 2rem;
-        border-radius: 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;;
-        flex-shrink: 0;
-        transition: background-color var(--default-transition-speed), border-radius var(--default-transition-speed);
-
-        &.disabled {
-            opacity: 0.25;
-        }
-
-        &:hover {
-            background-color: var(--main-purple-hover);
-            border-radius: 0.75rem;
-        }
-    }
-
-    .board-options-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0 0.5rem;
-        margin-left: 0.5rem;
     }
 }
 
 .tablet-header {
+    display: flex;
+    border-bottom: 1px solid var(--lines-light);
     @media (max-width: 767px) {
         display: none;
+    }
+
+    .header-logo-section {
+        display: flex;
+        align-items: center;
+        padding: 0 1.5rem;
+
+        @media (min-width: 1200px) {
+            padding-right: 2rem;
+        }
+
+        .logo {
+            margin-right: 1rem;
+        }
+    }
+
+    // The header element is not the outermost container for accessibility reasons.
+    header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-grow: 1;
+        border-left: 1px solid var(--lines-light);
+        padding-left: 1.5rem;
+
+        .current-board {
+            @include font-heading-l;
+            font-size: 20px;
+            @media (min-width: 1200px) {
+                @include font-heading-xl;
+            }
+        }
+
+        .add-task-button {
+            height: 3rem;
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: 1.5rem;
+
+            &:not([disabled]):hover, &:not([disabled]):focus-visible {
+                border-radius: 1rem;
+            }
+
+            svg {
+                margin-right: 6px;
+            }
+        }
+
+        // .header-right-section {
+        // }
     }
 }

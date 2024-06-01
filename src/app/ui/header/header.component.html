@@ -1,33 +1,61 @@
 <header class="mobile-header">
     <div class="header-left-section">
         <div class="logo">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
             <rect width="6" height="25" rx="2" fill="#635FC7"/>
             <rect opacity="0.75" x="9" width="6" height="25" rx="2" fill="#635FC7"/>
             <rect opacity="0.5" x="18" width="6" height="25" rx="2" fill="#635FC7"/>
           </svg>
         </div>
-        <div class="current-board-button" role="button" tabindex="0" aria-label="Select current board" class="select-current-board">Current Board 
+        <button class="current-board-button" aria-label="Select current board" class="select-current-board">Current Board 
             <svg width="10" height="7" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path id="Path 3" d="M1 1L5 5L9 1" stroke="#635FC7" stroke-width="2"/>
             </svg>
-        </div>
+        </button>
     </div>
     <div class="header-right-section">
-        <div class="add-task-button" role="button" tabindex="0" aria-label="Add new task"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <button class="add-task-button" aria-label="Add new task"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path d="M7.368 12V7.344H12V4.632H7.368V0H4.656V4.632H0V7.344H4.656V12H7.368Z" fill="white"/>
           </svg>
-        </div>
-        <div class="board-options-button" role="button" tabindex="0" aria-label="Board options">
+        </button>
+        <button class="board-options-button" aria-label="Board options">
             <svg xmlns="http://www.w3.org/2000/svg" width="5" height="20" viewBox="0 0 5 20" fill="none">
                 <circle cx="2.30769" cy="2.30769" r="2.30769" fill="#828FA3"/>
                 <circle cx="2.30769" cy="10.0001" r="2.30769" fill="#828FA3"/>
                 <circle cx="2.30769" cy="17.6925" r="2.30769" fill="#828FA3"/>
             </svg>
-        </div>
+        </button>
     </div>
 </header>
-<header class="tablet-header">
-    <div class="logo">Logo</div>
-    <div class="current-board">Current Board</div>
-</header>
+
+<div class="tablet-header">
+    <div class="header-logo-section">
+        <div class="logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
+            <rect width="6" height="25" rx="2" fill="#635FC7"/>
+            <rect opacity="0.75" x="9" width="6" height="25" rx="2" fill="#635FC7"/>
+            <rect opacity="0.5" x="18" width="6" height="25" rx="2" fill="#635FC7"/>
+          </svg></div>
+        <div class="logo-text"><svg xmlns="http://www.w3.org/2000/svg" width="114" height="25" viewBox="0 0 114 25" fill="none">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M5.55999 24.224V18.88L7.47999 16.768L11.928 24.224H17.368L11.064 13.792L17.4 6.752H11.48L5.55999 13.056V0H0.759995V24.224H5.55999ZM24.92 24.608C27.096 24.608 28.8453 23.936 30.168 22.592V24.224H34.648V12.704C34.648 11.4453 34.3333 10.3413 33.704 9.392C33.0747 8.44267 32.1947 7.70133 31.064 7.168C29.9333 6.63467 28.632 6.368 27.16 6.368C25.304 6.368 23.6773 6.79467 22.28 7.648C20.8827 8.50133 19.928 9.65333 19.416 11.104L23.256 12.928C23.5547 12.16 24.0293 11.5413 24.68 11.072C25.3307 10.6027 26.0827 10.368 26.936 10.368C27.832 10.368 28.5413 10.592 29.064 11.04C29.5867 11.488 29.848 12.0427 29.848 12.704V13.184L25.016 13.952C22.9253 14.2933 21.368 14.944 20.344 15.904C19.32 16.864 18.808 18.08 18.808 19.552C18.808 21.1307 19.3573 22.368 20.456 23.264C21.5547 24.16 23.0427 24.608 24.92 24.608ZM24.376 20.64C24.7813 20.9387 25.2827 21.088 25.88 21.088C27.0747 21.088 28.0347 20.7147 28.76 19.968C29.4853 19.2213 29.848 18.3147 29.848 17.248V16.704L25.88 17.408C25.1973 17.536 24.6747 17.7547 24.312 18.064C23.9493 18.3733 23.768 18.816 23.768 19.392C23.768 19.9253 23.9707 20.3413 24.376 20.64ZM42.968 24.224V14.016C42.968 13.0133 43.2667 12.208 43.864 11.6C44.4613 10.992 45.2293 10.688 46.168 10.688C47.1067 10.688 47.8747 10.992 48.472 11.6C49.0693 12.208 49.368 13.0133 49.368 14.016V24.224H54.168V12.992C54.168 11.6693 53.8907 10.512 53.336 9.52C52.7813 8.528 52.008 7.75467 51.016 7.2C50.024 6.64533 48.8667 6.368 47.544 6.368C46.4347 6.368 45.4533 6.576 44.6 6.992C43.7467 7.408 43.096 8.04267 42.648 8.896V6.752H38.168V24.224H42.968ZM71.704 23.392C70.36 24.2027 68.8347 24.608 67.128 24.608C66.0613 24.608 65.064 24.432 64.136 24.08C63.208 23.728 62.4347 23.2213 61.816 22.56V24.224H57.336V0H62.136V8.224C63.3733 6.98667 65.048 6.368 67.16 6.368C68.824 6.368 70.328 6.77333 71.672 7.584C73.016 8.39467 74.0827 9.488 74.872 10.864C75.6613 12.24 76.056 13.7813 76.056 15.488C76.056 17.1733 75.6667 18.7093 74.888 20.096C74.1093 21.4827 73.048 22.5813 71.704 23.392ZM66.552 20.288C65.2507 20.288 64.1893 19.8453 63.368 18.96C62.5467 18.0747 62.136 16.9173 62.136 15.488C62.136 14.08 62.5467 12.928 63.368 12.032C64.1893 11.136 65.2507 10.688 66.552 10.688C67.8747 10.688 68.9627 11.1413 69.816 12.048C70.6693 12.9547 71.096 14.1013 71.096 15.488C71.096 16.896 70.6693 18.048 69.816 18.944C68.9627 19.84 67.8747 20.288 66.552 20.288ZM89.528 22.592C88.2053 23.936 86.456 24.608 84.28 24.608C82.4027 24.608 80.9147 24.16 79.816 23.264C78.7173 22.368 78.168 21.1307 78.168 19.552C78.168 18.08 78.68 16.864 79.704 15.904C80.728 14.944 82.2853 14.2933 84.376 13.952L89.208 13.184V12.704C89.208 12.0427 88.9467 11.488 88.424 11.04C87.9013 10.592 87.192 10.368 86.296 10.368C85.4427 10.368 84.6907 10.6027 84.04 11.072C83.3893 11.5413 82.9147 12.16 82.616 12.928L78.776 11.104C79.288 9.65333 80.2427 8.50133 81.64 7.648C83.0373 6.79467 84.664 6.368 86.52 6.368C87.992 6.368 89.2933 6.63467 90.424 7.168C91.5547 7.70133 92.4347 8.44267 93.064 9.392C93.6933 10.3413 94.008 11.4453 94.008 12.704V24.224H89.528V22.592ZM85.24 21.088C84.6427 21.088 84.1413 20.9387 83.736 20.64C83.3307 20.3413 83.128 19.9253 83.128 19.392C83.128 18.816 83.3093 18.3733 83.672 18.064C84.0347 17.7547 84.5573 17.536 85.24 17.408L89.208 16.704V17.248C89.208 18.3147 88.8453 19.2213 88.12 19.968C87.3947 20.7147 86.4347 21.088 85.24 21.088ZM102.328 14.016V24.224H97.528V6.752H102.008V8.896C102.456 8.04267 103.107 7.408 103.96 6.992C104.813 6.576 105.795 6.368 106.904 6.368C108.227 6.368 109.384 6.64533 110.376 7.2C111.368 7.75467 112.141 8.528 112.696 9.52C113.251 10.512 113.528 11.6693 113.528 12.992V24.224H108.728V14.016C108.728 13.0133 108.429 12.208 107.832 11.6C107.235 10.992 106.467 10.688 105.528 10.688C104.589 10.688 103.821 10.992 103.224 11.6C102.627 12.208 102.328 13.0133 102.328 14.016Z" fill="#000112"/>
+          </svg></div>
+    </div>
+
+      <!-- The header element is here instead of as the outermost container for accessibility reasons -->
+      <header>
+        <div class="current-board">Current Board</div>
+        <div class="header-right-section">
+            <button class="add-task-button" aria-label="Add new task"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M7.368 12V7.344H12V4.632H7.368V0H4.656V4.632H0V7.344H4.656V12H7.368Z" fill="white"/>
+                </svg> Add New Task
+            </button>
+            <button class="board-options-button" aria-label="Board options">
+                <svg xmlns="http://www.w3.org/2000/svg" width="5" height="20" viewBox="0 0 5 20" fill="none">
+                    <circle cx="2.30769" cy="2.30769" r="2.30769" fill="#828FA3"/>
+                    <circle cx="2.30769" cy="10.0001" r="2.30769" fill="#828FA3"/>
+                    <circle cx="2.30769" cy="17.6925" r="2.30769" fill="#828FA3"/>
+                </svg>
+            </button>
+        </div>
+      </header>
+</div>

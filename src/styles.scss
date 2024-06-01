@@ -21,10 +21,11 @@
   --white: #2b2c37;
   --black: #fff;
   --light-grey-light-bg: #20212C;
+  --lines-light: #3E3F4E;
 }
 
 /* FONTS */
-.font-heading-s {
+@mixin font-heading-s {
   font-size: 12px;
   font-style: normal;
   font-weight: 700;
@@ -32,35 +33,35 @@
   letter-spacing: 2.4px;
 }
 
-.font-heading-m {
+@mixin font-heading-m {
   font-size: 15px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
 }
 
-.font-heading-l {
+@mixin font-heading-l {
   font-size: 18px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
 }
 
-.font-heading-xl {
+@mixin font-heading-xl {
   font-size: 24px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
 }
 
-.font-body-m {
+@mixin font-body-m {
   font-size: 12px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
 }
 
-.font-body-l {
+@mixin font-body-l {
   font-size: 13px;
   font-style: normal;
   font-weight: 500;
@@ -70,4 +71,21 @@
 /* GLOBAL CSS */
 body {
   font-family: "Plus Jakarta Sans";
+  
+  * {
+    box-sizing: border-box;
+  }
+}
+
+// Simple button styling resets
+button {
+  border: unset;
+  background-color: unset;
+  padding: unset;
+  font-family: inherit;
+
+  &[disabled] {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
 }

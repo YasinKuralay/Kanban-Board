@@ -10,7 +10,7 @@
     transition: background-color var(--default-transition-speed);
 
     &:hover, 
-    &:focus {
+    &:focus-visible {
         background-color: var(--main-purple-rgba);
     }
 
