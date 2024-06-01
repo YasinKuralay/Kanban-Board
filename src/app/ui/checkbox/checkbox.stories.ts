@@ -5,7 +5,7 @@ import { moduleMetadata } from '@storybook/angular';
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories
 const meta: Meta<CheckboxComponent> = {
-  title: 'Example/Checkbox',
+  title: 'UI/Checkbox',
   component: CheckboxComponent,
   tags: ['autodocs'],
   decorators: [

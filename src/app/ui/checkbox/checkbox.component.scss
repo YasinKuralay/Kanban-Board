@@ -7,7 +7,7 @@
     border-radius: 4px;
     cursor: pointer;
     user-select: none;
-    transition: background-color 0.15s;
+    transition: background-color var(--default-transition-speed);
 
     &:hover, 
     &:focus {
@@ -23,7 +23,7 @@
         height: 1rem;
         border: 1px solid var(--checkbox-border-color);
         border-radius: 2px;
-        transition: background-color 0.15s, border-color 0.15s;
+        transition: background-color var(--default-transition-speed), border-color var(--default-transition-speed);
 
         &.checked {
             background-color: var(--main-purple);
@@ -37,6 +37,17 @@
         .icon-checkbox-checked {
             padding-top: 2px; // For perfect centering
             transform: scale(1.1);
+        }
+    }
+
+    .checkbox-label {
+        transition: opacity var(--default-transition-speed);
+    }
+
+    &[aria-checked=true] {
+        .checkbox-label {
+            opacity: 50%;
+            text-decoration: line-through;
         }
     }
 }
