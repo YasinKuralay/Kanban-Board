@@ -1,0 +1,84 @@
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--white);
+    height: 64px;
+    @media (min-width: 768px) {
+        height: 80px;
+    }
+    @media (min-width: 1200px) {
+        height: 96px;
+    }
+
+    * {
+        user-select: none;
+    }
+}
+
+.header-left-section, .header-right-section {
+    display: flex;
+}
+
+div[role="button"] {
+    cursor: pointer;
+}
+
+.mobile-header {
+    padding: 0 0.5rem 0 1rem;
+
+    @media (min-width: 768px) {
+        display: none
+    }
+
+    .logo {
+        height: 25px;
+        margin-right: 1rem;
+    }
+
+    .select-current-board {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: var(--black);
+
+        svg {
+            margin-top: 2px; // To make it appear perfectly horizontally centered.
+        }
+    }
+
+    .add-task-button {
+        background-color: var(--main-purple);
+        width: 3rem;
+        height: 2rem;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;;
+        flex-shrink: 0;
+        transition: background-color var(--default-transition-speed), border-radius var(--default-transition-speed);
+
+        &.disabled {
+            opacity: 0.25;
+        }
+
+        &:hover {
+            background-color: var(--main-purple-hover);
+            border-radius: 0.75rem;
+        }
+    }
+
+    .board-options-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 0.5rem;
+        margin-left: 0.5rem;
+    }
+}
+
+.tablet-header {
+    @media (max-width: 767px) {
+        display: none;
+    }
+}

@@ -14,6 +14,12 @@
   --red: #ea5555;
   --red-hover: #ff9898;
   --checkbox-border-color: rgba(130, 143, 163, 0.249);
+  --default-transition-speed: 0.15s;
+}
+
+[data-theme="dark"] {
+  --white: #2b2c37;
+  --black: #fff;
 }
 
 /* FONTS */
