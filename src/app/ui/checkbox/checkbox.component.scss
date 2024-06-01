@@ -31,7 +31,11 @@
         }
 
         &.unchecked {
-            background-color: #fff;
+            background-color: var(--white);
+
+            svg {
+                display: none;
+            }
         }
 
         .icon-checkbox-checked {
@@ -41,6 +45,7 @@
     }
 
     .checkbox-label {
+        color: var(--black);
         transition: opacity var(--default-transition-speed);
     }
 
