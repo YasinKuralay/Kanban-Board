@@ -78,6 +78,14 @@ button {
     align-items: center;
     gap: 0.4rem;
     color: var(--black);
+
+    svg {
+      display: none;
+
+      &.active {
+        display: initial;
+      }
+    }
   }
 
   .add-task-button {
