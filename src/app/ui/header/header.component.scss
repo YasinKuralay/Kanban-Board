@@ -1,139 +1,146 @@
-@use '../../../styles.scss' as *;
+@use "../../../styles.scss" as *;
 
-.mobile-header, .tablet-header {
-    display: flex;
-    background-color: var(--white);
-    height: 64px;
-    @media (min-width: 768px) {
-        height: 80px;
-    }
-    @media (min-width: 1200px) {
-        height: 96px;
-    }
+.mobile-header,
+.tablet-header {
+  display: flex;
+  background-color: var(--white);
+  height: 64px;
+  @media (min-width: 768px) {
+    height: 80px;
+  }
+  @media (min-width: 1200px) {
+    height: 96px;
+  }
 
-    * {
-        user-select: none;
-    }
+  * {
+    user-select: none;
+  }
 }
 
-.header-left-section, .header-right-section {
-    display: flex;
+.header-left-section,
+.header-right-section {
+  display: flex;
 }
 
-div[role="button"], button {
-    cursor: pointer;
+div[role="button"],
+button {
+  cursor: pointer;
 }
 
 .board-options-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 0.5rem;
-    margin-left: 0.5rem;
-    transition: filter var(--default-transition-speed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.5rem;
+  margin-left: 0.5rem;
+  transition: filter var(--default-transition-speed);
 
-    &:not([disabled]):hover, &:not([disabled]):focus-visible {
-        filter: brightness(0.5);
-    }
+  &:not([disabled]):hover,
+  &:not([disabled]):focus-visible {
+    filter: brightness(0.5);
+  }
 }
 
 .add-task-button {
-    background-color: var(--main-purple);
-    border-radius: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;;
-    flex-shrink: 0;
-    transition: background-color var(--default-transition-speed), border-radius var(--default-transition-speed);
+  background-color: var(--main-purple);
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background-color var(--default-transition-speed),
+    border-radius var(--default-transition-speed);
 
-    &:not([disabled]):hover, &:not([disabled]):focus-visible {
-        background-color: var(--main-purple-hover);
-        border-radius: 0.75rem;
-    }
+  &:not([disabled]):hover,
+  &:not([disabled]):focus-visible {
+    background-color: var(--main-purple-hover);
+    border-radius: 0.75rem;
+  }
 }
 
 .mobile-header {
-    padding: 0 0.5rem 0 1rem;
-    justify-content: space-between;
+  padding: 0 0.5rem 0 1rem;
+  justify-content: space-between;
+  align-items: center;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+
+  .logo {
+    height: 25px;
+    margin-right: 1rem;
+  }
+
+  .select-current-board {
+    @include font-heading-l;
+    display: flex;
     align-items: center;
+    gap: 0.4rem;
+    color: var(--black);
+  }
 
-    @media (min-width: 768px) {
-        display: none
-    }
-
-    .logo {
-        height: 25px;
-        margin-right: 1rem;
-    }
-
-    .select-current-board {
-        @include font-heading-l;
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        color: var(--black);
-    }
-
-    .add-task-button {
-        width: 3rem;
-        height: 2rem;
-    }
+  .add-task-button {
+    width: 3rem;
+    height: 2rem;
+  }
 }
 
 .tablet-header {
+  display: flex;
+  border-bottom: 1px solid var(--lines-light);
+  @media (max-width: 767px) {
+    display: none;
+  }
+
+  .header-logo-section {
     display: flex;
-    border-bottom: 1px solid var(--lines-light);
-    @media (max-width: 767px) {
-        display: none;
+    align-items: center;
+    padding: 0 1.5rem;
+
+    @media (min-width: 1200px) {
+      padding-right: 2rem;
     }
 
-    .header-logo-section {
-        display: flex;
-        align-items: center;
-        padding: 0 1.5rem;
+    .logo {
+      margin-right: 1rem;
+    }
+  }
 
-        @media (min-width: 1200px) {
-            padding-right: 2rem;
-        }
+  // The header element is not the outermost container for accessibility reasons.
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-grow: 1;
+    border-left: 1px solid var(--lines-light);
+    padding-left: 1.5rem;
 
-        .logo {
-            margin-right: 1rem;
-        }
+    .current-board {
+      @include font-heading-l;
+      font-size: 20px;
+      @media (min-width: 1200px) {
+        @include font-heading-xl;
+      }
     }
 
-    // The header element is not the outermost container for accessibility reasons.
-    header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-grow: 1;
-        border-left: 1px solid var(--lines-light);
-        padding-left: 1.5rem;
+    .add-task-button {
+      height: 3rem;
+      color: var(--white);
+      padding: 1rem 1.5rem;
+      border-radius: 1.5rem;
 
-        .current-board {
-            @include font-heading-l;
-            font-size: 20px;
-            @media (min-width: 1200px) {
-                @include font-heading-xl;
-            }
-        }
+      &:not([disabled]):hover,
+      &:not([disabled]):focus-visible {
+        border-radius: 1rem;
+      }
 
-        .add-task-button {
-            height: 3rem;
-            color: var(--white);
-            padding: 1rem 1.5rem;
-            border-radius: 1.5rem;
-
-            &:not([disabled]):hover, &:not([disabled]):focus-visible {
-                border-radius: 1rem;
-            }
-
-            svg {
-                margin-right: 6px;
-            }
-        }
-
-        // .header-right-section {
-        // }
+      svg {
+        margin-right: 6px;
+      }
     }
+
+    // .header-right-section {
+    // }
+  }
 }
