@@ -7,13 +7,12 @@ const config: StorybookConfig = {
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     '@storybook/onboarding',
+    '@chromatic-com/storybook'
   ],
   framework: {
     name: '@storybook/angular',
     options: {},
   },
-  docs: {
-    autodocs: 'tag',
-  },
+  docs: {},
 };
 export default config;
