@@ -48,7 +48,8 @@ button {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: background-color var(--default-transition-speed),
+  transition:
+    background-color var(--default-transition-speed),
     border-radius var(--default-transition-speed);
 
   &:not([disabled]):hover,
@@ -78,6 +79,7 @@ button {
     align-items: center;
     gap: 0.4rem;
     color: var(--black);
+    white-space: nowrap;
 
     svg {
       display: none;

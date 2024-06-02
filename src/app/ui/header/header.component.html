@@ -35,6 +35,7 @@
       class="select-current-board"
       [ngClass]="{ active: mobileBoardsDialogIsOpen }"
       (click)="openMobileBoardsDialog()"
+      #mobileBoardsDialogTrigger
     >
       Current Board
       <svg
