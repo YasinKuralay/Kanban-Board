@@ -6,11 +6,9 @@ import { BrowserModule } from '@angular/platform-browser';
 @Component({
   selector: 'app-checkbox',
   standalone: true,
-  imports: [
-    CommonModule
-  ],
+  imports: [CommonModule],
   templateUrl: './checkbox.component.html',
-  styleUrl: './checkbox.component.scss'
+  styleUrl: './checkbox.component.scss',
 })
 export class CheckboxComponent {
   @Input() label: string = '';

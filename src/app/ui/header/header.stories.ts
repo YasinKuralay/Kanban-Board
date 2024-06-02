@@ -3,8 +3,8 @@ import type { Meta, StoryObj } from '@storybook/angular';
 import { HeaderComponent } from './header.component';
 
 const meta: Meta<HeaderComponent> = {
-    title: 'UI/Header',
-    component: HeaderComponent,
+  title: 'UI/Header',
+  component: HeaderComponent,
 };
 
 export default meta;

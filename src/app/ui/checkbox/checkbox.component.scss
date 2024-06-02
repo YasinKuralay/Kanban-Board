@@ -1,58 +1,59 @@
 .checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--light-grey-light-bg);
+  padding: 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--default-transition-speed);
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--main-purple-rgba);
+  }
+
+  .checkbox-visual-box {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    background-color: var(--light-grey-light-bg);
-    padding: 0.75rem;
-    border-radius: 4px;
-    cursor: pointer;
-    user-select: none;
-    transition: background-color var(--default-transition-speed);
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid var(--checkbox-border-color);
+    border-radius: 2px;
+    transition: background-color var(--default-transition-speed),
+      border-color var(--default-transition-speed);
 
-    &:hover, 
-    &:focus-visible {
-        background-color: var(--main-purple-rgba);
+    &.checked {
+      background-color: var(--main-purple);
+      border-color: transparent; // Hides border while ensuring the element keeps its height/width
     }
 
-    .checkbox-visual-box {
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 1rem;
-        height: 1rem;
-        border: 1px solid var(--checkbox-border-color);
-        border-radius: 2px;
-        transition: background-color var(--default-transition-speed), border-color var(--default-transition-speed);
+    &.unchecked {
+      background-color: var(--white);
 
-        &.checked {
-            background-color: var(--main-purple);
-            border-color: transparent; // Hides border while ensuring the element keeps its height/width
-        }
-
-        &.unchecked {
-            background-color: var(--white);
-
-            svg {
-                display: none;
-            }
-        }
-
-        .icon-checkbox-checked {
-            padding-top: 2px; // For perfect centering
-            transform: scale(1.1);
-        }
+      svg {
+        display: none;
+      }
     }
 
+    .icon-checkbox-checked {
+      padding-top: 2px; // For perfect centering
+      transform: scale(1.1);
+    }
+  }
+
+  .checkbox-label {
+    color: var(--black);
+    transition: opacity var(--default-transition-speed);
+  }
+
+  &[aria-checked="true"] {
     .checkbox-label {
-        color: var(--black);
-        transition: opacity var(--default-transition-speed);
+      opacity: 50%;
+      text-decoration: line-through;
     }
-
-    &[aria-checked=true] {
-        .checkbox-label {
-            opacity: 50%;
-            text-decoration: line-through;
-        }
-    }
+  }
 }

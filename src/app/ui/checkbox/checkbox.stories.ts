@@ -56,7 +56,6 @@ export const Primary: StoryObj<CheckboxComponent> = {
   },
 };
 
-
 // export const Secondary: Story = {
 //   args: {
 //     label: 'Button',
