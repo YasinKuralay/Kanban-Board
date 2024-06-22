@@ -1,12 +1,5 @@
 import { Injectable } from '@angular/core';
-
-/**
- * The interface that keeps track of all Boards.
- *
- */
-interface Boards {
-  boards: Board[];
-}
+import { BehaviorSubject, Observable } from 'rxjs';
 
 /**
  * The Board interface contains all board information.
@@ -62,12 +55,25 @@ interface Subtask {
   providedIn: 'root',
 })
 export class BoardsService {
-  constructor() {}
-
   private db: IDBDatabase | null = null;
-  public selectedBoardID: number = 0;
-  public boardNames: string[] = [];
-  public selectedBoard: Board | null = null;
+
+  private selectedBoardIDSubject = new BehaviorSubject<number | undefined>(
+    undefined,
+  );
+  public selectedBoardID$ = this.selectedBoardIDSubject.asObservable();
+  private selectedBoardID: number | undefined; // Internal variable to keep track of the selected board id, without creating unnecessary extra subscriptions.
+
+  private boardNamesSubject = new BehaviorSubject<string[]>([]);
+  public boardNames$ = this.boardNamesSubject.asObservable();
+
+  private selectedBoardSubject = new BehaviorSubject<Board | undefined>(
+    undefined,
+  );
+  public selectedBoard$ = this.boardNamesSubject.asObservable();
+
+  constructor() {
+    this.selectedBoardID$.subscribe((id) => (this.selectedBoardID = id)); // This subscription is for internal tracking of the selectedBoardID.
+  }
 
   /**
    * The initializer of the whole service and IndexedDB logic.
@@ -77,13 +83,14 @@ export class BoardsService {
    * The function is promisified to handle the async nature of the IndexedDB API.
    *
    */
-  public async initBoardsServiceAndGetSelectedBoard(): Promise<Board> {
+  public async initBoardsServiceAndGetSelectedBoard(): Promise<void> {
     await this.connectToDB();
     const boardNames = await this.getAllBoardNames();
 
     // If no boards exist, this is the first run. Create a new default board.
     if (boardNames.length === 0) {
       await this.createDefaultBoard();
+      await this.getAllBoardNames();
     }
 
     await this.getSelectedBoardId();
@@ -169,8 +176,9 @@ export class BoardsService {
 
       request.onsuccess = () => {
         // Extract the boardName from each Board object
-        this.boardNames = request.result.map((board) => board.boardName);
-        resolve(this.boardNames);
+        const boardNames = request.result.map((board) => board.boardName);
+        this.boardNamesSubject.next(boardNames);
+        resolve(boardNames);
       };
 
       request.onerror = (event) => {
@@ -187,8 +195,8 @@ export class BoardsService {
    * There is always a selectedBoardId.
    *
    */
-  public getSelectedBoardId(): Promise<number> {
-    return new Promise<number>((resolve, reject) => {
+  public getSelectedBoardId(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       if (!this.db) {
         reject('Database not connected.');
         return;
@@ -203,8 +211,8 @@ export class BoardsService {
       request.onsuccess = () => {
         const selectedBoardID = request.result.selectedBoardID;
         if (selectedBoardID) {
-          this.selectedBoardID = selectedBoardID;
-          resolve(selectedBoardID);
+          this.selectedBoardIDSubject.next(selectedBoardID);
+          resolve();
         } else {
           reject('No selectedBoardID found.');
         }
@@ -224,14 +232,20 @@ export class BoardsService {
    * If for some reason there is no selectedBoardId, the function will run getSelectedBoardId() once to get it.
    *
    */
-  public getSelectedBoard(): Promise<Board> {
-    return new Promise<Board>(async (resolve, reject) => {
+  public getSelectedBoard(): Promise<void> {
+    return new Promise<void>(async (resolve, reject) => {
       if (!this.db) {
         reject('Database not connected.');
         return;
       } else if (!this.selectedBoardID) {
         // No selectedBoardId found, running a request for it.
         await this.getSelectedBoardId();
+
+        // If still no selectedBoardId, reject.
+        if (!this.selectedBoardID) {
+          reject('No selected board id found.');
+          return;
+        }
       }
 
       const transaction = this.db.transaction('boards', 'readonly');
@@ -242,8 +256,8 @@ export class BoardsService {
       request.onsuccess = () => {
         const selectedBoard = request.result;
         if (selectedBoard) {
-          this.selectedBoard = selectedBoard;
-          resolve(selectedBoard);
+          this.selectedBoardSubject.next(selectedBoard);
+          resolve();
         } else {
           reject('No selected board found.');
         }
@@ -293,7 +307,7 @@ export class BoardsService {
       // Set the default board as the 'selected board'
       const idStore = transaction.objectStore('selectedBoardId');
       idStore.put({ id: 1, selectedBoardID: 1 });
-      this.selectedBoardID = 1;
+      this.selectedBoardIDSubject.next(1);
     });
   }
 }
