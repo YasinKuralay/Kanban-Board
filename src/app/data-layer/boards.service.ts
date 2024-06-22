@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 /**
- * The interface that keeps track of all Boards and the active one.
+ * The interface that keeps track of all Boards.
  *
  */
 interface Boards {
@@ -69,11 +69,19 @@ export class BoardsService {
   public boardNames: string[] = [];
   public selectedBoard: Board | null = null;
 
-  async initBoardsServiceAndGetSelectedBoard(): Promise<Board> {
+  /**
+   * The initializer of the whole service and IndexedDB logic.
+   * The promise resolves only when the connection is successful, otherwise it rejects with an error message.
+   *
+   * @remarks
+   * The function is promisified to handle the async nature of the IndexedDB API.
+   *
+   */
+  public async initBoardsServiceAndGetSelectedBoard(): Promise<Board> {
     await this.connectToDB();
     const boardNames = await this.getAllBoardNames();
 
-    // If no boards exist, this is the first run
+    // If no boards exist, this is the first run. Create a new default board.
     if (boardNames.length === 0) {
       await this.createDefaultBoard();
     }
@@ -82,9 +90,19 @@ export class BoardsService {
     return await this.getSelectedBoard();
   }
 
-  connectToDB() {
+  /**
+   * Connects to the IndexedDB 'boards' database.
+   * The promise resolves only when the connection is successful, otherwise it rejects with an error message.
+   *
+   * @remarks
+   * The function is promisified to handle the async nature of the IndexedDB API.
+   *
+   * @param version - The version of the database. Defaults to 1. Increment this number when you change the structure of the database.
+   *
+   */
+  public connectToDB(version: number = 1): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      const requestToGetBoardsDB = indexedDB.open('boardsDatabase', 1);
+      const requestToGetBoardsDB = indexedDB.open('boardsDatabase', version);
 
       // Error handler.
       requestToGetBoardsDB.onerror = (event) => {
@@ -99,6 +117,7 @@ export class BoardsService {
         const db = (event.target as IDBOpenDBRequest).result;
 
         // We define both keyPath and autoIncrement to make sure that the id is always "displayed" in the object store.
+        // (If you don't specify the keyPath as id, the id is implicitly set and not 'visible' in the object store.)
         const boardsObjectStore = db.createObjectStore('boards', {
           keyPath: 'id',
           autoIncrement: true,
@@ -108,6 +127,7 @@ export class BoardsService {
           unique: false,
         });
 
+        // No autoincrement needed for selectedBoardId, since we only need one object in this store.
         db.createObjectStore('selectedBoardId', { keyPath: 'id' });
       };
 
@@ -125,8 +145,16 @@ export class BoardsService {
     });
   }
 
-  //  @TODO: Since we changed this function to actually iterate over all boards (getAllKeys() doesnt support getting only a subset of properties), we should probably create a separate store just to keep track of the board names. It could be a single array, so that we can easily change the order of board names displayed.
-  getAllBoardNames() {
+  //
+  /**
+   * Gets all board names from the IndexedDB.
+   * Returns a promise that resolves with the selected board names, or rejects with an error message.
+   *
+   * @remarks
+   * @TODO Since we changed this function to actually iterate over all boards (getAllKeys() doesnt support getting only a subset of properties, like only the name fields), we should probably create a separate store just to keep track of the board names. It could be a single array, so that we can easily change the order of board names displayed.
+   *
+   */
+  public getAllBoardNames(): Promise<string[]> {
     return new Promise<string[]>((resolve, reject) => {
       if (!this.db) {
         reject('Database not connected.');
@@ -151,8 +179,15 @@ export class BoardsService {
     });
   }
 
-  // Get selected board id
-  getSelectedBoardId() {
+  /**
+   * Gets the currently 'selected' board id from the IndexedDB.
+   * Returns a promise that resolves with the selected board id, or rejects with an error message.
+   *
+   * @remarks
+   * There is always a selectedBoardId.
+   *
+   */
+  public getSelectedBoardId(): Promise<number> {
     return new Promise<number>((resolve, reject) => {
       if (!this.db) {
         reject('Database not connected.');
@@ -162,6 +197,7 @@ export class BoardsService {
       const transaction = this.db.transaction('selectedBoardId', 'readonly');
       const objectStore = transaction.objectStore('selectedBoardId');
 
+      // Always gets the first object in the store, since there is only ever one: It keeps track of the currently selectedBoardId.
       const request = objectStore.get(1);
 
       request.onsuccess = () => {
@@ -170,7 +206,6 @@ export class BoardsService {
           this.selectedBoardID = selectedBoardID;
           resolve(selectedBoardID);
         } else {
-          // If there is no selected board, return null.
           reject('No selectedBoardID found.');
         }
       };
@@ -181,15 +216,22 @@ export class BoardsService {
     });
   }
 
-  // GetSelectedBoard.
-  getSelectedBoard() {
-    return new Promise<Board>((resolve, reject) => {
+  /**
+   * Gets the currently 'selected' board from the IndexedDB.
+   * Returns a promise that resolves with the selected board, or rejects with an error message.
+   *
+   * @remarks
+   * If for some reason there is no selectedBoardId, the function will run getSelectedBoardId() once to get it.
+   *
+   */
+  public getSelectedBoard(): Promise<Board> {
+    return new Promise<Board>(async (resolve, reject) => {
       if (!this.db) {
         reject('Database not connected.');
         return;
       } else if (!this.selectedBoardID) {
-        reject('Error in getSelectedBoard(): No selected board.');
-        return;
+        // No selectedBoardId found, running a request for it.
+        await this.getSelectedBoardId();
       }
 
       const transaction = this.db.transaction('boards', 'readonly');
@@ -213,8 +255,14 @@ export class BoardsService {
     });
   }
 
-  // Create a default board. Used in case there are no other boards (application runs for the first time)
-  createDefaultBoard() {
+  /**
+   * Creates a default board. Used in case there are no other boards (application runs for the first time), or user deletes all boards.
+   *
+   * @remarks
+   * There is always a selectedBoardId.
+   *
+   */
+  private createDefaultBoard() {
     return new Promise<void>((resolve, reject) => {
       if (!this.db) {
         reject('Database not connected.');
@@ -222,7 +270,7 @@ export class BoardsService {
       }
 
       const defaultBoard: Board = {
-        id: 1, // Since it's the first board
+        id: 1, // The key is 1, since it's the first board.
         boardName: 'Welcome Board',
         columns: [
           { id: 1, columnName: 'To Do', tasks: [] },
@@ -231,17 +279,20 @@ export class BoardsService {
         ],
       };
 
-      const boardsTransaction = this.db.transaction('boards', 'readwrite');
-      const objectStore = boardsTransaction.objectStore('boards');
+      // We have a single transaction for both stores, because if one db operation fails, we want to rollback the other.
+      const transaction = this.db.transaction(
+        ['boards', 'selectedBoardId'],
+        'readwrite',
+      );
+      const objectStore = transaction.objectStore('boards');
       const boardsRequest = objectStore.add(defaultBoard); // Add the board
       boardsRequest.onsuccess = () => resolve();
       boardsRequest.onerror = (event) =>
         reject('Error creating default board: ' + event);
 
-      // Also set this as the selected board
-      const idTransaction = this.db.transaction('selectedBoardId', 'readwrite');
-      const idStore = idTransaction.objectStore('selectedBoardId');
-      idStore.put({ id: 1, selectedBoardID: 1 }); // Store the ID 1
+      // Set the default board as the 'selected board'
+      const idStore = transaction.objectStore('selectedBoardId');
+      idStore.put({ id: 1, selectedBoardID: 1 });
       this.selectedBoardID = 1;
     });
   }
