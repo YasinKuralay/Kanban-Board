@@ -1,9 +1,53 @@
-:host {
+@use "../../../../styles.scss" as *;
+
+app-mobile-boards-dialog {
   display: block;
   background-color: var(--white);
   border-radius: 8px;
+  padding-right: 24px;
 }
 
-h3 {
+.title {
   padding: 1rem 0 19px 1.5rem;
+  @include font-heading-s;
+  color: var(--medium-gray);
+  margin-bottom: unset;
+}
+
+.board {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  @include font-heading-m;
+  padding: 15px 0 15px 24px;
+  cursor: pointer;
+  width: 240px;
+  text-align: left;
+
+  .board-icon-regular,
+  app-svg-loader {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+
+    svg {
+      fill: var(--main-purple);
+    }
+  }
+
+  &.selected {
+    background-color: var(--main-purple);
+    color: var(--white);
+    border-radius: 0px 100px 100px 0px;
+
+    .board-icon-regular {
+      svg {
+        fill: var(--white);
+      }
+    }
+  }
+
+  &.create-new-board {
+    color: var(--main-purple);
+  }
 }

@@ -1,1 +1,15 @@
-<h3>ALL BOARDS (3)</h3>
+<h3 class="title">ALL BOARDS ({{ boardNames?.length || 0 }})</h3>
+@for (boardName of boardNames; track boardName) {
+  <button
+    class="board"
+    [ngClass]="$index + 1 === selectedBoardID ? 'selected' : ''"
+  >
+    <app-svg-loader name="board-icon-regular"></app-svg-loader>{{ boardName }}
+  </button>
+}
+
+<button class="board create-new-board">
+  <app-svg-loader name="board-icon-regular"></app-svg-loader>Create New Board
+</button>
+
+<!-- <div class="theme-switcher-container">Switch Theme</div> -->
