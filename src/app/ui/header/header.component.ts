@@ -1,23 +1,37 @@
 import { NgClass } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { Dialog, DialogModule, DialogRef } from '@angular/cdk/dialog';
-import { MobileBoardsDialogComponent } from '../dialogs/mobile-boards-dialog/mobile-boards-dialog.component';
 import { DialogService } from '../dialogs/dialog.service';
+import { Subscription } from 'rxjs';
+import { Board, BoardsService } from '../../data-layer/boards.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [NgClass, DialogModule],
+  imports: [NgClass],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
   public mobileBoardsDialogIsOpen = false;
+  private selectedBoardSubscription: Subscription;
+  public selectedBoard: Board | undefined;
 
   @ViewChild('mobileBoardsDialogAnchorPoint')
   mobileBoardsDialogAnchorPoint!: ElementRef;
 
-  constructor(private dialogService: DialogService) {}
+  constructor(
+    private dialogService: DialogService,
+    private boardsService: BoardsService,
+  ) {
+    this.selectedBoardSubscription =
+      this.boardsService.selectedBoard$.subscribe((board) => {
+        this.selectedBoard = board;
+      });
+  }
+
+  ngOnDestroy() {
+    this.selectedBoardSubscription.unsubscribe();
+  }
 
   /**
    * Opens the "Boards Dialog" on the mobile header.

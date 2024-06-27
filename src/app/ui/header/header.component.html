@@ -37,7 +37,9 @@
       (click)="openMobileBoardsDialog()"
       #mobileBoardsDialogAnchorPoint
     >
-      Current Board
+      <span class="button-text">
+        {{ selectedBoard?.boardName }}
+      </span>
       <svg
         width="10"
         height="7"

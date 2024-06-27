@@ -9,7 +9,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
  * The id will always be incremented by 1 based on the last id in the Boards object.
  *
  */
-interface Board {
+export interface Board {
   id: number;
   boardName: string;
   columns: Column[];
@@ -51,6 +51,15 @@ interface Subtask {
   completed: boolean;
 }
 
+/**
+ * The BoardName interface contains the BoardName of a board, and a unique id to be used with Angulars trackBy (for performance).
+ *
+ */
+export interface BoardName {
+  boardName: string;
+  uid: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -63,13 +72,13 @@ export class BoardsService {
   public selectedBoardID$ = this.selectedBoardIDSubject.asObservable();
   private selectedBoardID: number | undefined; // Internal variable to keep track of the selected board id, without creating unnecessary extra subscriptions.
 
-  private boardNamesSubject = new BehaviorSubject<string[]>([]);
+  private boardNamesSubject = new BehaviorSubject<BoardName[]>([]);
   public boardNames$ = this.boardNamesSubject.asObservable();
 
   private selectedBoardSubject = new BehaviorSubject<Board | undefined>(
     undefined,
   );
-  public selectedBoard$ = this.boardNamesSubject.asObservable();
+  public selectedBoard$ = this.selectedBoardSubject.asObservable();
 
   constructor() {
     this.selectedBoardID$.subscribe((id) => (this.selectedBoardID = id)); // This subscription is for internal tracking of the selectedBoardID.
@@ -98,7 +107,7 @@ export class BoardsService {
   }
 
   /**
-   * Connects to the IndexedDB 'boards' database.
+   * Connects to the IndexedDB boardsDatabase.
    * The promise resolves only when the connection is successful, otherwise it rejects with an error message.
    *
    * @remarks
@@ -154,15 +163,15 @@ export class BoardsService {
 
   //
   /**
-   * Gets all board names from the IndexedDB.
+   * Gets all board names from the boardsDatabase.
    * Returns a promise that resolves with the selected board names, or rejects with an error message.
    *
    * @remarks
    * @TODO Since we changed this function to actually iterate over all boards (getAllKeys() doesnt support getting only a subset of properties, like only the name fields), we should probably create a separate store just to keep track of the board names. It could be a single array, so that we can easily change the order of board names displayed.
    *
    */
-  public getAllBoardNames(): Promise<string[]> {
-    return new Promise<string[]>((resolve, reject) => {
+  public getAllBoardNames(): Promise<BoardName[]> {
+    return new Promise<BoardName[]>((resolve, reject) => {
       if (!this.db) {
         reject('Database not connected.');
         return;
@@ -176,7 +185,12 @@ export class BoardsService {
 
       request.onsuccess = () => {
         // Extract the boardName from each Board object
-        const boardNames = request.result.map((board) => board.boardName);
+        const boardNames = request.result.map((board, index) => {
+          return {
+            boardName: board.boardName,
+            uid: board.id,
+          };
+        });
         this.boardNamesSubject.next(boardNames);
         resolve(boardNames);
       };
@@ -188,8 +202,9 @@ export class BoardsService {
   }
 
   /**
-   * Gets the currently 'selected' board id from the IndexedDB.
-   * Returns a promise that resolves with the selected board id, or rejects with an error message.
+   * Gets the currently 'selected' board id from the boardsDatabase.
+   * Calls selectedBoardIDSubject.next() with the according selectedBoardId.
+   * Returns a promise, or rejects with an error message.
    *
    * @remarks
    * There is always a selectedBoardId.
@@ -225,7 +240,41 @@ export class BoardsService {
   }
 
   /**
-   * Gets the currently 'selected' board from the IndexedDB.
+   * Sets the currently 'selected' board id to the boardsDatabase.
+   * Calls selectedBoardIDSubject.next() with the according boardId.
+   * Returns a promise, or rejects with an error message.
+   *
+   * @remarks
+   * There is always a selectedBoardId.
+   *
+   */
+  public setSelectedBoardId(boardId: number): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (!this.db) {
+        reject('Database not connected.');
+        return;
+      }
+
+      const transaction = this.db.transaction('selectedBoardId', 'readwrite');
+      const objectStore = transaction.objectStore('selectedBoardId');
+
+      // Always gets the first object in the store, since there is only ever one: It keeps track of the currently selectedBoardId.
+      const request = objectStore.put({ id: 1, selectedBoardId: boardId });
+
+      request.onsuccess = () => {
+        this.selectedBoardIDSubject.next(boardId);
+        this.getSelectedBoard();
+        resolve();
+      };
+
+      request.onerror = (event) => {
+        reject(`Error in setSelectedBoardId(): ${event}`);
+      };
+    });
+  }
+
+  /**
+   * Gets the currently 'selected' board from the boardsDatabase.
    * Returns a promise that resolves with the selected board, or rejects with an error message.
    *
    * @remarks
@@ -293,6 +342,16 @@ export class BoardsService {
         ],
       };
 
+      // const defaultBoard2: Board = {
+      //   id: 2, // The key is 1, since it's the first board.
+      //   boardName: 'Second Welcome Board',
+      //   columns: [
+      //     { id: 1, columnName: 'To Do', tasks: [] },
+      //     { id: 2, columnName: 'In Progress', tasks: [] },
+      //     { id: 3, columnName: 'Done', tasks: [] },
+      //   ],
+      // };
+
       // We have a single transaction for both stores, because if one db operation fails, we want to rollback the other.
       const transaction = this.db.transaction(
         ['boards', 'selectedBoardId'],
@@ -300,6 +359,7 @@ export class BoardsService {
       );
       const objectStore = transaction.objectStore('boards');
       const boardsRequest = objectStore.add(defaultBoard); // Add the board
+      // const boardsRequest2 = objectStore.add(defaultBoard2);
       boardsRequest.onsuccess = () => resolve();
       boardsRequest.onerror = (event) =>
         reject('Error creating default board: ' + event);

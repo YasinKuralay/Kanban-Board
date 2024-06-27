@@ -2,7 +2,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, Inject, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { SvgLoaderComponent } from '../../svg-loader/svg-loader.component';
 import { Subscription } from 'rxjs';
-import { BoardsService } from '../../../data-layer/boards.service';
+import { BoardsService, BoardName } from '../../../data-layer/boards.service';
 import { NgClass } from '@angular/common';
 
 @Component({
@@ -18,7 +18,7 @@ export class MobileBoardsDialogComponent implements OnDestroy {
   public selectedBoardID: number | undefined;
 
   private boardNamesSubscription: Subscription;
-  public boardNames: string[] | undefined;
+  public boardNamesWithUID: BoardName[] | undefined;
 
   constructor(
     public dialogRef: DialogRef<string>,
@@ -32,7 +32,7 @@ export class MobileBoardsDialogComponent implements OnDestroy {
 
     this.boardNamesSubscription = this.boardsService.boardNames$.subscribe(
       (boardNames) => {
-        this.boardNames = boardNames;
+        this.boardNamesWithUID = boardNames;
       },
     );
   }
@@ -40,5 +40,10 @@ export class MobileBoardsDialogComponent implements OnDestroy {
   ngOnDestroy() {
     this.selectedBoardIDSubscription.unsubscribe();
     this.boardNamesSubscription.unsubscribe();
+  }
+
+  public setSelectedBoardId(boardID: number) {
+    this.boardsService.setSelectedBoardId(boardID);
+    this.dialogRef.close();
   }
 }

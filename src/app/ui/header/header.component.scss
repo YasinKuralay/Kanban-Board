@@ -5,6 +5,8 @@
   display: flex;
   background-color: var(--white);
   height: 64px;
+  width: 100%;
+  max-width: 100%;
   @media (min-width: 768px) {
     height: 80px;
   }
@@ -73,26 +75,41 @@ button {
     margin-right: 1rem;
   }
 
-  .select-current-board {
-    @include font-heading-l;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    color: var(--black);
-    white-space: nowrap;
+  .header-left-section {
+    overflow: hidden;
 
-    svg {
-      display: none;
+    .select-current-board {
+      @include font-heading-l;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--black);
+      white-space: nowrap;
+      overflow: hidden;
 
-      &.active {
-        display: initial;
+      .button-text {
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      svg {
+        display: none;
+        overflow: visible; // Needed to prevent the icon from shrinking when the button's width is being cut.
+
+        &.active {
+          display: initial;
+        }
       }
     }
   }
 
-  .add-task-button {
-    width: 3rem;
-    height: 2rem;
+  .header-right-section {
+    margin-left: 12px;
+
+    .add-task-button {
+      width: 3rem;
+      height: 2rem;
+    }
   }
 }
 
