@@ -15,6 +15,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   standalone: true,
   imports: [],
   template: '<span [innerHTML]="svgIcon" [class]="name"></span>',
+  styles: [':host, span { display: inline-flex; }'],
 })
 export class SvgLoaderComponent implements OnChanges {
   @Input() public name?: string;

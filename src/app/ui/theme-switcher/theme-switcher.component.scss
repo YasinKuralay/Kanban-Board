@@ -1,0 +1,46 @@
+app-theme-switcher {
+  display: block;
+}
+
+.theme-switcher {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  height: 48px;
+  background-color: var(--light-grey-light-bg);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color var(--medium-transition-speed);
+
+  &:hover {
+    background-color: lightgray;
+  }
+}
+
+.switch-icon {
+  svg {
+    circle {
+      transition: transform var(--medium-transition-speed);
+    }
+  }
+}
+
+[data-theme="dark"] {
+  .theme-switcher {
+    background-color: var(--very-dark-grey);
+
+    &:hover {
+      background-color: var(--lines-dark);
+    }
+  }
+
+  .switch-icon {
+    svg {
+      circle {
+        transform: translateX(20px);
+      }
+    }
+  }
+}

@@ -4,14 +4,15 @@ import { SvgLoaderComponent } from '../../svg-loader/svg-loader.component';
 import { Subscription } from 'rxjs';
 import { BoardsService, BoardName } from '../../../data-layer/boards.service';
 import { NgClass } from '@angular/common';
+import { ThemeSwitcherComponent } from '../../theme-switcher/theme-switcher.component';
 
 @Component({
   selector: 'app-mobile-boards-dialog',
   standalone: true,
-  imports: [NgClass, SvgLoaderComponent],
   templateUrl: './mobile-boards-dialog.component.html',
   styleUrl: './mobile-boards-dialog.component.scss',
-  encapsulation: ViewEncapsulation.None, // Encapsulation is set to none to allow for the dialog to apply its styles to its children.
+  encapsulation: ViewEncapsulation.None,
+  imports: [NgClass, SvgLoaderComponent, ThemeSwitcherComponent],
 })
 export class MobileBoardsDialogComponent implements OnDestroy {
   private selectedBoardIDSubscription: Subscription;
