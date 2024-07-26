@@ -1,0 +1,30 @@
+.launch-sidebar {
+  position: absolute;
+  top: calc(100vh - 80px);
+  left: 0;
+  background-color: var(--main-purple);
+  cursor: pointer;
+  width: 56px;
+  height: 42px;
+  text-align: right;
+  padding-right: 22px;
+  border-top-right-radius: var(--button-default-border-radius);
+  border-bottom-right-radius: var(--button-default-border-radius);
+  transition:
+    background-color var(--default-transition-speed),
+    width var(--default-transition-speed),
+    left var(--default-transition-speed);
+
+  @media (max-width: 767px) {
+    display: none;
+  }
+
+  &:hover:not(.hide) {
+    background-color: var(--main-purple-hover);
+    width: 66px;
+  }
+
+  &.hide {
+    left: -57px;
+  }
+}

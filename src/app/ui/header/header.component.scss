@@ -124,9 +124,21 @@ button {
     display: flex;
     align-items: center;
     padding: 0 1.5rem;
-
+    border-right: 1px solid var(--lines-light);
+    width: 202px;
+    transition: width calc(var(--medium-transition-speed) / 1.6);
+    transition-delay: 0ms; // The delay "syncs" this transition with the sidebar's transition, so that the borders appear to be moving together.
     @media (min-width: 1200px) {
       padding-right: 2rem;
+      width: 210px;
+    }
+
+    &.sidebar-is-open {
+      transition-delay: 130ms;
+      width: 260px;
+      @media (min-width: 1200px) {
+        width: 300px;
+      }
     }
 
     .logo {
@@ -140,7 +152,6 @@ button {
     align-items: center;
     justify-content: space-between;
     flex-grow: 1;
-    border-left: 1px solid var(--lines-light);
     padding-left: 1.5rem;
 
     .current-board {

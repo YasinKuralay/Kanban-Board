@@ -6,7 +6,7 @@
 :root {
   --main-purple: #635fc7;
   --main-purple-rgba: rgba(99, 95, 199, 0.25);
-  --main-purple-hover: #a8a4ff;
+  --main-purple-hover: #4d47a6;
   --black: #000112;
   --very-dark-grey: #20212c;
   --dark-grey: #2b2c37;
@@ -20,6 +20,12 @@
   --checkbox-border-color: rgba(130, 143, 163, 0.249);
   --default-transition-speed: 0.15s;
   --medium-transition-speed: 0.3s;
+  --button-default-border-radius: 1.5rem;
+  --button-hover-border-radius: 1rem;
+}
+
+body {
+  margin: unset;
 }
 
 /* FONTS */

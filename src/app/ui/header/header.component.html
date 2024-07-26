@@ -94,7 +94,10 @@
 </header>
 
 <div class="tablet-header">
-  <div class="header-logo-section">
+  <div
+    class="header-logo-section"
+    [ngClass]="{ 'sidebar-is-open': sidebarIsOpen }"
+  >
     <div class="logo">
       <svg
         xmlns="http://www.w3.org/2000/svg"

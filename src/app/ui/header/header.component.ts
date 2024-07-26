@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { DialogService } from '../dialogs/dialog.service';
 import { Subscription } from 'rxjs';
 import { Board, BoardsService } from '../../data-layer/boards.service';
@@ -18,6 +18,8 @@ export class HeaderComponent {
 
   @ViewChild('mobileBoardsDialogAnchorPoint')
   mobileBoardsDialogAnchorPoint!: ElementRef;
+
+  @Input() sidebarIsOpen = false;
 
   constructor(
     private dialogService: DialogService,

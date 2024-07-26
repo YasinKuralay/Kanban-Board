@@ -1,0 +1,5 @@
+<div class="sidebar" [ngClass]="{ open: isOpen }"></div>
+<!-- The sidebar-content-pusher exists to "push" content aside by changing width,
+     whereas the sidebar itself is animated with positioning (to "seem" 
+     like its sliding in rather than growing) -->
+<div class="sidebar-content-pusher" [ngClass]="{ open: isOpen }"></div>
