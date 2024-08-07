@@ -28,3 +28,19 @@
     left: -57px;
   }
 }
+
+.app-container {
+  display: flex;
+
+  .main-area {
+    flex-grow: 1;
+    transition: background-color var(--medium-transition-speed);
+    height: calc(100vh - var(--header-height));
+  }
+}
+
+[data-theme="dark"] {
+  .main-area {
+    background-color: var(--very-dark-grey);
+  }
+}

@@ -1,3 +1,5 @@
+@use "../../../styles.scss" as *;
+
 app-sidebar {
   position: relative;
   height: calc(100vh - var(--header-height));
@@ -20,6 +22,10 @@ app-sidebar {
 }
 
 .sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 3rem;
   height: calc(100vh - var(--header-height) + 1px);
   border-right: 1px solid var(--lines-light);
   background-color: var(--white);
@@ -29,7 +35,10 @@ app-sidebar {
   left: -260px;
   transition:
     left var(--medium-transition-speed),
-    width var(--medium-transition-speed);
+    width var(--medium-transition-speed),
+    background-color var(--medium-transition-speed),
+    border-right var(--medium-transition-speed);
+
   @media (min-width: 1200px) {
     width: 300px;
     left: -300px;
@@ -37,6 +46,38 @@ app-sidebar {
 
   &.open {
     left: 0;
+  }
+
+  &-bottom-half {
+    padding: 0 0.75rem;
+  }
+
+  .hide-sidebar {
+    @include font-heading-m;
+    color: var(--medium-gray);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-self: center;
+    margin-top: 30px;
+    padding-left: 10px;
+    transition: color var(--default-transition-speed);
+
+    &:hover {
+      color: var(--dark-grey);
+
+      path {
+        fill: var(--dark-grey);
+      }
+    }
+
+    path {
+      transition: fill var(--default-transition-speed);
+    }
+
+    &-icon {
+      display: flex;
+    }
   }
 }
 
@@ -49,6 +90,23 @@ app-sidebar {
     width: 260px;
     @media (min-width: 1200px) {
       width: 300px;
+    }
+  }
+}
+
+[data-theme="dark"] {
+  .sidebar {
+    border-right: 1px solid var(--lines-dark);
+    background-color: var(--dark-grey);
+  }
+
+  .hide-sidebar {
+    &:hover {
+      color: var(--light-gray);
+
+      path {
+        fill: var(--light-gray);
+      }
     }
   }
 }

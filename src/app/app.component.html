@@ -1,8 +1,12 @@
 <app-header [sidebarIsOpen]="sidebarIsOpen"></app-header>
 
-<app-sidebar [isOpen]="sidebarIsOpen"></app-sidebar>
-
-<!-- <div style="display: inline-block">hallo</div> -->
+<div class="app-container">
+  <app-sidebar
+    [isOpen]="sidebarIsOpen"
+    (onToggleSidebar)="toggleSidebar()"
+  ></app-sidebar>
+  <main class="main-area"></main>
+</div>
 
 <button
   class="launch-sidebar"

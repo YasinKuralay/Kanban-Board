@@ -1,5 +1,11 @@
 import { NgClass } from '@angular/common';
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 import { DialogService } from '../dialogs/dialog.service';
 import { Subscription } from 'rxjs';
 import { Board, BoardsService } from '../../data-layer/boards.service';
@@ -10,6 +16,7 @@ import { Board, BoardsService } from '../../data-layer/boards.service';
   imports: [NgClass],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
+  encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent {
   public mobileBoardsDialogIsOpen = false;

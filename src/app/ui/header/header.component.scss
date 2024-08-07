@@ -4,6 +4,9 @@
 .tablet-header {
   display: flex;
   background-color: var(--white);
+  transition:
+    background-color var(--medium-transition-speed),
+    border-bottom-color var(--medium-transition-speed);
   height: 64px;
   width: 100%;
   max-width: 100%;
@@ -40,6 +43,10 @@ button {
   &:not([disabled]):hover,
   &:not([disabled]):focus-visible {
     filter: brightness(0.5);
+  }
+
+  circle {
+    transition: fill var(--default-transition-speed);
   }
 }
 
@@ -86,6 +93,7 @@ button {
       color: var(--black);
       white-space: nowrap;
       overflow: hidden;
+      outline-color: current-color;
 
       .button-text {
         text-overflow: ellipsis;
@@ -126,7 +134,9 @@ button {
     padding: 0 1.5rem;
     border-right: 1px solid var(--lines-light);
     width: 202px;
-    transition: width calc(var(--medium-transition-speed) / 1.6);
+    transition:
+      width calc(var(--medium-transition-speed) / 1.6),
+      border-right var(--medium-transition-speed);
     transition-delay: 0ms; // The delay "syncs" this transition with the sidebar's transition, so that the borders appear to be moving together.
     @media (min-width: 1200px) {
       padding-right: 2rem;
@@ -134,7 +144,7 @@ button {
     }
 
     &.sidebar-is-open {
-      transition-delay: 130ms;
+      // transition-delay: 130ms;
       width: 260px;
       @media (min-width: 1200px) {
         width: 300px;
@@ -143,6 +153,12 @@ button {
 
     .logo {
       margin-right: 1rem;
+    }
+
+    .logo-text {
+      path {
+        transition: fill var(--medium-transition-speed);
+      }
     }
   }
 
@@ -155,6 +171,7 @@ button {
     padding-left: 1.5rem;
 
     .current-board {
+      transition: color var(--medium-transition-speed);
       @include font-heading-l;
       font-size: 20px;
       @media (min-width: 1200px) {
@@ -177,8 +194,56 @@ button {
         margin-right: 6px;
       }
     }
+  }
+}
 
-    // .header-right-section {
-    // }
+[data-theme="dark"] {
+  .mobile-header,
+  .tablet-header {
+    background-color: var(--dark-grey);
+  }
+
+  .mobile-header {
+    .select-current-board {
+      color: var(--white);
+    }
+  }
+
+  .tablet-header {
+    border-bottom-color: var(--lines-dark);
+
+    .current-board {
+      color: var(--white);
+    }
+
+    .header-logo-section {
+      border-right: 1px solid var(--lines-dark);
+
+      .logo-text {
+        path {
+          fill: var(--white);
+        }
+      }
+    }
+  }
+
+  .add-task-button {
+    // background-color: var(--main-purple-dark);
+
+    &:not([disabled]):hover,
+    &:not([disabled]):focus-visible {
+      // background-color: var(--main-purple-hover-dark);
+    }
+  }
+
+  .board-options-button {
+    &:not([disabled]):hover,
+    &:not([disabled]):focus-visible {
+      filter: brightness(1);
+
+      circle {
+        fill: var(--light-gray);
+      }
+    }
   }
 }

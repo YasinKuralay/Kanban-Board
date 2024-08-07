@@ -1,0 +1,70 @@
+@use "../../../styles.scss" as *;
+
+.title {
+  padding: 1rem 0 19px 1.5rem;
+  @include font-heading-s;
+  color: var(--medium-gray);
+  margin-bottom: unset;
+}
+
+.board {
+  display: flex;
+  align-items: center;
+  @include font-heading-m;
+  padding: 15px 0 15px 24px;
+  border-radius: 0px 100px 100px 0px;
+  cursor: pointer;
+  width: 240px;
+  text-align: left;
+  transition: background-color var(--default-transition-speed);
+
+  &:hover {
+    background-color: lightgray;
+  }
+
+  .board-icon-regular,
+  app-svg-loader {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+
+    svg {
+      fill: var(--main-purple);
+    }
+  }
+
+  app-svg-loader {
+    margin-right: 12px;
+  }
+
+  &.selected {
+    background-color: var(--main-purple);
+    color: var(--white);
+
+    .board-icon-regular {
+      svg {
+        fill: var(--white);
+      }
+    }
+  }
+
+  &.create-new-board {
+    color: var(--main-purple);
+
+    .plus-sign {
+      margin: -4px 2px 0 0;
+    }
+  }
+}
+
+[data-theme="dark"] {
+  app-mobile-boards-dialog {
+    background-color: var(--dark-grey);
+  }
+
+  .board {
+    &:not(.selected):hover {
+      background-color: var(--lines-dark);
+    }
+  }
+}

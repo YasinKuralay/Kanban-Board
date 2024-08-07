@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { BoardsService } from './data-layer/boards.service';
@@ -11,6 +11,7 @@ import { SidebarComponent } from './ui/sidebar/sidebar.component';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   imports: [CommonModule, RouterOutlet, HeaderComponent, SidebarComponent],
+  encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent implements OnInit {
   constructor(
