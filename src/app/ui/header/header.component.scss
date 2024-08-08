@@ -144,7 +144,9 @@ button {
     }
 
     &.sidebar-is-open {
-      // transition-delay: 130ms;
+      transition:
+        width calc(var(--medium-transition-speed) / 1.6) 130ms,
+        border-right var(--medium-transition-speed);
       width: 260px;
       @media (min-width: 1200px) {
         width: 300px;

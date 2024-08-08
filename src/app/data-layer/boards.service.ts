@@ -224,9 +224,9 @@ export class BoardsService {
       const request = objectStore.get(1);
 
       request.onsuccess = () => {
-        const selectedBoardID = request.result.selectedBoardID;
-        if (selectedBoardID) {
-          this.selectedBoardIDSubject.next(selectedBoardID);
+        const selectedBoardId = request.result.selectedBoardId;
+        if (selectedBoardId) {
+          this.selectedBoardIDSubject.next(selectedBoardId);
           resolve();
         } else {
           reject('No selectedBoardID found.');
