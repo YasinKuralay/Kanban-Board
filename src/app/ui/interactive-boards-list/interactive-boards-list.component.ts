@@ -1,4 +1,9 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Output,
+  ViewEncapsulation,
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { BoardName, BoardsService } from '../../data-layer/boards.service';
 import { NgClass } from '@angular/common';
@@ -13,6 +18,8 @@ import { SvgLoaderComponent } from '../svg-loader/svg-loader.component';
   encapsulation: ViewEncapsulation.None,
 })
 export class InteractiveBoardsListComponent {
+  @Output() boardSelectedEvent = new EventEmitter<void>();
+
   private selectedBoardIDSubscription: Subscription;
   public selectedBoardID: number | undefined;
 
@@ -37,7 +44,12 @@ export class InteractiveBoardsListComponent {
     this.boardNamesSubscription.unsubscribe();
   }
 
+  /**
+   * Sets the selectedBoardId and emits an event so that the parent component can react if needed, for example by closing a dialog.
+   *
+   */
   public setSelectedBoardId(boardID: number) {
     this.boardsService.setSelectedBoardId(boardID);
+    this.boardSelectedEvent.emit();
   }
 }
