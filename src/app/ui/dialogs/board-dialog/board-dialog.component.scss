@@ -1,0 +1,19 @@
+@use "../../../../styles.scss" as *;
+
+app-board-dialog {
+  display: block;
+  background-color: var(--white);
+  border-radius: 8px;
+  padding: 24px;
+  user-select: none;
+  transition: background-color var(--medium-transition-speed);
+
+  @media screen and (max-width: 768px) {
+    padding: 32px;
+  }
+
+  .board-dialog-title {
+    margin: 0 0 24px 0;
+    @include font-heading-l;
+  }
+}

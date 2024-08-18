@@ -1,0 +1,9 @@
+@if (label !== "") {
+  <label class="input-text-label" [for]="uniqueId">{{ label }}</label>
+}
+<input
+  type="text"
+  [id]="uniqueId"
+  [formControl]="formControl"
+  [placeholder]="placeholder"
+/>

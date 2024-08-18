@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 import { BoardName, BoardsService } from '../../data-layer/boards.service';
 import { NgClass } from '@angular/common';
 import { SvgLoaderComponent } from '../svg-loader/svg-loader.component';
+import { DialogService } from '../dialogs/dialog.service';
 
 @Component({
   selector: 'app-interactive-boards-list',
@@ -26,7 +27,10 @@ export class InteractiveBoardsListComponent {
   private boardNamesSubscription: Subscription;
   public boardNamesWithUID: BoardName[] | undefined;
 
-  constructor(private boardsService: BoardsService) {
+  constructor(
+    private boardsService: BoardsService,
+    private dialogService: DialogService,
+  ) {
     this.selectedBoardIDSubscription =
       this.boardsService.selectedBoardID$.subscribe((boardID) => {
         this.selectedBoardID = boardID;
@@ -51,5 +55,9 @@ export class InteractiveBoardsListComponent {
   public setSelectedBoardId(boardID: number) {
     this.boardsService.setSelectedBoardId(boardID);
     this.boardSelectedEvent.emit();
+  }
+
+  public launchCreateBoardDialog() {
+    this.dialogService.openBoardDialog(true);
   }
 }

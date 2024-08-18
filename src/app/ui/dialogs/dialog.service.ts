@@ -2,7 +2,10 @@ import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { ElementRef, Injectable } from '@angular/core';
 import { MobileBoardsDialogComponent } from './mobile-boards-dialog/mobile-boards-dialog.component';
 import { Overlay } from '@angular/cdk/overlay';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { filter, fromEvent, takeUntil } from 'rxjs';
+import { BoardDialogComponent } from './board-dialog/board-dialog.component';
+import { Board } from '../../data-layer/boards.service';
 
 /**
  * The service for opening/closing any dialog. This service is used to launch dialogs from any component in the application.
@@ -15,9 +18,12 @@ export class DialogService {
   public mobileBoardsDialogIsOpen = false;
   private mobileBoardsDialogRef!: DialogRef<MobileBoardsDialogComponent>;
 
+  private boardDialogRef!: DialogRef<BoardDialogComponent>;
+
   constructor(
     private dialog: Dialog,
     private overlay: Overlay,
+    private breakpointObserver: BreakpointObserver,
   ) {}
 
   /**
@@ -91,5 +97,26 @@ export class DialogService {
     } else {
       this.mobileBoardsDialogRef?.close();
     }
+  }
+
+  /**
+   * Opens the "Board Dialog", which is used either for creating or editing a board.
+   *
+   * @param board - The boardData such as boardName, columns etc. are contained here. Only needed if the dialog is used for editing an existing board.
+   * @param isCreateNewBoard - A boolean that determines if the dialog is used for creating a new board or editing an existing one. This determines some strings (e.g. new instead of edit) and the behavior of the dialog upon clicking the primary button.
+   *
+   * @remarks
+   *
+   * For further reference on the CDK, please visit: https://material.angular.io/cdk/dialog/overview
+   *
+   */
+  public openBoardDialog(isCreateNewBoard: boolean, board?: Board) {
+    this.dialog.open<BoardDialogComponent>(BoardDialogComponent, {
+      width: '264px',
+      data: {
+        boardData: board || undefined,
+        isCreateNewBoard: isCreateNewBoard,
+      },
+    });
   }
 }
