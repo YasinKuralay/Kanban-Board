@@ -112,7 +112,8 @@ export class DialogService {
    */
   public openBoardDialog(isCreateNewBoard: boolean, board?: Board) {
     this.dialog.open<BoardDialogComponent>(BoardDialogComponent, {
-      width: '264px',
+      width: '100%',
+      maxWidth: 'min(480px, 94%)',
       data: {
         boardData: board || undefined,
         isCreateNewBoard: isCreateNewBoard,

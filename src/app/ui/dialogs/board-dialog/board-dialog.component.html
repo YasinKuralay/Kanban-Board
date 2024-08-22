@@ -1,2 +1,22 @@
 <h2 class="board-dialog-title">Add New Board</h2>
-<app-input-text label="Board Name" placeholder="e.g. sth"></app-input-text>
+
+<app-input-text
+  label="Board Name"
+  placeholder="e.g. Web Design"
+  [internalFormControl]="boardNameFormControl"
+></app-input-text>
+
+<app-list-of-input-texts
+  [inputTextStrings]="['todo', 'doing', '']"
+  addNewButtonText="Column"
+  topLabel="Columns"
+  (isValid)="checkIfListOfInputTextsIsValid($event)"
+></app-list-of-input-texts>
+
+<button
+  class="action-button"
+  (click)="actionButton()"
+  [disabled]="!boardNameFormControl.valid || !listOfInputTextsIsValid"
+>
+  Create New Board
+</button>

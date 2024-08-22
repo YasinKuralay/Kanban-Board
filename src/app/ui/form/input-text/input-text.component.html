@@ -1,9 +1,22 @@
 @if (label !== "") {
   <label class="input-text-label" [for]="uniqueId">{{ label }}</label>
 }
-<input
-  type="text"
-  [id]="uniqueId"
-  [formControl]="formControl"
-  [placeholder]="placeholder"
-/>
+<div class="input-text-container">
+  <input
+    type="text"
+    [id]="uniqueId"
+    [formControl]="internalFormControl"
+    [placeholder]="placeholder"
+    [ngClass]="{
+      'invalid-input':
+        internalFormControl.invalid &&
+        (internalFormControl.dirty || internalFormControl.touched),
+    }"
+  />
+  @if (
+    internalFormControl.invalid &&
+    (internalFormControl.dirty || internalFormControl.touched)
+  ) {
+    <span class="input-text-error-message">Can't be empty</span>
+  }
+</div>

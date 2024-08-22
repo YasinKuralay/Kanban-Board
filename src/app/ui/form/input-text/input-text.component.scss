@@ -10,14 +10,31 @@ app-input-text {
     color: var(--medium-gray);
   }
 
-  input {
-    width: 100%;
-    padding: 8px 16px;
-    border-radius: 4px;
-    border: 1px solid rgba(130, 143, 163, 0.25);
-    background-color: var(--white);
-    height: 42px;
-    @include font-body-l;
-    font-family: "Plus Jakarta Sans", sans-serif;
+  .input-text-container {
+    position: relative;
+
+    input {
+      width: 100%;
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: 1px solid rgba(130, 143, 163, 0.25);
+      background-color: var(--white);
+      height: 42px;
+      @include font-body-l;
+      font-family: "Plus Jakarta Sans", sans-serif;
+
+      &.invalid-input {
+        border-color: var(--red);
+      }
+    }
+
+    .input-text-error-message {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      @include font-body-l;
+      color: var(--red);
+    }
   }
 }
