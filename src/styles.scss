@@ -2,11 +2,13 @@
 @use "../node_modules/@angular/cdk/overlay-prebuilt.css";
 @use "../node_modules/@angular/cdk/text-field-prebuilt.css";
 
-/* COLORS */
+/* CSS VARIABLES */
 :root {
   --main-purple: #635fc7;
   --main-purple-rgba: rgba(99, 95, 199, 0.25);
   --main-purple-hover: #4d47a6;
+  --secondary-purple: rgb(239.4, 239, 249.4);
+  --secondary-purple-hover: rgb(216, 215, 241);
   --black: #000112;
   --very-dark-grey: #20212c;
   --dark-grey: #2b2c37;
@@ -17,7 +19,7 @@
   --light-grey-light-bg: #f4f7fd;
   --white: #fff;
   --red: #ea5555;
-  --red-hover: #ff9898;
+  --red-hover: #d54c4c;
   --checkbox-border-color: rgba(130, 143, 163, 0.249);
   --default-transition-speed: 0.15s;
   --medium-transition-speed: 0.3s;
@@ -57,6 +59,10 @@ body {
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+
+  [data-theme="dark"] & {
+    color: var(--white);
+  }
 }
 
 @mixin font-heading-xl {
@@ -99,5 +105,69 @@ button {
   &[disabled] {
     opacity: 0.25;
     cursor: not-allowed;
+  }
+}
+
+/* BUTTON CLASSES */
+.button-primary-s,
+.button-primary-l,
+.button-secondary,
+.button-destructive {
+  color: var(--white);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  transition:
+    background-color var(--default-transition-speed),
+    border-radius var(--default-transition-speed),
+    opacity var(--default-transition-speed);
+}
+
+.button-primary-s,
+.button-secondary,
+.button-destructive {
+  height: 2.5rem;
+  border-radius: 20px;
+
+  &:hover:not([disabled]) {
+    border-radius: 0.75rem;
+  }
+}
+
+.button-primary-s,
+.button-primary-l {
+  background-color: var(--main-purple);
+
+  &:hover:not([disabled]) {
+    background-color: var(--main-purple-hover);
+  }
+}
+
+.button-primary-l {
+  height: 3rem;
+  padding: 1rem 1.5rem;
+  border-radius: 1.5rem;
+
+  &:hover:not([disabled]) {
+    border-radius: 1rem;
+  }
+}
+
+.button-secondary {
+  background-color: var(--secondary-purple);
+  color: var(--main-purple);
+
+  &:hover:not([disabled]) {
+    background-color: var(--secondary-purple-hover);
+  }
+}
+
+.button-destructive {
+  background-color: var(--red);
+
+  &:hover:not([disabled]) {
+    background-color: var(--red-hover);
   }
 }

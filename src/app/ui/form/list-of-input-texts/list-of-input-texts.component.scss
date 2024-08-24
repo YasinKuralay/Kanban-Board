@@ -9,6 +9,10 @@ app-list-of-input-texts {
     margin-bottom: 8px;
     @include font-body-m;
     color: var(--medium-gray);
+
+    [data-theme="dark"] & {
+      color: var(--white);
+    }
   }
 
   .container {
@@ -29,21 +33,8 @@ app-list-of-input-texts {
   }
 
   .add-input-button {
-    width: 100%;
-    border-radius: 20px;
-    background: rgba(99, 95, 199, 0.1);
-    height: 2.5rem;
-    color: var(--main-purple);
     font-size: 13px;
     font-style: normal;
     font-weight: 700;
-    transition:
-      background-color var(--default-transition-speed),
-      border-radius var(--default-transition-speed);
-
-    &:hover {
-      background: rgba(99, 95, 199, 0.2);
-      border-radius: 0.75rem;
-    }
   }
 }

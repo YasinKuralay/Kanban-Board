@@ -8,6 +8,10 @@ app-input-text {
     margin-bottom: 8px;
     @include font-body-m;
     color: var(--medium-gray);
+
+    [data-theme="dark"] & {
+      color: var(--white);
+    }
   }
 
   .input-text-container {
@@ -22,6 +26,12 @@ app-input-text {
       height: 42px;
       @include font-body-l;
       font-family: "Plus Jakarta Sans", sans-serif;
+
+      [data-theme="dark"] & {
+        color: var(--white);
+        background-color: var(--dark-grey);
+        border-color: rgba(130, 143, 163, 0.25);
+      }
 
       &.invalid-input {
         border-color: var(--red);

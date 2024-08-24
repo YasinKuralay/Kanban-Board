@@ -12,6 +12,10 @@ app-board-dialog {
     padding: 32px;
   }
 
+  [data-theme="dark"] & {
+    background-color: var(--dark-grey);
+  }
+
   .board-dialog-title {
     margin: 0 0 24px 0;
     @include font-heading-l;
@@ -19,19 +23,5 @@ app-board-dialog {
 
   .action-button {
     margin-top: 24px;
-    height: 2.5rem;
-    background-color: var(--main-purple);
-    width: 100%;
-    border-radius: 20px;
-    color: var(--white);
-    transition:
-      background-color var(--default-transition-speed),
-      border-radius var(--default-transition-speed),
-      opacity var(--default-transition-speed);
-
-    &:hover:not([disabled]) {
-      background-color: var(--main-purple-hover);
-      border-radius: 0.75rem;
-    }
   }
 }
