@@ -10,7 +10,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
  *
  */
 export interface Board {
-  id: number;
+  id?: number;
   boardName: string;
   columns: Column[];
 }
@@ -229,7 +229,7 @@ export class BoardsService {
           this.selectedBoardIDSubject.next(selectedBoardId);
           resolve();
         } else {
-          reject('No selectedBoardID found.');
+          reject('No selectedBoardId found.');
         }
       };
 
@@ -366,8 +366,52 @@ export class BoardsService {
 
       // Set the default board as the 'selected board'
       const idStore = transaction.objectStore('selectedBoardId');
-      idStore.put({ id: 1, selectedBoardID: 1 });
+      idStore.put({ id: 1, selectedBoardId: 1 });
       this.selectedBoardIDSubject.next(1);
+    });
+  }
+
+  /**
+   * Creates a new board.
+   * Returns a promise that resolves, or rejects with an error message.
+   *
+   * @param boardData - The data for the new Board
+   *
+   */
+  public createNewBoard(boardData: Board): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (!this.db) {
+        reject('Database not connected.');
+        return;
+      }
+
+      const newBoard: Board = {
+        boardName: boardData.boardName,
+        columns: boardData.columns,
+      };
+
+      const transaction = this.db.transaction(
+        ['boards', 'selectedBoardId'],
+        'readwrite',
+      );
+
+      const objectStore = transaction.objectStore('boards');
+      const boardsRequest = objectStore.add(newBoard); // Add the board
+
+      // On Success, sets the new board as the 'Selected Board', and updates all related observables.
+      boardsRequest.onsuccess = (event) => {
+        // Set the new board as the 'Selected Board'
+        const idStore = transaction.objectStore('selectedBoardId');
+        const result = (event.target as IDBRequest<IDBValidKey>)
+          .result as number;
+        idStore.put({ id: 1, selectedBoardId: result });
+        this.selectedBoardIDSubject.next(result);
+        this.selectedBoardSubject.next(newBoard);
+        this.getAllBoardNames(); // This call is needed to update the boardNames list.
+        resolve();
+      };
+      boardsRequest.onerror = (event) =>
+        reject('Error creating default board: ' + event);
     });
   }
 }

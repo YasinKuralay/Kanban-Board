@@ -17,6 +17,7 @@
   width: 240px;
   text-align: left;
   transition: background-color var(--default-transition-speed);
+  color: var(--medium-gray);
 
   &:hover {
     background-color: lightgray;
@@ -29,7 +30,7 @@
     height: 16px;
 
     svg {
-      fill: var(--main-purple);
+      fill: var(--medium-gray);
     }
   }
 
@@ -50,6 +51,12 @@
 
   &.create-new-board {
     color: var(--main-purple);
+
+    .board-icon-regular {
+      svg {
+        fill: var(--main-purple);
+      }
+    }
 
     .plus-sign {
       margin: -4px 2px 0 0;
