@@ -1,7 +1,7 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, Inject, Input, ViewEncapsulation } from '@angular/core';
 import { InputTextComponent } from '../../form/input-text/input-text.component';
-import { FormControl, Validators } from '@angular/forms';
+import { FormArray, FormControl, Validators } from '@angular/forms';
 import { ListOfInputTextsComponent } from '../../form/list-of-input-texts/list-of-input-texts.component';
 import { Board, BoardsService } from '../../../data-layer/boards.service';
 
@@ -15,7 +15,9 @@ import { Board, BoardsService } from '../../../data-layer/boards.service';
 })
 export class BoardDialogComponent {
   public boardNameFormControl = new FormControl('', [Validators.required]);
-  public listOfInputTextsIsValid = false;
+  public listOfInputTextsFormArray = new FormArray<FormControl<string | null>>(
+    [],
+  );
   public dialogMode: 'create' | 'edit';
 
   constructor(
@@ -34,10 +36,19 @@ export class BoardDialogComponent {
     if (this.boardNameFormControl.valid) {
       // Check if Create or Update Board
       if (this.dialogMode === 'create') {
-        // Create new board
+        // Loops over the formArray to create the columns
+        const columns = this.listOfInputTextsFormArray.controls.map(
+          (control, index) => ({
+            id: index + 1,
+            columnName: control.value as string,
+            tasks: [],
+          }),
+        );
+
+        // Creates the new board
         const newBoard: Board = {
           boardName: this.boardNameFormControl.value as string,
-          columns: [{ id: 1, columnName: 'To Do', tasks: [] }],
+          columns: columns,
         };
         this.boardsService.createNewBoard(newBoard);
       } else {
@@ -45,12 +56,5 @@ export class BoardDialogComponent {
       }
       this.dialogRef.close();
     }
-  }
-
-  /**
-   * Keeps track of whether all FormsControls inside app-list-of-input-texts are valid.
-   */
-  public checkIfListOfInputTextsIsValid(isValid: boolean) {
-    this.listOfInputTextsIsValid = isValid;
   }
 }

@@ -7,16 +7,15 @@
 ></app-input-text>
 
 <app-list-of-input-texts
-  [inputTextStrings]="['todo', 'doing', '']"
+  [inputFormArray]="listOfInputTextsFormArray"
   addNewButtonText="Column"
   topLabel="Columns"
-  (isValid)="checkIfListOfInputTextsIsValid($event)"
 ></app-list-of-input-texts>
 
 <button
   class="action-button button-primary-s"
   (click)="actionButton()"
-  [disabled]="!boardNameFormControl.valid || !listOfInputTextsIsValid"
+  [disabled]="boardNameFormControl.invalid || listOfInputTextsFormArray.invalid"
 >
   Create New Board
 </button>
