@@ -20,7 +20,7 @@ export interface Board {
  * It has a unique id, a name, and a list of tasks.
  *
  */
-interface Column {
+export interface Column {
   id: number;
   columnName: string;
   tasks: Task[];
@@ -28,14 +28,13 @@ interface Column {
 
 /**
  * The Task interface contains info about itself, and subtasks.
- * It has a unique id, a title, a description, a status and a list of subtasks.
+ * It has a unique id, a title, a description and a list of subtasks.
  *
  */
-interface Task {
+export interface Task {
   id: number;
   title: string;
-  description: string;
-  status: string; // "todo" | "in-progress" | "done" (@TODO: Make this an enum)
+  description?: string;
   subtasks: Subtask[];
 }
 
@@ -44,10 +43,10 @@ interface Task {
  * It has a unique id, a name, a description and a field indicating whether it is completed or not.
  *
  */
-interface Subtask {
+export interface Subtask {
   id: number;
-  subTaskName: string;
-  description: string;
+  subTaskTitle: string;
+  description?: string;
   completed: boolean;
 }
 
@@ -412,6 +411,199 @@ export class BoardsService {
       };
       boardsRequest.onerror = (event) =>
         reject('Error creating default board: ' + event);
+    });
+  }
+
+  /**
+   * Generates a new unique task ID in a specificed column, based on the existing tasks in the column.
+   *
+   * @returns A Promise that resolves with the new task ID.
+   */
+  private generateTaskId(columnId: number): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      if (!this.db || !this.selectedBoardID) {
+        reject('Database or selected board not available.');
+        return;
+      }
+
+      const transaction = this.db.transaction('boards', 'readonly');
+      const objectStore = transaction.objectStore('boards');
+      const request = objectStore.get(this.selectedBoardID);
+
+      request.onsuccess = () => {
+        const selectedBoard = request.result as Board;
+        let maxTaskId = 0;
+
+        selectedBoard.columns[columnId].tasks.forEach((task) => {
+          if (task.id > maxTaskId) {
+            maxTaskId = task.id;
+          }
+        });
+
+        resolve(maxTaskId + 1);
+      };
+
+      request.onerror = (event) => {
+        reject(`Error generating task ID: ${event}`);
+      };
+    });
+  }
+
+  /**
+   * Creates a new task in the specified column of the selected board.
+   * Automatically generates a new unique task ID.
+   *
+   * @param columnId - The ID of the column where the task should be added.
+   * @param taskWithoutId - The task object without the id property.
+   */
+  public createTask(
+    columnId: number,
+    taskWithoutId: Omit<Task, 'id'>,
+  ): Promise<void> {
+    return new Promise<void>(async (resolve, reject) => {
+      if (!this.db || !this.selectedBoardID) {
+        reject('Database or selected board not available.');
+        return;
+      }
+
+      try {
+        const newTaskId = await this.generateTaskId(columnId);
+        const newTask: Task = { id: newTaskId, ...taskWithoutId };
+
+        const transaction = this.db.transaction('boards', 'readwrite');
+        const objectStore = transaction.objectStore('boards');
+        const request = objectStore.get(this.selectedBoardID);
+
+        request.onsuccess = () => {
+          const selectedBoard = request.result as Board;
+          const column = selectedBoard.columns.find(
+            (col) => col.id === columnId,
+          );
+
+          if (column) {
+            column.tasks.push(newTask);
+            const updateRequest = objectStore.put(selectedBoard);
+            updateRequest.onsuccess = () => {
+              this.selectedBoardSubject.next(selectedBoard);
+              resolve();
+            };
+            updateRequest.onerror = (event) => {
+              reject(`Error creating task: ${event}`);
+            };
+          } else {
+            reject('Column not found.');
+          }
+        };
+
+        request.onerror = (event) => {
+          reject(`Error creating task: ${event}`);
+        };
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  /**
+   * Edits an existing task in the specified column of the selected board.
+   *
+   * @param columnId - The ID of the column where the task is located.
+   * @param taskId - The ID of the task to be edited.
+   * @param updatedTask - The updated task object.
+   */
+  public editTask(
+    columnId: number,
+    taskId: number,
+    updatedTask: Task,
+  ): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (!this.db || !this.selectedBoardID) {
+        reject('Database or selected board not available.');
+        return;
+      }
+
+      const transaction = this.db.transaction('boards', 'readwrite');
+      const objectStore = transaction.objectStore('boards');
+      const request = objectStore.get(this.selectedBoardID);
+
+      request.onsuccess = () => {
+        const selectedBoard = request.result as Board;
+        const column = selectedBoard.columns.find((col) => col.id === columnId);
+
+        if (column) {
+          const taskIndex = column.tasks.findIndex(
+            (task) => task.id === taskId,
+          );
+          if (taskIndex !== -1) {
+            column.tasks[taskIndex] = { ...updatedTask };
+            const updateRequest = objectStore.put(selectedBoard);
+            updateRequest.onsuccess = () => {
+              this.selectedBoardSubject.next(selectedBoard);
+              resolve();
+            };
+            updateRequest.onerror = (event) => {
+              reject(`Error editing task: ${event}`);
+            };
+          } else {
+            reject('Task not found.');
+          }
+        } else {
+          reject('Column not found.');
+        }
+      };
+
+      request.onerror = (event) => {
+        reject(`Error editing task: ${event}`);
+      };
+    });
+  }
+
+  /**
+   * Deletes an existing task in the specified column of the selected board.
+   *
+   * @param columnId - The ID of the column where the task is located.
+   * @param taskId - The ID of the task to be deleted.
+   */
+  public deleteTask(columnId: number, taskId: number): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (!this.db || !this.selectedBoardID) {
+        reject('Database or selected board not available.');
+        return;
+      }
+
+      const transaction = this.db.transaction('boards', 'readwrite');
+      const objectStore = transaction.objectStore('boards');
+      const request = objectStore.get(this.selectedBoardID);
+
+      request.onsuccess = () => {
+        const selectedBoard = request.result as Board;
+        const column = selectedBoard.columns.find((col) => col.id === columnId);
+
+        if (column) {
+          const taskIndex = column.tasks.findIndex(
+            (task) => task.id === taskId,
+          );
+          if (taskIndex !== -1) {
+            column.tasks.splice(taskIndex, 1);
+            const updateRequest = objectStore.put(selectedBoard);
+            updateRequest.onsuccess = () => {
+              this.selectedBoardSubject.next(selectedBoard);
+              resolve();
+            };
+            updateRequest.onerror = (event) => {
+              reject(`Error deleting task: ${event}`);
+            };
+          } else {
+            reject('Task not found.');
+          }
+        } else {
+          reject('Column not found.');
+        }
+      };
+
+      request.onerror = (event) => {
+        reject(`Error deleting task: ${event}`);
+      };
     });
   }
 }
