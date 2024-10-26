@@ -1,0 +1,20 @@
+<div class="dropdown" [class.open]="isOpen">
+  <div #dropdownHeader class="dropdown-header" (click)="toggleDropdown()">
+    {{
+      selectedOptionIndex !== -1
+        ? options[selectedOptionIndex]
+        : "Select an option"
+    }}
+    <span class="arrow">▼</span>
+  </div>
+
+  @if (isOpen) {
+    <ul #dropdownList class="dropdown-list">
+      @for (option of options; track option; let idx = $index) {
+        <li class="dropdown-list-item" (click)="selectOption(idx)">
+          {{ option }}
+        </li>
+      }
+    </ul>
+  }
+</div>
