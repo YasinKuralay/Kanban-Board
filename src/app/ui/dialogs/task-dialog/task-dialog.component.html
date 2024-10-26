@@ -1,0 +1,28 @@
+<h2 class="task-dialog-title">{{ dialogTitle }}</h2>
+
+<app-input-text
+  label="Task Name"
+  placeholder="e.g. Take Coffee Break"
+  [internalFormControl]="taskNameFormControl"
+></app-input-text>
+
+@if (dialogMode === "create" || dialogMode === "edit") {
+  <app-list-of-input-texts
+    [inputFormArray]="subtasksFormArray"
+    addNewButtonText="Subtask"
+    topLabel="Subtasks"
+  ></app-list-of-input-texts>
+
+  <app-dropdown
+    label="Priority"
+    [options]="['option-1', 'option-2', 'option-3']"
+    [selectedOptionIndex]="0"
+  ></app-dropdown>
+  <button
+    class="action-button button-primary-s"
+    (click)="actionButton()"
+    [disabled]="taskNameFormControl.invalid || subtasksFormArray.invalid"
+  >
+    {{ actionButtonText }}
+  </button>
+}

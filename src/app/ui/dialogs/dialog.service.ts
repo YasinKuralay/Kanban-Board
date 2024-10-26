@@ -6,6 +6,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { filter, fromEvent, takeUntil } from 'rxjs';
 import { BoardDialogComponent } from './board-dialog/board-dialog.component';
 import { Board } from '../../data-layer/boards.service';
+import { TaskDialogComponent } from './task-dialog/task-dialog.component';
 
 /**
  * The service for opening/closing any dialog. This service is used to launch dialogs from any component in the application.
@@ -117,6 +118,25 @@ export class DialogService {
       data: {
         boardData: board || undefined,
         isCreateNewBoard: isCreateNewBoard,
+      },
+    });
+  }
+
+  /**
+   * Opens the "Task Dialog", which is used for Creating, Editing or Viewing a task.
+   *
+   * @param dialogMode - The mode of the dialog. This determines the behavior of the dialog.
+   *
+   * @remarks
+   * For further reference on the CDK, please visit: https://material.angular.io/cdk/dialog/overview
+   *
+   */
+  public openTaskDialog(dialogMode: 'create' | 'edit' | 'view') {
+    this.dialog.open<TaskDialogComponent>(TaskDialogComponent, {
+      width: '100%',
+      maxWidth: 'min(480px, 94%)',
+      data: {
+        dialogMode: dialogMode,
       },
     });
   }

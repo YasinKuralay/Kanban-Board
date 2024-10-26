@@ -53,9 +53,21 @@ export class HeaderComponent {
    * For further reference on the CDK, please visit: https://material.angular.io/cdk/dialog/overview
    *
    */
-  openMobileBoardsDialog() {
+  public openMobileBoardsDialog() {
     this.dialogService.openMobileBoardsDialog(
       this.mobileBoardsDialogAnchorPoint,
     );
+  }
+
+  /**
+   * Opens the "Create Task Dialog".
+   *
+   * @remarks
+   * This method launches an Angular CDK dialog that allows the user to create a new board.
+   * For further reference on the CDK, please visit: https://material.angular.io/cdk/dialog/overview
+   *
+   */
+  public openCreateTaskDialog() {
+    this.dialogService.openTaskDialog('create');
   }
 }

@@ -145,9 +145,13 @@
 
   <!-- The header element is here instead of as the outermost container for accessibility reasons -->
   <header>
-    <div class="current-board">Current Board</div>
+    <div class="current-board">{{ selectedBoard?.boardName }}</div>
     <div class="header-right-section">
-      <button class="add-task-button" aria-label="Add new task">
+      <button
+        class="add-task-button"
+        aria-label="Add new task"
+        (click)="openCreateTaskDialog()"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="12"
