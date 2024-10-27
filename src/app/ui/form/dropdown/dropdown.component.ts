@@ -81,6 +81,12 @@ export class DropdownComponent implements OnDestroy {
                 fallbackPlacements: ['top'], // Flip to top if not enough space below
               },
             },
+            {
+              name: 'offset',
+              options: {
+                offset: [0, 18], // Adjust the second value to set the vertical spacing
+              },
+            },
           ],
         },
       );

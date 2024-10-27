@@ -1,11 +1,32 @@
+@use "../../../../styles.scss" as *;
+
 .dropdown {
   position: relative;
   display: block;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid rgba(130, 143, 163, 0.25);
+  background-color: var(--white);
+  height: 42px;
+  @include font-body-l;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  transition:
+    background-color var(--medium-transition-speed),
+    color var(--medium-transition-speed);
+
+  [data-theme="dark"] & {
+    color: var(--white);
+    background-color: var(--dark-grey);
+    border-color: rgba(130, 143, 163, 0.25);
+  }
 
   .dropdown-header {
     width: 100%;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    padding: 8px 16px;
   }
 
   .dropdown-list {
@@ -13,13 +34,28 @@
     background-color: var(--white);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 8px 0;
+    padding: 1rem 0.75rem;
     user-select: none;
     transition: background-color var(--medium-transition-speed);
     width: 100%;
 
     &-item {
-      display: block;
+      display: block; // THi display block is needed to prevent the list "dots" being rendered by html (since display: list).
+      border-radius: 4px;
+      padding: 0.25rem 0.25rem;
+
+      &:hover {
+        background-color: lightgray;
+        cursor: pointer;
+      }
+
+      [data-theme="dark"] & {
+        background-color: var(--dark-grey);
+
+        &:hover {
+          background-color: var(--lines-dark);
+        }
+      }
     }
 
     [data-theme="dark"] & {
