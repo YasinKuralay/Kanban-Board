@@ -9,7 +9,7 @@ app-theme-switcher {
   justify-content: center;
   gap: 24px;
   height: 48px;
-  background-color: var(--light-grey-light-bg);
+  background-color: var(--light-gray-light-bg);
   border-radius: 6px;
   cursor: pointer;
   transition: background-color var(--medium-transition-speed);
@@ -29,7 +29,7 @@ app-theme-switcher {
 
 [data-theme="dark"] {
   .theme-switcher {
-    background-color: var(--very-dark-grey);
+    background-color: var(--very-dark-gray);
 
     &:hover {
       background-color: var(--lines-dark);

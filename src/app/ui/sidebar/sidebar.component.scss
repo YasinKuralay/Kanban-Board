@@ -64,10 +64,10 @@ app-sidebar {
     transition: color var(--default-transition-speed);
 
     &:hover {
-      color: var(--dark-grey);
+      color: var(--dark-gray);
 
       path {
-        fill: var(--dark-grey);
+        fill: var(--dark-gray);
       }
     }
 
@@ -97,7 +97,7 @@ app-sidebar {
 [data-theme="dark"] {
   .sidebar {
     border-right: 1px solid var(--lines-dark);
-    background-color: var(--dark-grey);
+    background-color: var(--dark-gray);
   }
 
   .hide-sidebar {

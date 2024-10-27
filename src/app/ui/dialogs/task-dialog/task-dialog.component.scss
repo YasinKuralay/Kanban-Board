@@ -1,7 +1,9 @@
 @use "../../../../styles.scss" as *;
 
 app-task-dialog {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
   background-color: var(--white);
   border-radius: 8px;
   padding: 24px;
@@ -13,15 +15,11 @@ app-task-dialog {
   }
 
   [data-theme="dark"] & {
-    background-color: var(--dark-grey);
+    background-color: var(--dark-gray);
   }
 
   .task-dialog-title {
-    margin: 0 0 24px 0;
+    margin: unset;
     @include font-heading-l;
-  }
-
-  .action-button {
-    margin-top: 24px;
   }
 }

@@ -4,7 +4,7 @@
   display: block;
   margin-bottom: 0.5rem;
   @include font-body-m;
-  color: var(--medium-grey);
+  color: var(--medium-gray);
   transition: color var(--medium-transition-speed);
 
   [data-theme="dark"] & {
@@ -28,7 +28,7 @@
 
   [data-theme="dark"] & {
     color: var(--white);
-    background-color: var(--dark-grey);
+    background-color: var(--dark-gray);
     border-color: rgba(130, 143, 163, 0.25);
   }
 
@@ -62,7 +62,7 @@
       }
 
       [data-theme="dark"] & {
-        background-color: var(--dark-grey);
+        background-color: var(--dark-gray);
 
         &:hover {
           background-color: var(--lines-dark);
@@ -71,7 +71,7 @@
     }
 
     [data-theme="dark"] & {
-      background-color: var(--dark-grey);
+      background-color: var(--dark-gray);
     }
 
     // .dropdown-item {
