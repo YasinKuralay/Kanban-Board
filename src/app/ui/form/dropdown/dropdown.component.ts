@@ -104,7 +104,7 @@ export class DropdownComponent implements OnDestroy {
   }
 
   /**
-   * Toggles the dropdown-list visibility via the isOpen property.
+   * Toggles the dropdown-list visibility via the isOpen property, then focuses the selected option.
    * If the dropdown-list is opened, the Popper.js instance is created.
    * If the dropdown-list is closed, the Popper.js instance is destroyed.
    *
@@ -116,6 +116,11 @@ export class DropdownComponent implements OnDestroy {
     if (this.isOpen) {
       this.cdRef.detectChanges();
       this.createPopperInstance();
+
+      // Set focus on the 'selected' element via selectedOptionIndex.
+      const indexToFocus =
+        this.selectedOptionIndex === -1 ? 0 : this.selectedOptionIndex;
+      this.focusOption(indexToFocus);
     } else {
       this.destroyPopperInstance();
     }
@@ -133,24 +138,42 @@ export class DropdownComponent implements OnDestroy {
   }
 
   /**
-   * Handles the Space and Enter keydown events on the dropdown-list items.
-   * Selects the option at the given index, by calling the selectOption method with the index.
+   * Handles the Space, and Enter, Tab, Arropup and Arropdown keydown events on the dropdown-list items.
+   * Either selects or focuses the option at the given index, by calling the selectOption or focusOption methods with the index.
    */
   public handleKeydownOnListItem(event: KeyboardEvent, idx: number) {
-    if (event.key === ' ' || event.key === 'Enter') {
+    event.preventDefault();
+
+    if (event.key === ' ' || event.key === 'Enter' || event.key === 'Tab') {
       this.selectOption(idx);
-      event.preventDefault();
+    } else if (event.key === 'ArrowUp') {
+      idx = Math.max(0, idx - 1); // Ensures idx is not negative.
+      this.focusOption(idx);
+    } else if (event.key === 'ArrowDown') {
+      idx = Math.min(this.options.length - 1, idx + 1); // Ensures idx is not out of bounds.
+      this.focusOption(idx);
     }
   }
 
   /**
-   * Selects the option at the given index.
+   * Focuses the option at the given index.
+   */
+  private focusOption(index: number) {
+    const optionElements =
+      this.dropdownList?.nativeElement.querySelectorAll('li');
+    if (optionElements && optionElements[index]) {
+      optionElements[index].focus();
+    }
+  }
+
+  /**
+   * Selects the option at the given index, closes the dropdown-list and sets the focus back on the dropdownHeader.
    * Emits the selectedOptionIndexChange event with the index.
-   * Closes the dropdown-list by setting the isOpen property to false.
    */
   public selectOption(index: number) {
     this.selectedOptionIndex = index;
     this.selectedOptionIndexChange.emit(index);
+    this.dropdownHeader.nativeElement.focus();
     this.isOpen = false;
   }
 
@@ -163,7 +186,14 @@ export class DropdownComponent implements OnDestroy {
    */
   public handleFocusOutOnList(event: FocusEvent) {
     // The event.relatedTarget (in FocusEvents) is the element that is gaining focus.
-    if (!this.dropdownList?.nativeElement.contains(event.relatedTarget)) {
+    const relatedTarget = event.relatedTarget as HTMLElement;
+    const isRelatedTargetInDropdown =
+      this.dropdownList?.nativeElement.contains(relatedTarget);
+    const isRelatedTargetHeader =
+      relatedTarget === this.dropdownHeader.nativeElement;
+
+    // Check if the related target is within the dropdown list or the header itself.
+    if (!isRelatedTargetInDropdown && !isRelatedTargetHeader) {
       this.isOpen = false;
     }
   }
