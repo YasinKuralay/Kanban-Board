@@ -1,7 +1,7 @@
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { v4 as uuidv4 } from 'uuid'; // Install 'uuid' package if needed
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-input-text',

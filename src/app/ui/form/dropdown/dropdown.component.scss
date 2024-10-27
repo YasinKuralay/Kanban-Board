@@ -1,5 +1,17 @@
 @use "../../../../styles.scss" as *;
 
+.dropdown-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  @include font-body-m;
+  color: var(--medium-grey);
+  transition: color var(--medium-transition-speed);
+
+  [data-theme="dark"] & {
+    color: var(--white);
+  }
+}
+
 .dropdown {
   position: relative;
   display: block;

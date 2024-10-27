@@ -9,6 +9,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import { v4 as uuidv4 } from 'uuid';
 import { createPopper } from '@popperjs/core';
 
 @Component({
@@ -22,6 +23,11 @@ import { createPopper } from '@popperjs/core';
 export class DropdownComponent implements OnDestroy {
   @ViewChild('dropdownHeader') dropdownHeader!: ElementRef;
   @ViewChild('dropdownList') dropdownList?: ElementRef;
+
+  /**
+   * The label that is displayed above the dropdown-header.
+   */
+  @Input() public label: string = '';
 
   /**
    * The options that are displayed in the dropdown-list.
@@ -48,6 +54,11 @@ export class DropdownComponent implements OnDestroy {
    * The Popper.js instance that manages the dropdown-list positioning.
    */
   popperInstance: any;
+
+  /**
+   * Generates a unique ID for the input id attribute
+   */
+  public uniqueId = uuidv4();
 
   constructor(private cdRef: ChangeDetectorRef) {}
 

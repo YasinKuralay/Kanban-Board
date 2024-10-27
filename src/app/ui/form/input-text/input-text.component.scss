@@ -5,9 +5,10 @@ app-input-text {
 
   .input-text-label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 0.5rem;
     @include font-body-m;
     color: var(--medium-gray);
+    transition: color var(--medium-transition-speed);
 
     [data-theme="dark"] & {
       color: var(--white);
