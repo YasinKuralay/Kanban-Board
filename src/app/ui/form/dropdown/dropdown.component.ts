@@ -23,8 +23,20 @@ export class DropdownComponent implements OnDestroy {
   @ViewChild('dropdownHeader') dropdownHeader!: ElementRef;
   @ViewChild('dropdownList') dropdownList?: ElementRef;
 
+  /**
+   * The options that are displayed in the dropdown-list.
+   */
   @Input() options: string[] = [];
+
+  /**
+   * The index of the selected option.
+   * If no option is selected, the index is -1.
+   */
   @Input() selectedOptionIndex: number = -1;
+
+  /**
+   * Emits the index of the selected option when the option is changed.
+   */
   @Output() selectedOptionIndexChange = new EventEmitter<number>();
 
   /**
