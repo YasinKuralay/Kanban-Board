@@ -1,0 +1,7 @@
+<h3 class="tasks-column-title">{{ columnData.columnName.toUpperCase() }}</h3>
+
+<div class="tasks-column-container">
+  @for (task of columnData.tasks; track task.id) {
+    <app-task [task]="task"></app-task>
+  }
+</div>

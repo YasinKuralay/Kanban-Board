@@ -1,16 +1,26 @@
 import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { BoardsService } from './data-layer/boards.service';
+import { Board, BoardsService } from './data-layer/boards.service';
 import { HeaderComponent } from './ui/header/header.component';
 import { SidebarComponent } from './ui/sidebar/sidebar.component';
+import { Subscription } from 'rxjs';
+import { TasksColumnComponent } from './ui/tasks-column/tasks-column.component';
+import { DropdownComponent } from './ui/form/dropdown/dropdown.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  imports: [CommonModule, RouterOutlet, HeaderComponent, SidebarComponent],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    HeaderComponent,
+    SidebarComponent,
+    TasksColumnComponent,
+    DropdownComponent,
+  ],
   encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent implements OnInit {
@@ -19,11 +29,23 @@ export class AppComponent implements OnInit {
     @Inject(DOCUMENT) private document: Document,
   ) {}
 
+  private selectedBoardSubscription!: Subscription;
+  public selectedBoard: Board | undefined;
+
   public sidebarIsOpen: boolean = false;
 
   async ngOnInit() {
     this.applyTheme();
     await this.boardsService.initBoardsServiceAndGetSelectedBoard();
+    this.selectedBoardSubscription =
+      this.boardsService.selectedBoard$.subscribe((board) => {
+        this.selectedBoard = board;
+        console.log('this.selectedBoard is: ', this.selectedBoard);
+      });
+  }
+
+  ngOnDestroy() {
+    this.selectedBoardSubscription.unsubscribe();
   }
 
   /**

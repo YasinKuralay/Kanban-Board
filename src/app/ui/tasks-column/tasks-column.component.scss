@@ -1,0 +1,19 @@
+@use "../../../styles.scss" as *;
+
+.tasks-column {
+  width: 280px;
+  flex-shrink: 0;
+  user-select: none;
+
+  &-title {
+    margin: 0 0 1.5rem 0;
+    @include font-heading-s;
+    color: var(--medium-gray);
+  }
+
+  &-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+}

@@ -33,9 +33,20 @@
   display: flex;
 
   .main-area {
+    overflow-x: auto;
     flex-grow: 1;
+    background-color: var(--light-gray-light-bg);
     transition: background-color var(--medium-transition-speed);
     height: calc(100vh - var(--header-height));
+    padding: 1.5rem 0 0 1rem;
+    @media screen and (min-width: 768px) {
+      padding: 1.5rem 0 0 1.5rem;
+    }
+
+    .tasks-columns-container {
+      display: flex;
+      gap: 1.5rem;
+    }
   }
 }
 

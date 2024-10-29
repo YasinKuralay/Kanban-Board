@@ -5,7 +5,13 @@
     [isOpen]="sidebarIsOpen"
     (onToggleSidebar)="toggleSidebar()"
   ></app-sidebar>
-  <main class="main-area"></main>
+  <main class="main-area">
+    <div class="tasks-columns-container">
+      @for (column of selectedBoard?.columns; track column.id) {
+        <app-tasks-column [columnData]="column"></app-tasks-column>
+      }
+    </div>
+  </main>
 </div>
 
 <button
