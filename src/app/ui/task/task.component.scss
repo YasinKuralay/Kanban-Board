@@ -1,0 +1,25 @@
+@use "../../../styles.scss" as *;
+
+.task {
+  background-color: var(--white);
+  width: 280px;
+  padding: 23px 16px 23px 16px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(54, 78, 126, 0.1);
+  user-select: none;
+
+  &:hover {
+    cursor: pointer;
+    filter: brightness(90%);
+  }
+
+  &-title {
+    margin: 0 0 0.5rem 0;
+    @include font-heading-m;
+  }
+
+  .num-of-subtasks {
+    @include font-body-m;
+    color: var(--medium-gray);
+  }
+}
