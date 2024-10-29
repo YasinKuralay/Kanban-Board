@@ -5,7 +5,7 @@ import { Overlay } from '@angular/cdk/overlay';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { filter, fromEvent, takeUntil } from 'rxjs';
 import { BoardDialogComponent } from './board-dialog/board-dialog.component';
-import { Board } from '../../data-layer/boards.service';
+import { Board, Column } from '../../data-layer/boards.service';
 import { TaskDialogComponent } from './task-dialog/task-dialog.component';
 
 /**
@@ -40,7 +40,7 @@ export class DialogService {
    * For further reference on the CDK, please visit: https://material.angular.io/cdk/dialog/overview
    *
    */
-  openMobileBoardsDialog(dialogAnchorPoint: ElementRef) {
+  openMobileBoardsDialog(dialogAnchorPoint: ElementRef): void {
     // Only open the dialogue if it is not already open
     if (!this.mobileBoardsDialogIsOpen) {
       this.mobileBoardsDialogRef =
@@ -111,7 +111,7 @@ export class DialogService {
    * For further reference on the CDK, please visit: https://material.angular.io/cdk/dialog/overview
    *
    */
-  public openBoardDialog(isCreateNewBoard: boolean, board?: Board) {
+  public openBoardDialog(isCreateNewBoard: boolean, board?: Board): void {
     this.dialog.open<BoardDialogComponent>(BoardDialogComponent, {
       width: '100%',
       maxWidth: 'min(480px, 94%)',
@@ -126,18 +126,27 @@ export class DialogService {
    * Opens the "Task Dialog", which is used for Creating, Editing or Viewing a task.
    *
    * @param dialogMode - The mode of the dialog. This determines the behavior of the dialog.
+   * @param columns - The columns of the board. Used to make the user select which column the task should be created in.
    *
    * @remarks
    * For further reference on the CDK, please visit: https://material.angular.io/cdk/dialog/overview
    *
    */
-  public openTaskDialog(dialogMode: 'create' | 'edit' | 'view') {
-    this.dialog.open<TaskDialogComponent>(TaskDialogComponent, {
-      width: '100%',
-      maxWidth: 'min(480px, 94%)',
-      data: {
-        dialogMode: dialogMode,
-      },
-    });
+  public openTaskDialog(
+    dialogMode: 'create' | 'edit' | 'view',
+    columns: Column[] | undefined,
+  ): void {
+    if (columns === undefined) {
+      console.error('Columns are required for creating a new task.');
+    } else {
+      this.dialog.open<TaskDialogComponent>(TaskDialogComponent, {
+        width: '100%',
+        maxWidth: 'min(480px, 94%)',
+        data: {
+          dialogMode: dialogMode,
+          columns: columns,
+        },
+      });
+    }
   }
 }

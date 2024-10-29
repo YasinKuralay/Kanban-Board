@@ -9,14 +9,16 @@
 @if (dialogMode === "create" || dialogMode === "edit") {
   <app-list-of-input-texts
     [inputFormArray]="subtasksFormArray"
+    [emptyFormArrayNotAllowed]="true"
     addNewButtonText="Subtask"
     topLabel="Subtasks"
   ></app-list-of-input-texts>
 
   <app-dropdown
-    label="Priority"
-    [options]="['option-1', 'option-2', 'option-3']"
-    [selectedOptionIndex]="0"
+    label="Column"
+    [options]="columnsOnlyNames"
+    [selectedOptionIndex]="selectedColumnIndex"
+    (selectedOptionIndexChange)="onSelectedColumnIndexChange($event)"
   ></app-dropdown>
   <button
     class="action-button button-primary-s"

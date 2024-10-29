@@ -1,7 +1,9 @@
 @use "../../../../styles.scss" as *;
 
 app-board-dialog {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   background-color: var(--white);
   border-radius: 8px;
   padding: 24px;
@@ -17,11 +19,7 @@ app-board-dialog {
   }
 
   .board-dialog-title {
-    margin: 0 0 24px 0;
+    margin: unset;
     @include font-heading-l;
-  }
-
-  .action-button {
-    margin-top: 24px;
   }
 }

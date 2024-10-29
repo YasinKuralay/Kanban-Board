@@ -32,7 +32,7 @@ export class DropdownComponent implements OnDestroy {
   /**
    * The options that are displayed in the dropdown-list.
    */
-  @Input() options: string[] = [];
+  @Input({ required: true }) options: string[] = [];
 
   /**
    * The index of the selected option.

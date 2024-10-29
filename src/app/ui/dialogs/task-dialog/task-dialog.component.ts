@@ -6,6 +6,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { DropdownComponent } from '../../form/dropdown/dropdown.component';
 import {
   BoardsService,
+  Column,
   Subtask,
   Task,
 } from '../../../data-layer/boards.service';
@@ -23,29 +24,49 @@ export class TaskDialogComponent {
    * Dynamic title for the dialog, based on the dialogMode.
    */
   public dialogTitle!: string;
+
   /**
    * Dynamic action-button text for the dialog, based on the dialogMode.
    */
   public actionButtonText!: string;
+
   /**
    * The FormControl for the Task Name. Used in Create and Edit dialogMode.
    */
   public taskNameFormControl = new FormControl('', [Validators.required]);
+
   /**
    * FormArray that holds the Subtasks. Used in Create and Edit dialogMode.
    */
   public subtasksFormArray = new FormArray<FormControl<string | null>>([]);
+
   /**
    * Based on the dialogMode, the dialog will either Create, Edit or View a Task.
    * This determines the behavior of the dialog.
    * The title and action-button text will be dynamically set based on this value.
    */
   public dialogMode: 'create' | 'edit' | 'view';
+
   /**
-   * The ID of the column that the task will be created in.
-   * @required for creating a new task.
+   * The index of the column where the Task should be created.
+   * Please keep in mind that index in the columns array will probably not correspond to the id of the column!
+   *
+   * @remarks
+   * This can be made dynamic in the future by passing it via the DIALOG_DATA.
    */
-  private columnId: number;
+  public selectedColumnIndex: number = 0;
+
+  /**
+   * The names of the columns.
+   * Used for the dropdown in the dialog.
+   */
+  public columnsOnlyNames: string[] = [];
+
+  /**
+   * The columns of the board.
+   * @required for making the user select which column the task should be created in.
+   */
+  private columns: Column[];
 
   constructor(
     public dialogRef: DialogRef<string>,
@@ -53,12 +74,20 @@ export class TaskDialogComponent {
     @Inject(DIALOG_DATA) public data: any,
   ) {
     this.dialogMode = this.data.dialogMode || 'create';
-    this.columnId = this.data.columnId;
+    this.columns = this.data.columns;
+    this.columnsOnlyNames = this.columns.map((column) => column.columnName);
 
     if (this.dialogMode === 'create') {
       this.dialogTitle = 'Add New Task';
       this.actionButtonText = 'Create Task';
     }
+  }
+
+  /**
+   * Event handler for when the user changes the selected column.
+   */
+  public onSelectedColumnIndexChange(selectedColumnIdx: number) {
+    this.selectedColumnIndex = selectedColumnIdx;
   }
 
   /**
@@ -89,7 +118,11 @@ export class TaskDialogComponent {
           title: this.taskNameFormControl.value as string,
           subtasks: subtasks,
         };
-        this.boardsService.createTask(this.columnId, newTask);
+
+        this.boardsService.createTask(
+          this.columns[this.selectedColumnIndex].id,
+          newTask,
+        );
       } else {
         // Edit existing Task
       }
