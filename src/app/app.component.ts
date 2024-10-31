@@ -40,7 +40,6 @@ export class AppComponent implements OnInit {
     this.selectedBoardSubscription =
       this.boardsService.selectedBoard$.subscribe((board) => {
         this.selectedBoard = board;
-        console.log('this.selectedBoard is: ', this.selectedBoard);
       });
   }
 

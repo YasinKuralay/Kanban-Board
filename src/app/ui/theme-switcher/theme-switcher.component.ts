@@ -26,6 +26,5 @@ export class ThemeSwitcherComponent {
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     this.document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
-    console.log('Theme switched to:', newTheme);
   }
 }
