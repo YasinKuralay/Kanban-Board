@@ -2,6 +2,7 @@
 
 .task {
   background-color: var(--white);
+  display: block;
   width: 280px;
   padding: 23px 16px 23px 16px;
   border-radius: 8px;
@@ -11,6 +12,7 @@
   &:hover {
     cursor: pointer;
     filter: brightness(90%);
+    box-shadow: unset;
   }
 
   &-title {

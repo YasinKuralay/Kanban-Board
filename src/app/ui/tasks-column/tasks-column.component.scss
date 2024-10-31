@@ -16,4 +16,19 @@
     flex-direction: column;
     gap: 1.25rem;
   }
+
+  .cdk-drag-placeholder {
+    opacity: 0;
+  }
+}
+
+// The animation which is applied to the items when they are "dropped" and moving to the position automatically.
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+// The animation which is applied to the items moving as the user drags another item over.
+.tasks-column-container.cdk-drop-list-dragging
+  app-task:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }

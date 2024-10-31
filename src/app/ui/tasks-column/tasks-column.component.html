@@ -1,7 +1,11 @@
 <h3 class="tasks-column-title">{{ columnData.columnName.toUpperCase() }}</h3>
 
-<div class="tasks-column-container">
+<div
+  cdkDropList
+  class="tasks-column-container"
+  (cdkDropListDropped)="taskDragAndDropped($event)"
+>
   @for (task of columnData.tasks; track task.id) {
-    <app-task [task]="task"></app-task>
+    <app-task [task]="task" cdkDrag></app-task>
   }
 </div>

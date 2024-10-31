@@ -152,7 +152,9 @@ export class BoardsService {
 
         // Generic db error
         this.db.onerror = (event: Event) => {
-          console.log(`Database error: ${(event.target as IDBRequest).error}`);
+          console.error(
+            `Database error: ${(event.target as IDBRequest).error}`,
+          );
         };
 
         resolve('Connected to the database.');
@@ -417,6 +419,8 @@ export class BoardsService {
   /**
    * Generates a new unique task ID in a specificed column, based on the existing tasks in the column.
    *
+   * @param columnId - The ID of the column where the task should be added.
+   *
    * @returns A Promise that resolves with the new task ID.
    */
   private generateTaskId(columnId: number): Promise<number> {
@@ -433,8 +437,14 @@ export class BoardsService {
       request.onsuccess = () => {
         const selectedBoard = request.result as Board;
         let maxTaskId = 0;
+        const column = selectedBoard.columns.find((col) => col.id === columnId);
 
-        selectedBoard.columns[columnId].tasks.forEach((task) => {
+        if (!column) {
+          reject(`Column with ID ${columnId} not found.`);
+          return;
+        }
+
+        column.tasks.forEach((task) => {
           if (task.id > maxTaskId) {
             maxTaskId = task.id;
           }
@@ -603,6 +613,51 @@ export class BoardsService {
 
       request.onerror = (event) => {
         reject(`Error deleting task: ${event}`);
+      };
+    });
+  }
+
+  public moveTaskInColumn(
+    columnId: number,
+    previousIndex: number,
+    currentIndex: number,
+  ): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (!this.db || !this.selectedBoardID) {
+        reject('Database or selected board not available.');
+        return;
+      }
+
+      const transaction = this.db.transaction('boards', 'readwrite');
+      const objectStore = transaction.objectStore('boards');
+      const request = objectStore.get(this.selectedBoardID);
+
+      request.onsuccess = () => {
+        const selectedBoard = request.result as Board;
+        const column = selectedBoard.columns.find((col) => col.id === columnId);
+
+        if (column) {
+          if (previousIndex !== -1) {
+            const [task] = column.tasks.splice(previousIndex, 1);
+            column.tasks.splice(currentIndex, 0, task);
+            const updateRequest = objectStore.put(selectedBoard);
+            updateRequest.onsuccess = () => {
+              this.selectedBoardSubject.next(selectedBoard);
+              resolve();
+            };
+            updateRequest.onerror = (event) => {
+              reject(`Error moving task: ${event}`);
+            };
+          } else {
+            reject('Task not found.');
+          }
+        } else {
+          reject('Column not found.');
+        }
+      };
+
+      request.onerror = (event) => {
+        reject(`Error moving task: ${event}`);
       };
     });
   }

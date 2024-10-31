@@ -17,6 +17,7 @@ import { Task } from '../../data-layer/boards.service';
 })
 export class TaskComponent implements OnChanges {
   @HostBinding('class') class = 'task';
+  @HostBinding('attr.tabindex') tabindex = '0';
 
   @Input({ required: true }) public task!: Task;
 
@@ -35,11 +36,12 @@ export class TaskComponent implements OnChanges {
   public numOfTotalSubtasks!: number;
 
   ngOnChanges() {
-    console.log('this.task is: ', this.task);
+    // Assigns all properties their values.
     this.taskTitle = this.task.title;
     this.numOfDoneSubtasks = this.task.subtasks.filter(
       (subtask) => subtask.completed,
     ).length;
     this.numOfTotalSubtasks = this.task.subtasks.length;
+    // @end of assigning all properties their values.
   }
 }
