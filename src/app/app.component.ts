@@ -1,12 +1,14 @@
 import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
+import { CdkDropListGroup, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Board, BoardsService } from './data-layer/boards.service';
 import { HeaderComponent } from './ui/header/header.component';
 import { SidebarComponent } from './ui/sidebar/sidebar.component';
 import { Subscription } from 'rxjs';
 import { TasksColumnComponent } from './ui/tasks-column/tasks-column.component';
 import { DropdownComponent } from './ui/form/dropdown/dropdown.component';
+import { TaskMovedBetweenColumns } from './interfaces/task-moved-between-columns.interface';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +22,7 @@ import { DropdownComponent } from './ui/form/dropdown/dropdown.component';
     SidebarComponent,
     TasksColumnComponent,
     DropdownComponent,
+    CdkDropListGroup,
   ],
   encapsulation: ViewEncapsulation.None,
 })
@@ -58,5 +61,63 @@ export class AppComponent implements OnInit {
 
   public toggleSidebar() {
     this.sidebarIsOpen = !this.sidebarIsOpen;
+  }
+
+  /**
+   * When a task is moved between columns, this function is called.
+   *
+   * @remarks
+   * The reason this function is called here is because one TaskColumn can't directly change the state of another TaskColumn.
+   * The AppComponent listens for this event and first optimistically updates the UI, then calls the service method to update the database.
+   * If the database fails to save the new state, the UI is restored to its previous state.
+   *
+   * @param event Contains all necessary data to update the the position of the dragged Task.
+   */
+  public onTaskMovedBetweenColumns(event: TaskMovedBetweenColumns) {
+    // Find the columns by columnId
+    const previousColumn = this.selectedBoard!.columns.find(
+      (column) => column.id === event.previousColumnId,
+    );
+    const currentColumn = this.selectedBoard!.columns.find(
+      (column) => column.id === event.currentColumnId,
+    );
+
+    if (!previousColumn || !currentColumn) {
+      console.error(
+        'Could not find columns with the given IDs:',
+        previousColumn,
+        currentColumn,
+      );
+      return;
+    }
+
+    // The backups will be used to revert state in case the database action fails after the optimistic UI update.
+    const backupOfPreviousColumnTasks = [...previousColumn.tasks];
+    const backupOfCurrentColumnTasks = [...currentColumn.tasks];
+
+    // Optimistic update
+    transferArrayItem(
+      previousColumn.tasks,
+      currentColumn.tasks,
+      event.previousIndexOfTask,
+      event.currentIndexOfTask,
+    );
+
+    // Update the board in the service
+    this.boardsService
+      .moveTaskBetweenColumns(
+        event.previousColumnId,
+        event.currentColumnId,
+        event.previousIndexOfTask,
+        event.currentIndexOfTask,
+      )
+      .catch((error) => {
+        console.error(
+          'Error moving task between columns, restoring array to its previous state:',
+          error,
+        );
+        previousColumn.tasks = [...backupOfPreviousColumnTasks];
+        currentColumn.tasks = [...backupOfCurrentColumnTasks];
+      });
   }
 }

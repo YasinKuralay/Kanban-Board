@@ -114,7 +114,7 @@ export class TaskDialogComponent {
         );
 
         // Creates the new Task
-        const newTask: Omit<Task, 'id'> = {
+        const newTask: Omit<Task, 'uniqueId'> = {
           title: this.taskNameFormControl.value as string,
           subtasks: subtasks,
         };

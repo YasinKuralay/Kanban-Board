@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * The Board interface contains all board information.
@@ -32,7 +33,8 @@ export interface Column {
  *
  */
 export interface Task {
-  id: number;
+  /** The uniqueId is a uuidv4 */
+  uniqueId: string;
   title: string;
   description?: string;
   subtasks: Subtask[];
@@ -343,16 +345,6 @@ export class BoardsService {
         ],
       };
 
-      // const defaultBoard2: Board = {
-      //   id: 2, // The key is 1, since it's the first board.
-      //   boardName: 'Second Welcome Board',
-      //   columns: [
-      //     { id: 1, columnName: 'To Do', tasks: [] },
-      //     { id: 2, columnName: 'In Progress', tasks: [] },
-      //     { id: 3, columnName: 'Done', tasks: [] },
-      //   ],
-      // };
-
       // We have a single transaction for both stores, because if one db operation fails, we want to rollback the other.
       const transaction = this.db.transaction(
         ['boards', 'selectedBoardId'],
@@ -417,49 +409,6 @@ export class BoardsService {
   }
 
   /**
-   * Generates a new unique task ID in a specificed column, based on the existing tasks in the column.
-   *
-   * @param columnId - The ID of the column where the task should be added.
-   *
-   * @returns A Promise that resolves with the new task ID.
-   */
-  private generateTaskId(columnId: number): Promise<number> {
-    return new Promise<number>((resolve, reject) => {
-      if (!this.db || !this.selectedBoardID) {
-        reject('Database or selected board not available.');
-        return;
-      }
-
-      const transaction = this.db.transaction('boards', 'readonly');
-      const objectStore = transaction.objectStore('boards');
-      const request = objectStore.get(this.selectedBoardID);
-
-      request.onsuccess = () => {
-        const selectedBoard = request.result as Board;
-        let maxTaskId = 0;
-        const column = selectedBoard.columns.find((col) => col.id === columnId);
-
-        if (!column) {
-          reject(`Column with ID ${columnId} not found.`);
-          return;
-        }
-
-        column.tasks.forEach((task) => {
-          if (task.id > maxTaskId) {
-            maxTaskId = task.id;
-          }
-        });
-
-        resolve(maxTaskId + 1);
-      };
-
-      request.onerror = (event) => {
-        reject(`Error generating task ID: ${event}`);
-      };
-    });
-  }
-
-  /**
    * Creates a new task in the specified column of the selected board.
    * Automatically generates a new unique task ID.
    *
@@ -468,7 +417,7 @@ export class BoardsService {
    */
   public createTask(
     columnId: number,
-    taskWithoutId: Omit<Task, 'id'>,
+    taskWithoutId: Omit<Task, 'uniqueId'>,
   ): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
       if (!this.db || !this.selectedBoardID) {
@@ -477,8 +426,8 @@ export class BoardsService {
       }
 
       try {
-        const newTaskId = await this.generateTaskId(columnId);
-        const newTask: Task = { id: newTaskId, ...taskWithoutId };
+        const newTaskId = uuidv4();
+        const newTask: Task = { uniqueId: newTaskId, ...taskWithoutId };
 
         const transaction = this.db.transaction('boards', 'readwrite');
         const objectStore = transaction.objectStore('boards');
@@ -518,12 +467,12 @@ export class BoardsService {
    * Edits an existing task in the specified column of the selected board.
    *
    * @param columnId - The ID of the column where the task is located.
-   * @param taskId - The ID of the task to be edited.
+   * @param taskId - The uniqueId of the task to be edited.
    * @param updatedTask - The updated task object.
    */
   public editTask(
     columnId: number,
-    taskId: number,
+    taskId: string,
     updatedTask: Task,
   ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
@@ -542,7 +491,7 @@ export class BoardsService {
 
         if (column) {
           const taskIndex = column.tasks.findIndex(
-            (task) => task.id === taskId,
+            (task) => task.uniqueId === taskId,
           );
           if (taskIndex !== -1) {
             column.tasks[taskIndex] = { ...updatedTask };
@@ -572,9 +521,9 @@ export class BoardsService {
    * Deletes an existing task in the specified column of the selected board.
    *
    * @param columnId - The ID of the column where the task is located.
-   * @param taskId - The ID of the task to be deleted.
+   * @param taskId - The uniqueId of the task to be deleted.
    */
-  public deleteTask(columnId: number, taskId: number): Promise<void> {
+  public deleteTask(columnId: number, taskId: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (!this.db || !this.selectedBoardID) {
         reject('Database or selected board not available.');
@@ -591,7 +540,7 @@ export class BoardsService {
 
         if (column) {
           const taskIndex = column.tasks.findIndex(
-            (task) => task.id === taskId,
+            (task) => task.uniqueId === taskId,
           );
           if (taskIndex !== -1) {
             column.tasks.splice(taskIndex, 1);
@@ -617,6 +566,13 @@ export class BoardsService {
     });
   }
 
+  /**
+   * Moves a task within the same column.
+   *
+   * @param columnId - The ID of the column where the task is located.
+   * @param previousIndex - The previous index of the task.
+   * @param currentIndex - The current index of the task.
+   */
   public moveTaskInColumn(
     columnId: number,
     previousIndex: number,
@@ -640,6 +596,65 @@ export class BoardsService {
           if (previousIndex !== -1) {
             const [task] = column.tasks.splice(previousIndex, 1);
             column.tasks.splice(currentIndex, 0, task);
+            const updateRequest = objectStore.put(selectedBoard);
+            updateRequest.onsuccess = () => {
+              this.selectedBoardSubject.next(selectedBoard);
+              resolve();
+            };
+            updateRequest.onerror = (event) => {
+              reject(`Error moving task: ${event}`);
+            };
+          } else {
+            reject('Task not found.');
+          }
+        } else {
+          reject('Column not found.');
+        }
+      };
+
+      request.onerror = (event) => {
+        reject(`Error moving task: ${event}`);
+      };
+    });
+  }
+
+  /**
+   * Moves a task between two specified columns.
+   *
+   * @param previousColumnId - The ID of the column where the task was previously located.
+   * @param currentColumnId - The ID of the column where the task should be moved to.
+   * @param previousIndexOfTask - The index of the task in the previous column.
+   * @param currentIndexOfTask - The index where the task should be moved to in the current column.
+   */
+  public moveTaskBetweenColumns(
+    previousColumnId: number,
+    currentColumnId: number,
+    previousIndexOfTask: number,
+    currentIndexOfTask: number,
+  ): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (!this.db || !this.selectedBoardID) {
+        reject('Database or selected board not available.');
+        return;
+      }
+
+      const transaction = this.db.transaction('boards', 'readwrite');
+      const objectStore = transaction.objectStore('boards');
+      const request = objectStore.get(this.selectedBoardID);
+
+      request.onsuccess = () => {
+        const selectedBoard = request.result as Board;
+        const previousColumn = selectedBoard.columns.find(
+          (col) => col.id === previousColumnId,
+        );
+        const currentColumn = selectedBoard.columns.find(
+          (col) => col.id === currentColumnId,
+        );
+
+        if (previousColumn && currentColumn) {
+          if (previousIndexOfTask !== -1 && currentIndexOfTask !== -1) {
+            const [task] = previousColumn.tasks.splice(previousIndexOfTask, 1);
+            currentColumn.tasks.splice(currentIndexOfTask, 0, task);
             const updateRequest = objectStore.put(selectedBoard);
             updateRequest.onsuccess = () => {
               this.selectedBoardSubject.next(selectedBoard);

@@ -6,9 +6,12 @@
     (onToggleSidebar)="toggleSidebar()"
   ></app-sidebar>
   <main class="main-area">
-    <div class="tasks-columns-container">
+    <div class="tasks-columns-container" cdkDropListGroup>
       @for (column of selectedBoard?.columns; track column.id) {
-        <app-tasks-column [columnData]="column"></app-tasks-column>
+        <app-tasks-column
+          [columnData]="column"
+          (taskMovedBetweenColumns)="onTaskMovedBetweenColumns($event)"
+        ></app-tasks-column>
       }
     </div>
   </main>

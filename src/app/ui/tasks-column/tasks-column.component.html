@@ -1,11 +1,15 @@
-<h3 class="tasks-column-title">{{ columnData.columnName.toUpperCase() }}</h3>
+<h3 class="tasks-column-title">
+  {{ columnData.columnName.toUpperCase() }} ({{ columnData.tasks.length }})
+</h3>
 
+<!-- The cdkDropListData is used to identify which column is which. It is turned into a string and put into an array because only that format is allowed by AngularMaterial. -->
 <div
   cdkDropList
+  [cdkDropListData]="[columnData.id.toString()]"
   class="tasks-column-container"
   (cdkDropListDropped)="taskDragAndDropped($event)"
 >
-  @for (task of columnData.tasks; track task.id) {
+  @for (task of columnData.tasks; track task.uniqueId) {
     <app-task [task]="task" cdkDrag></app-task>
   }
 </div>
