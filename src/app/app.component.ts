@@ -63,6 +63,10 @@ export class AppComponent implements OnInit {
     this.sidebarIsOpen = !this.sidebarIsOpen;
   }
 
+  public createNewColumn() {
+    // this.boardsService.createNewColumn();
+  }
+
   /**
    * When a task is moved between columns, this function is called.
    *

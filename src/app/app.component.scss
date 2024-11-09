@@ -1,3 +1,5 @@
+@use "../styles.scss" as *;
+
 .launch-sidebar {
   position: absolute;
   top: calc(100vh - 80px);
@@ -38,24 +40,53 @@
     background-color: var(--light-gray-light-bg);
     transition: background-color var(--medium-transition-speed);
     height: calc(100vh - var(--header-height));
-    padding: 1.5rem 0 0 1rem;
+    padding: 1.5rem 1rem 0 1rem;
     @media screen and (min-width: 768px) {
-      padding: 1.5rem 0 0 1.5rem;
+      padding: 1.5rem 1rem 0 1.5rem;
     }
 
     .tasks-columns-container {
       display: flex;
+      width: fit-content;
       gap: 1.5rem;
-      padding-right: 1rem;
-      @media screen and (min-width: 768px) {
-        padding-right: 1.5rem;
-      }
     }
+  }
+}
+
+.create-new-column {
+  @include font-heading-xl;
+  color: var(--medium-gray);
+  width: 280px;
+  margin: 2.4rem 0 1rem 0;
+  border-radius: 6px;
+  background: linear-gradient(
+    180deg,
+    #e9effa 0%,
+    rgba(233, 239, 250, 0.5) 100%
+  );
+  transition: filter var(--default-transition-speed);
+  flex-shrink: 0;
+
+  &:hover,
+  &:focus-visible {
+    filter: brightness(90%);
   }
 }
 
 [data-theme="dark"] {
   .main-area {
     background-color: var(--very-dark-gray);
+  }
+
+  .create-new-column {
+    background: linear-gradient(
+      180deg,
+      rgba(43, 44, 55, 0.25) 0%,
+      rgba(43, 44, 55, 0.125) 100%
+    );
+
+    &:hover {
+      filter: brightness(150%);
+    }
   }
 }
