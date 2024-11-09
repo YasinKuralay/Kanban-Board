@@ -1,0 +1,10 @@
+@if (label !== "") {
+  <label class="input-textarea-label" [for]="uniqueId">{{ label }}</label>
+}
+<div class="input-textarea-container">
+  <textarea
+    [id]="uniqueId"
+    [formControl]="internalFormControl"
+    [placeholder]="placeholder"
+  ></textarea>
+</div>

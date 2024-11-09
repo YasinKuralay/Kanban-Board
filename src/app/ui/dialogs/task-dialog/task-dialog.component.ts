@@ -10,11 +10,17 @@ import {
   Subtask,
   Task,
 } from '../../../data-layer/boards.service';
+import { InputTextareaComponent } from '../../form/input-textarea/input-textarea.component';
 
 @Component({
   selector: 'app-task-dialog',
   standalone: true,
-  imports: [InputTextComponent, ListOfInputTextsComponent, DropdownComponent],
+  imports: [
+    InputTextComponent,
+    ListOfInputTextsComponent,
+    DropdownComponent,
+    InputTextareaComponent,
+  ],
   templateUrl: './task-dialog.component.html',
   styleUrl: './task-dialog.component.scss',
   encapsulation: ViewEncapsulation.None,
@@ -34,6 +40,11 @@ export class TaskDialogComponent {
    * The FormControl for the Task Name. Used in Create and Edit dialogMode.
    */
   public taskNameFormControl = new FormControl('', [Validators.required]);
+
+  /**
+   * The FormControl for the Task Description. Used in Create and Edit dialogMode.
+   */
+  public taskDescriptionFormControl = new FormControl('');
 
   /**
    * FormArray that holds the Subtasks. Used in Create and Edit dialogMode.
@@ -116,6 +127,7 @@ export class TaskDialogComponent {
         // Creates the new Task
         const newTask: Omit<Task, 'uniqueId'> = {
           title: this.taskNameFormControl.value as string,
+          description: (this.taskDescriptionFormControl.value as string) || '',
           subtasks: subtasks,
         };
 

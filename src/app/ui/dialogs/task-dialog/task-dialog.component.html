@@ -7,6 +7,12 @@
 ></app-input-text>
 
 @if (dialogMode === "create" || dialogMode === "edit") {
+  <app-input-textarea
+    label="Description"
+    placeholder="e.g. It’s always good to take a break. This 15 minute break will recharge the batteries a little."
+    [internalFormControl]="taskDescriptionFormControl"
+  ></app-input-textarea>
+
   <app-list-of-input-texts
     [inputFormArray]="subtasksFormArray"
     addNewButtonText="Subtask"
