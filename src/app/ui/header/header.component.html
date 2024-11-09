@@ -63,7 +63,11 @@
     </button>
   </div>
   <div class="header-right-section">
-    <button class="add-task-button" aria-label="Add new task">
+    <button
+      class="add-task-button"
+      aria-label="Add new task"
+      (click)="openCreateTaskDialog()"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="12"
