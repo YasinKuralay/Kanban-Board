@@ -12,7 +12,6 @@ import {
   CdkDragDrop,
   CdkDropList,
   CdkDrag,
-  CdkDragPlaceholder,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import { TaskMovedBetweenColumns } from '../../interfaces/task-moved-between-columns.interface';
@@ -20,7 +19,7 @@ import { TaskMovedBetweenColumns } from '../../interfaces/task-moved-between-col
 @Component({
   selector: 'app-tasks-column',
   standalone: true,
-  imports: [TaskComponent, CdkDrag, CdkDropList, CdkDragPlaceholder],
+  imports: [TaskComponent, CdkDrag, CdkDropList],
   templateUrl: './tasks-column.component.html',
   styleUrl: './tasks-column.component.scss',
   encapsulation: ViewEncapsulation.None,

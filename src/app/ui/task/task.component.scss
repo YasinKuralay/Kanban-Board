@@ -8,6 +8,7 @@
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(54, 78, 126, 0.1);
   user-select: none;
+  transition: background-color var(--default-transition-speed);
 
   &:hover {
     cursor: pointer;
@@ -18,10 +19,25 @@
   &-title {
     margin: 0 0 0.5rem 0;
     @include font-heading-m;
+    transition: color var(--default-transition-speed);
   }
 
   .num-of-subtasks {
     @include font-body-m;
     color: var(--medium-gray);
+  }
+}
+
+[data-theme="dark"] {
+  .task {
+    background-color: var(--dark-gray);
+
+    &-title {
+      color: var(--white);
+    }
+
+    .num-of-subtasks {
+      color: var(--medium-gray);
+    }
   }
 }
