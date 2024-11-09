@@ -46,6 +46,10 @@
     .tasks-columns-container {
       display: flex;
       gap: 1.5rem;
+      padding-right: 1rem;
+      @media screen and (min-width: 768px) {
+        padding-right: 1.5rem;
+      }
     }
   }
 }
