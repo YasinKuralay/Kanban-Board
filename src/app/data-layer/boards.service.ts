@@ -409,6 +409,46 @@ export class BoardsService {
   }
 
   /**
+   * Edits the currently selected board by simply replacing it with the new boardData. Could theoretically be the same board, if nothing changed.
+   *
+   * @remarks The boardId always stays the same, only the boardName and columns can change.
+   *
+   * @param boardData - The replacement data for the currently selected board. The boardID always stays the same.
+   */
+  public editCurrentBoard(boardData: Board): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (!this.db || !this.selectedBoardID) {
+        reject('Database or selected board not available.');
+        return;
+      }
+
+      const transaction = this.db.transaction('boards', 'readwrite');
+      const objectStore = transaction.objectStore('boards');
+      const request = objectStore.get(this.selectedBoardID);
+
+      request.onsuccess = () => {
+        const selectedBoard = request.result as Board;
+        selectedBoard.boardName = boardData.boardName;
+        selectedBoard.columns = boardData.columns;
+
+        const updateRequest = objectStore.put(selectedBoard);
+        updateRequest.onsuccess = () => {
+          this.selectedBoardSubject.next(selectedBoard);
+          this.getAllBoardNames(); // This call is needed to update the boardNames list. (This could also be conditionally emitted: only if the boardName has changed.)
+          resolve();
+        };
+        updateRequest.onerror = (event) => {
+          reject(`Error editing board: ${event}`);
+        };
+      };
+
+      request.onerror = (event) => {
+        reject(`Error editing board: ${event}`);
+      };
+    });
+  }
+
+  /**
    * Creates a new task in the specified column of the selected board.
    * Automatically generates a new unique task ID.
    *

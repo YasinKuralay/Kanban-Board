@@ -116,8 +116,8 @@ export class DialogService {
       width: '100%',
       maxWidth: 'min(480px, 94%)',
       data: {
-        boardData: board || undefined,
         isCreateNewBoard: isCreateNewBoard,
+        currentBoard: board || undefined,
       },
     });
   }

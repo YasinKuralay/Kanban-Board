@@ -1,4 +1,6 @@
-<h2 class="board-dialog-title">Add New Board</h2>
+<h2 class="board-dialog-title">
+  {{ dialogMode === "create" ? "Add New Board" : "Edit Board" }}
+</h2>
 
 <app-input-text
   label="Board Name"
@@ -18,5 +20,5 @@
   (click)="actionButton()"
   [disabled]="boardNameFormControl.invalid || listOfInputTextsFormArray.invalid"
 >
-  Create New Board
+  {{ dialogMode === "create" ? "Create New Board" : "Save Changes" }}
 </button>

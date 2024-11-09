@@ -1,14 +1,13 @@
 import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
 import { CdkDropListGroup, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Board, BoardsService } from './data-layer/boards.service';
 import { HeaderComponent } from './ui/header/header.component';
 import { SidebarComponent } from './ui/sidebar/sidebar.component';
 import { Subscription } from 'rxjs';
 import { TasksColumnComponent } from './ui/tasks-column/tasks-column.component';
-import { DropdownComponent } from './ui/form/dropdown/dropdown.component';
 import { TaskMovedBetweenColumns } from './interfaces/task-moved-between-columns.interface';
+import { DialogService } from './ui/dialogs/dialog.service';
 
 @Component({
   selector: 'app-root',
@@ -17,11 +16,9 @@ import { TaskMovedBetweenColumns } from './interfaces/task-moved-between-columns
   styleUrl: './app.component.scss',
   imports: [
     CommonModule,
-    RouterOutlet,
     HeaderComponent,
     SidebarComponent,
     TasksColumnComponent,
-    DropdownComponent,
     CdkDropListGroup,
   ],
   encapsulation: ViewEncapsulation.None,
@@ -29,6 +26,7 @@ import { TaskMovedBetweenColumns } from './interfaces/task-moved-between-columns
 export class AppComponent implements OnInit {
   constructor(
     private boardsService: BoardsService,
+    private dialogService: DialogService,
     @Inject(DOCUMENT) private document: Document,
   ) {}
 
@@ -64,7 +62,7 @@ export class AppComponent implements OnInit {
   }
 
   public createNewColumn() {
-    // this.boardsService.createNewColumn();
+    this.dialogService.openBoardDialog(false, this.selectedBoard);
   }
 
   /**
