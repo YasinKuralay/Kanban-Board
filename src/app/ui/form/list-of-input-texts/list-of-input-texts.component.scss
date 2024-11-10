@@ -1,0 +1,39 @@
+@use "../../../../styles.scss" as *;
+
+app-list-of-input-texts {
+  display: block;
+
+  .list-of-input-texts-label {
+    display: block;
+    margin-bottom: 8px;
+    @include font-body-m;
+    color: var(--medium-gray);
+
+    [data-theme="dark"] & {
+      color: var(--white);
+    }
+  }
+
+  .container {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    margin-bottom: 12px;
+    align-items: center;
+
+    app-input-text {
+      flex-grow: 1;
+    }
+
+    .remove-input-button {
+      height: 16px; // Needed to perfectly align the button-height with the input (the height is the exact svg height)
+      width: 16px;
+    }
+  }
+
+  .add-input-button {
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 700;
+  }
+}

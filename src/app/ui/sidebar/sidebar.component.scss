@@ -1,0 +1,112 @@
+@use "../../../styles.scss" as *;
+
+app-sidebar {
+  position: relative;
+  height: calc(100vh - var(--header-height));
+  --header-height: 80px;
+  @media (max-width: 767px) {
+    display: none;
+  }
+  @media (min-width: 1200px) {
+    --header-height: 96px;
+  }
+}
+
+.sidebar,
+.sidebar-content-pusher {
+  //   max-height: calc(100vh - var(--header-height));
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 3rem;
+  height: calc(100vh - var(--header-height) + 1px);
+  border-right: 1px solid var(--lines-light);
+  background-color: var(--white);
+  width: 260px;
+  position: absolute;
+  top: -1px;
+  left: -260px;
+  transition:
+    left var(--medium-transition-speed),
+    width var(--medium-transition-speed),
+    background-color var(--medium-transition-speed),
+    border-right var(--medium-transition-speed);
+
+  @media (min-width: 1200px) {
+    width: 300px;
+    left: -300px;
+  }
+
+  &.open {
+    left: 0;
+  }
+
+  &-bottom-half {
+    padding: 0 0.75rem;
+  }
+
+  .hide-sidebar {
+    @include font-heading-m;
+    color: var(--medium-gray);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-self: center;
+    margin-top: 30px;
+    padding-left: 10px;
+    transition: color var(--default-transition-speed);
+
+    &:hover {
+      color: var(--dark-gray);
+
+      path {
+        fill: var(--dark-gray);
+      }
+    }
+
+    path {
+      transition: fill var(--default-transition-speed);
+    }
+
+    &-icon {
+      display: flex;
+    }
+  }
+}
+
+.sidebar-content-pusher {
+  width: 0px;
+  transition: width var(--medium-transition-speed);
+  height: calc(100vh - var(--header-height));
+
+  &.open {
+    width: 260px;
+    @media (min-width: 1200px) {
+      width: 300px;
+    }
+  }
+}
+
+[data-theme="dark"] {
+  .sidebar {
+    border-right: 1px solid var(--lines-dark);
+    background-color: var(--dark-gray);
+  }
+
+  .hide-sidebar {
+    &:hover {
+      color: var(--light-gray);
+
+      path {
+        fill: var(--light-gray);
+      }
+    }
+  }
+}

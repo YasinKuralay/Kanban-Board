@@ -1,8 +1,10 @@
+@use "../../../../styles.scss" as *;
+
 .checkbox {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: var(--light-grey-light-bg);
+  background-color: var(--light-gray-light-bg);
   padding: 0.75rem;
   border-radius: 4px;
   cursor: pointer;
@@ -23,7 +25,8 @@
     height: 1rem;
     border: 1px solid var(--checkbox-border-color);
     border-radius: 2px;
-    transition: background-color var(--default-transition-speed),
+    transition:
+      background-color var(--default-transition-speed),
       border-color var(--default-transition-speed);
 
     &.checked {
@@ -48,6 +51,7 @@
   .checkbox-label {
     color: var(--black);
     transition: opacity var(--default-transition-speed);
+    @include font-body-m;
   }
 
   &[aria-checked="true"] {

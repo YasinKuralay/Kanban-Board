@@ -1,0 +1,97 @@
+@use "../styles.scss" as *;
+
+.launch-sidebar {
+  position: absolute;
+  top: calc(100vh - 80px);
+  left: 0;
+  background-color: var(--main-purple);
+  cursor: pointer;
+  width: 56px;
+  height: 42px;
+  text-align: right;
+  padding-right: 22px;
+  border-top-right-radius: var(--button-default-border-radius);
+  border-bottom-right-radius: var(--button-default-border-radius);
+  transition:
+    background-color var(--default-transition-speed),
+    width var(--default-transition-speed),
+    left var(--default-transition-speed);
+
+  @media (max-width: 767px) {
+    display: none;
+  }
+
+  &:hover:not(.hide) {
+    background-color: var(--main-purple-hover);
+    width: 66px;
+  }
+
+  &.hide {
+    left: -57px;
+  }
+}
+
+.app-container {
+  display: flex;
+
+  .main-area {
+    overflow-x: auto;
+    overflow-y: hidden; // This element needs no scrolling. This fixes: that the vertical scrollbar appears on Windows when the horizontal scrollbar is present.
+    flex-grow: 1;
+    background-color: var(--light-gray-light-bg);
+    transition: background-color var(--medium-transition-speed);
+    height: calc(100vh - var(--header-height));
+    padding: 1.5rem 1rem 0 1rem;
+    @media screen and (min-width: 768px) {
+      padding: 1.5rem 1rem 0 1.5rem;
+    }
+
+    .tasks-columns-container {
+      display: flex;
+      width: fit-content;
+      gap: 1.5rem;
+    }
+  }
+}
+
+.create-new-column {
+  @include font-heading-xl;
+  color: var(--medium-gray);
+  width: 280px;
+  margin: 2.4rem 0 1rem 0;
+  border-radius: 6px;
+  background: linear-gradient(
+    180deg,
+    rgba(233, 239, 250, 0.85) 0%,
+    rgba(233, 239, 250, 0.5) 100%
+  );
+  transition: filter var(--default-transition-speed);
+  flex-shrink: 0;
+
+  &:hover,
+  &:focus-visible {
+    filter: brightness(90%);
+
+    @at-root body.cdk-drag-grabbing & {
+      filter: brightness(100%);
+    }
+  }
+}
+
+[data-theme="dark"] {
+  .main-area {
+    background-color: var(--very-dark-gray);
+  }
+
+  .create-new-column {
+    background: linear-gradient(
+      180deg,
+      rgba(43, 44, 55, 0.25) 0%,
+      rgba(43, 44, 55, 0.125) 100%
+    );
+
+    &:hover {
+      filter: brightness(150%);
+    }
+  }
+}

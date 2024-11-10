@@ -1,0 +1,43 @@
+<label class="list-of-input-texts-label">{{ topLabel }}</label>
+@for (
+  internalFormControl of inputFormArray.controls;
+  track internalFormControl.value;
+  let i = $index
+) {
+  <div class="container">
+    <app-input-text
+      [internalFormControl]="internalFormControl"
+    ></app-input-text>
+    <button class="remove-input-button" (click)="removeInputField(i)">
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 15 15"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g id="Group 18">
+          <rect
+            id="Rectangle"
+            x="12.728"
+            width="3"
+            height="18"
+            transform="rotate(45 12.728 0)"
+            fill="#828FA3"
+          />
+          <rect
+            id="Rectangle Copy"
+            y="2.12132"
+            width="3"
+            height="18"
+            transform="rotate(-45 0 2.12132)"
+            fill="#828FA3"
+          />
+        </g>
+      </svg>
+    </button>
+  </div>
+}
+<button class="add-input-button button-secondary" (click)="addInputField()">
+  + Add New {{ addNewButtonText }}
+</button>

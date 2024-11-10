@@ -1,27 +1,37 @@
-/* COLORS */
+@use "../node_modules/@angular/cdk/a11y-prebuilt.css";
+@use "../node_modules/@angular/cdk/overlay-prebuilt.css";
+@use "../node_modules/@angular/cdk/text-field-prebuilt.css";
+
+/* CSS VARIABLES */
 :root {
   --main-purple: #635fc7;
   --main-purple-rgba: rgba(99, 95, 199, 0.25);
-  --main-purple-hover: #a8a4ff;
+  --main-purple-hover: #4d47a6;
+  --secondary-purple: rgb(239.4, 239, 249.4);
+  --secondary-purple-hover: rgb(216, 215, 241);
   --black: #000112;
-  --very-dark-grey: #20212c;
-  --dark-grey: #2b2c37;
+  --very-dark-gray: #20212c;
+  --dark-gray: #2b2c37;
   --lines-dark: #3e3f4e;
   --medium-gray: #828fa3;
+  --light-gray: #a8b2bd;
   --lines-light: #e4ebfa;
-  --light-grey-light-bg: #f4f7fd;
+  --light-gray-light-bg: #f4f7fd;
   --white: #fff;
   --red: #ea5555;
-  --red-hover: #ff9898;
+  --red-hover: #d54c4c;
   --checkbox-border-color: rgba(130, 143, 163, 0.249);
   --default-transition-speed: 0.15s;
-}
-
-[data-theme="dark"] {
-  --white: #2b2c37;
-  --black: #fff;
-  --light-grey-light-bg: #20212c;
-  --lines-light: #3e3f4e;
+  --medium-transition-speed: 0.3s;
+  --button-default-border-radius: 1.5rem;
+  --button-hover-border-radius: 1rem;
+  --header-height: 64px;
+  @media screen and (min-width: 768px) {
+    --header-height: 80px;
+  }
+  @media screen and (min-width: 1200px) {
+    --header-height: 96px;
+  }
 }
 
 /* FONTS */
@@ -45,6 +55,10 @@
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+
+  [data-theme="dark"] & {
+    color: var(--white);
+  }
 }
 
 @mixin font-heading-xl {
@@ -71,13 +85,29 @@
 /* GLOBAL CSS */
 body {
   font-family: "Plus Jakarta Sans";
+  margin: unset;
+  -webkit-tap-highlight-color: transparent;
+
+  // Causes the cursor to change to a grabbing hand while the user is dragging an item.
+  &.cdk-drag-grabbing {
+    cursor: grabbing !important;
+  }
 
   * {
     box-sizing: border-box;
   }
 }
 
-// Simple button styling resets
+div[role="button"],
+button {
+  cursor: pointer;
+
+  // While the user is dragging a task, everything else should have a cursor of "grab".
+  @at-root body.cdk-drag-grabbing & {
+    cursor: grabbing;
+  }
+}
+
 button {
   border: unset;
   background-color: unset;
@@ -87,5 +117,69 @@ button {
   &[disabled] {
     opacity: 0.25;
     cursor: not-allowed;
+  }
+}
+
+/* BUTTON CLASSES */
+.button-primary-s,
+.button-primary-l,
+.button-secondary,
+.button-destructive {
+  color: var(--white);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  transition:
+    background-color var(--default-transition-speed),
+    border-radius var(--default-transition-speed),
+    opacity var(--default-transition-speed);
+}
+
+.button-primary-s,
+.button-secondary,
+.button-destructive {
+  height: 2.5rem;
+  border-radius: 20px;
+
+  &:hover:not([disabled]) {
+    border-radius: 0.75rem;
+  }
+}
+
+.button-primary-s,
+.button-primary-l {
+  background-color: var(--main-purple);
+
+  &:hover:not([disabled]) {
+    background-color: var(--main-purple-hover);
+  }
+}
+
+.button-primary-l {
+  height: 3rem;
+  padding: 1rem 1.5rem;
+  border-radius: 1.5rem;
+
+  &:hover:not([disabled]) {
+    border-radius: 1rem;
+  }
+}
+
+.button-secondary {
+  background-color: var(--secondary-purple);
+  color: var(--main-purple);
+
+  &:hover:not([disabled]) {
+    background-color: var(--secondary-purple-hover);
+  }
+}
+
+.button-destructive {
+  background-color: var(--red);
+
+  &:hover:not([disabled]) {
+    background-color: var(--red-hover);
   }
 }

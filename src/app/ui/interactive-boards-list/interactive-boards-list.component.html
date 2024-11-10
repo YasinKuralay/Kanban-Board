@@ -1,0 +1,16 @@
+<h3 class="title">ALL BOARDS ({{ boardNamesWithUID?.length || 0 }})</h3>
+@for (element of boardNamesWithUID; track element.uid) {
+  <button
+    class="board"
+    [ngClass]="$index + 1 === selectedBoardID ? 'selected' : ''"
+    (click)="setSelectedBoardId(element.uid)"
+  >
+    <app-svg-loader name="board-icon-regular"></app-svg-loader
+    >{{ element.boardName }}
+  </button>
+}
+
+<button class="board create-new-board" (click)="launchCreateBoardDialog()">
+  <app-svg-loader name="board-icon-regular"></app-svg-loader
+  ><span class="plus-sign">+</span> Create New Board
+</button>

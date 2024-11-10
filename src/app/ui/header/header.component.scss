@@ -4,7 +4,12 @@
 .tablet-header {
   display: flex;
   background-color: var(--white);
+  transition:
+    background-color var(--medium-transition-speed),
+    border-bottom-color var(--medium-transition-speed);
   height: 64px;
+  width: 100%;
+  max-width: 100%;
   @media (min-width: 768px) {
     height: 80px;
   }
@@ -22,11 +27,6 @@
   display: flex;
 }
 
-div[role="button"],
-button {
-  cursor: pointer;
-}
-
 .board-options-button {
   display: flex;
   align-items: center;
@@ -39,6 +39,10 @@ button {
   &:not([disabled]):focus-visible {
     filter: brightness(0.5);
   }
+
+  circle {
+    transition: fill var(--default-transition-speed);
+  }
 }
 
 .add-task-button {
@@ -48,7 +52,8 @@ button {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: background-color var(--default-transition-speed),
+  transition:
+    background-color var(--default-transition-speed),
     border-radius var(--default-transition-speed);
 
   &:not([disabled]):hover,
@@ -72,17 +77,42 @@ button {
     margin-right: 1rem;
   }
 
-  .select-current-board {
-    @include font-heading-l;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    color: var(--black);
+  .header-left-section {
+    overflow: hidden;
+
+    .select-current-board {
+      @include font-heading-l;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--black);
+      white-space: nowrap;
+      overflow: hidden;
+      outline-color: current-color;
+
+      .button-text {
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      svg {
+        display: none;
+        overflow: visible; // Needed to prevent the icon from shrinking when the button's width is being cut.
+
+        &.active {
+          display: initial;
+        }
+      }
+    }
   }
 
-  .add-task-button {
-    width: 3rem;
-    height: 2rem;
+  .header-right-section {
+    margin-left: 12px;
+
+    .add-task-button {
+      width: 3rem;
+      height: 2rem;
+    }
   }
 }
 
@@ -97,13 +127,35 @@ button {
     display: flex;
     align-items: center;
     padding: 0 1.5rem;
-
+    border-right: 1px solid var(--lines-light);
+    width: 202px;
+    transition:
+      width calc(var(--medium-transition-speed) / 1.6),
+      border-right var(--medium-transition-speed);
+    transition-delay: 0ms; // The delay "syncs" this transition with the sidebar's transition, so that the borders appear to be moving together.
     @media (min-width: 1200px) {
       padding-right: 2rem;
+      width: 210px;
+    }
+
+    &.sidebar-is-open {
+      transition:
+        width calc(var(--medium-transition-speed) / 1.6) 130ms,
+        border-right var(--medium-transition-speed);
+      width: 260px;
+      @media (min-width: 1200px) {
+        width: 300px;
+      }
     }
 
     .logo {
       margin-right: 1rem;
+    }
+
+    .logo-text {
+      path {
+        transition: fill var(--medium-transition-speed);
+      }
     }
   }
 
@@ -113,10 +165,10 @@ button {
     align-items: center;
     justify-content: space-between;
     flex-grow: 1;
-    border-left: 1px solid var(--lines-light);
     padding-left: 1.5rem;
 
     .current-board {
+      transition: color var(--medium-transition-speed);
       @include font-heading-l;
       font-size: 20px;
       @media (min-width: 1200px) {
@@ -139,8 +191,56 @@ button {
         margin-right: 6px;
       }
     }
+  }
+}
 
-    // .header-right-section {
-    // }
+[data-theme="dark"] {
+  .mobile-header,
+  .tablet-header {
+    background-color: var(--dark-gray);
+  }
+
+  .mobile-header {
+    .select-current-board {
+      color: var(--white);
+    }
+  }
+
+  .tablet-header {
+    border-bottom-color: var(--lines-dark);
+
+    .current-board {
+      color: var(--white);
+    }
+
+    .header-logo-section {
+      border-right: 1px solid var(--lines-dark);
+
+      .logo-text {
+        path {
+          fill: var(--white);
+        }
+      }
+    }
+  }
+
+  .add-task-button {
+    // background-color: var(--main-purple-dark);
+
+    &:not([disabled]):hover,
+    &:not([disabled]):focus-visible {
+      // background-color: var(--main-purple-hover-dark);
+    }
+  }
+
+  .board-options-button {
+    &:not([disabled]):hover,
+    &:not([disabled]):focus-visible {
+      filter: brightness(1);
+
+      circle {
+        fill: var(--light-gray);
+      }
+    }
   }
 }

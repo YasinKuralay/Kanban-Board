@@ -1,0 +1,66 @@
+@use "../../../styles.scss" as *;
+
+.task {
+  background-color: var(--white);
+  display: block;
+  width: 280px;
+  padding: 23px 16px 23px 16px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(54, 78, 126, 0.1);
+  user-select: none;
+  transition: background-color var(--default-transition-speed);
+
+  &:hover {
+    cursor: grab;
+
+    @at-root body.cdk-drag-grabbing & {
+      cursor: grabbing;
+    }
+  }
+
+  &-inner-wrapper {
+    &:hover {
+      cursor: pointer;
+
+      @at-root body.cdk-drag-grabbing & {
+        cursor: grabbing;
+      }
+
+      .task-title,
+      .num-of-subtasks {
+        text-decoration: underline;
+        text-underline-offset: 0.25rem;
+
+        @at-root body.cdk-drag-grabbing & {
+          text-decoration: none;
+          cursor: grabbing;
+        }
+      }
+    }
+  }
+
+  &-title {
+    margin: 0 0 0.5rem 0;
+    @include font-heading-m;
+    transition: color var(--default-transition-speed);
+  }
+
+  .num-of-subtasks {
+    @include font-body-m;
+    color: var(--medium-gray);
+  }
+}
+
+[data-theme="dark"] {
+  .task {
+    background-color: var(--dark-gray);
+
+    &-title {
+      color: var(--white);
+    }
+
+    .num-of-subtasks {
+      color: var(--medium-gray);
+    }
+  }
+}

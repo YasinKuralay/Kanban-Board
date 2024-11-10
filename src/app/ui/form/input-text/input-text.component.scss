@@ -1,0 +1,51 @@
+@use "../../../../styles.scss" as *;
+
+app-input-text {
+  display: block;
+
+  .input-text-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    @include font-body-m;
+    color: var(--medium-gray);
+    transition: color var(--medium-transition-speed);
+
+    [data-theme="dark"] & {
+      color: var(--white);
+    }
+  }
+
+  .input-text-container {
+    position: relative;
+
+    input {
+      width: 100%;
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: 1px solid rgba(130, 143, 163, 0.25);
+      background-color: var(--white);
+      height: 42px;
+      @include font-body-l;
+      font-family: "Plus Jakarta Sans", sans-serif;
+
+      [data-theme="dark"] & {
+        color: var(--white);
+        background-color: var(--dark-gray);
+        border-color: rgba(130, 143, 163, 0.25);
+      }
+
+      &.invalid-input {
+        border-color: var(--red);
+      }
+    }
+
+    .input-text-error-message {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      @include font-body-l;
+      color: var(--red);
+    }
+  }
+}

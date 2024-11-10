@@ -1,0 +1,24 @@
+<h2 class="board-dialog-title">
+  {{ dialogMode === "create" ? "Add New Board" : "Edit Board" }}
+</h2>
+
+<app-input-text
+  label="Board Name"
+  placeholder="e.g. Web Design"
+  [internalFormControl]="boardNameFormControl"
+></app-input-text>
+
+<app-list-of-input-texts
+  [inputFormArray]="listOfInputTextsFormArray"
+  [emptyFormArrayNotAllowed]="true"
+  addNewButtonText="Column"
+  topLabel="Columns"
+></app-list-of-input-texts>
+
+<button
+  class="action-button button-primary-s"
+  (click)="actionButton()"
+  [disabled]="boardNameFormControl.invalid || listOfInputTextsFormArray.invalid"
+>
+  {{ dialogMode === "create" ? "Create New Board" : "Save Changes" }}
+</button>

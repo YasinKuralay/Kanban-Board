@@ -1,0 +1,25 @@
+@use "../../../../styles.scss" as *;
+
+app-board-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background-color: var(--white);
+  border-radius: 8px;
+  padding: 24px;
+  user-select: none;
+  transition: background-color var(--medium-transition-speed);
+
+  @media screen and (max-width: 768px) {
+    padding: 32px;
+  }
+
+  [data-theme="dark"] & {
+    background-color: var(--dark-gray);
+  }
+
+  .board-dialog-title {
+    margin: unset;
+    @include font-heading-l;
+  }
+}

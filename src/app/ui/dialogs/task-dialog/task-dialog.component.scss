@@ -1,0 +1,63 @@
+@use "../../../../styles.scss" as *;
+
+app-task-dialog {
+  position: relative; // For positioning of the task-dialog-options button.
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background-color: var(--white);
+  border-radius: 8px;
+  padding: 24px;
+  user-select: none;
+  transition: background-color var(--medium-transition-speed);
+
+  @media screen and (min-width: 768px) {
+    padding: 32px;
+  }
+
+  .task-dialog-title {
+    margin: unset;
+    @include font-heading-l;
+  }
+
+  .task-dialog-options {
+    position: absolute;
+    top: 3rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.5rem;
+    transition: filter var(--default-transition-speed);
+
+    @media screen and (min-width: 768px) {
+      top: 56px;
+      right: 1.5rem;
+    }
+
+    &:hover {
+      filter: brightness(0.5);
+    }
+  }
+
+  .task-dialog-description {
+    @include font-body-l;
+    color: var(--medium-gray);
+  }
+
+  .checkboxes-title {
+    @include font-body-m;
+    color: var(--medium-gray);
+    margin-bottom: 1rem;
+  }
+
+  .checkboxes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  [data-theme="dark"] & {
+    background-color: var(--dark-gray);
+  }
+}

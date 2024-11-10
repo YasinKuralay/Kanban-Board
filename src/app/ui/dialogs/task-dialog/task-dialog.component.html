@@ -1,0 +1,80 @@
+<h2 class="task-dialog-title">{{ dialogTitle }}</h2>
+
+@if (dialogMode === "view") {
+  <button class="task-dialog-options">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="5"
+      height="20"
+      viewBox="0 0 5 20"
+      fill="none"
+    >
+      <circle cx="2.30769" cy="2.30769" r="2.30769" fill="#828FA3" />
+      <circle cx="2.30769" cy="10.0001" r="2.30769" fill="#828FA3" />
+      <circle cx="2.30769" cy="17.6925" r="2.30769" fill="#828FA3" />
+    </svg>
+  </button>
+
+  @if (dialogDescription) {
+    <div class="task-dialog-description">{{ dialogDescription }}</div>
+  }
+
+  @if (numOfTotalSubtasks !== undefined && numOfTotalSubtasks > 0) {
+    <div class="checkboxes">
+      <div class="checkboxes-title">
+        Subtasks
+        {{ "(" + numOfCompletedSubtasks + " of " + numOfTotalSubtasks + ")" }}
+      </div>
+
+      <div class="checkboxes-container">
+        @for (subtask of subtasks; track $index; let idx = $index) {
+          <app-checkbox
+            [label]="subtask.subTaskTitle"
+            [control]="subtaskCompletionStatusFormArray.controls[idx]"
+          />
+        }
+      </div>
+    </div>
+  }
+
+  <app-dropdown
+    label="Current Status"
+    [options]="columnsOnlyNames"
+    [selectedOptionIndex]="selectedColumnIndex"
+    (selectedOptionIndexChange)="onSelectedColumnIndexChange($event, true)"
+  ></app-dropdown>
+}
+
+@if (dialogMode === "create" || dialogMode === "edit") {
+  <app-input-text
+    label="Task Name"
+    placeholder="e.g. Take Coffee Break"
+    [internalFormControl]="taskNameFormControl"
+  ></app-input-text>
+
+  <app-input-textarea
+    label="Description"
+    placeholder="e.g. It’s always good to take a break. This 15 minute break will recharge the batteries a little."
+    [internalFormControl]="taskDescriptionFormControl"
+  ></app-input-textarea>
+
+  <app-list-of-input-texts
+    [inputFormArray]="subtasksFormArray"
+    addNewButtonText="Subtask"
+    topLabel="Subtasks"
+  ></app-list-of-input-texts>
+
+  <app-dropdown
+    label="Column"
+    [options]="columnsOnlyNames"
+    [selectedOptionIndex]="selectedColumnIndex"
+    (selectedOptionIndexChange)="onSelectedColumnIndexChange($event)"
+  ></app-dropdown>
+  <button
+    class="action-button button-primary-s"
+    (click)="actionButton()"
+    [disabled]="taskNameFormControl.invalid || subtasksFormArray.invalid"
+  >
+    {{ actionButtonText }}
+  </button>
+}
