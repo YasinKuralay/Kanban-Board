@@ -9,7 +9,9 @@
   border-radius: 4px;
   cursor: pointer;
   user-select: none;
-  transition: background-color var(--default-transition-speed);
+  transition:
+    background-color var(--default-transition-speed),
+    filter var(--default-transition-speed);
 
   &:hover,
   &:focus-visible {
@@ -43,8 +45,8 @@
     }
 
     .icon-checkbox-checked {
-      padding-top: 2px; // For perfect centering
-      transform: scale(1.1);
+      padding-top: 1px; // For perfect centering
+      transform: scale(1.2);
     }
   }
 
@@ -58,6 +60,26 @@
     .checkbox-label {
       opacity: 50%;
       text-decoration: line-through;
+    }
+  }
+
+  [data-theme="dark"] & {
+    background-color: var(--very-dark-gray);
+
+    &:hover {
+      filter: brightness(0.85);
+    }
+
+    .checkbox-label {
+      color: var(--white);
+    }
+
+    .checkbox-visual-box {
+      border-color: rgba(130, 143, 163, 0.25);
+
+      &.unchecked {
+        background-color: var(--dark-gray);
+      }
     }
   }
 }
