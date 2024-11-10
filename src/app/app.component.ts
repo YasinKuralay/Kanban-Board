@@ -107,7 +107,7 @@ export class AppComponent implements OnInit {
 
     // Update the board in the service
     this.boardsService
-      .moveTaskBetweenColumns(
+      .moveTaskBetweenColumnsViaDragdrop(
         event.previousColumnId,
         event.currentColumnId,
         event.previousIndexOfTask,

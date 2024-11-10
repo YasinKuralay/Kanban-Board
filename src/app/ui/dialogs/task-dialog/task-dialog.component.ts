@@ -170,6 +170,10 @@ export class TaskDialogComponent {
 
     if (changeImmediately) {
       // UpdateCurrentBoard
+      this.boardsService.changeTaskColumn(
+        this.task!.uniqueId,
+        this.columns[selectedColumnIdx].id,
+      );
     }
   }
 

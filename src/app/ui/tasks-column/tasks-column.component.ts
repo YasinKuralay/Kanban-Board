@@ -82,7 +82,7 @@ export class TasksColumnComponent {
       );
 
       this.boardsService
-        .moveTaskInColumn(
+        .moveTaskInColumnViaDragdrop(
           this.columnData.id,
           event.previousIndex,
           event.currentIndex,

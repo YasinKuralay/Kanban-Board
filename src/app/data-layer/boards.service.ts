@@ -607,13 +607,67 @@ export class BoardsService {
   }
 
   /**
-   * Moves a task within the same column.
+   * Changes a given Tasks column by adding it to the end of the column.
+   *
+   * @param taskUniqueID - The uniqueId of the task to be moved.
+   * @param newColumnId - The ID of the column where the task should be moved to.
+   */
+  public changeTaskColumn(taskUniqueID: string, newColumnId: number): void {
+    if (!this.db || !this.selectedBoardID) {
+      return;
+    }
+
+    const transaction = this.db.transaction('boards', 'readwrite');
+    const objectStore = transaction.objectStore('boards');
+    const request = objectStore.get(this.selectedBoardID);
+
+    request.onsuccess = () => {
+      const selectedBoard = request.result as Board;
+      const oldColumn = selectedBoard.columns.find((col) =>
+        col.tasks.some((task) => task.uniqueId === taskUniqueID),
+      );
+      const newColumn = selectedBoard.columns.find(
+        (col) => col.id === newColumnId,
+      );
+
+      if (oldColumn && newColumn) {
+        // Find the task in the old column.
+        const [task] = oldColumn.tasks.filter(
+          (task) => task.uniqueId === taskUniqueID,
+        );
+
+        // Remove the task from the old column and add it to the new column.
+        oldColumn.tasks = oldColumn.tasks.filter(
+          (task) => task.uniqueId !== taskUniqueID,
+        );
+
+        newColumn.tasks.push(task);
+
+        const updateRequest = objectStore.put(selectedBoard);
+        updateRequest.onsuccess = () => {
+          this.selectedBoardSubject.next(selectedBoard);
+        };
+        updateRequest.onerror = (event) => {
+          console.error(`Error changing task column: ${event}`);
+        };
+      }
+    };
+
+    request.onerror = (event) => {
+      console.error(`Error changing task column: ${event}`);
+    };
+  }
+
+  /**
+   * Moves a task within the same column via drag and drop.
+   *
+   * @remarks This function uses the previous and current indexes to move the task and thus is optimized to only be used with the CdkDragDrop event.
    *
    * @param columnId - The ID of the column where the task is located.
    * @param previousIndex - The previous index of the task.
    * @param currentIndex - The current index of the task.
    */
-  public moveTaskInColumn(
+  public moveTaskInColumnViaDragdrop(
     columnId: number,
     previousIndex: number,
     currentIndex: number,
@@ -659,14 +713,16 @@ export class BoardsService {
   }
 
   /**
-   * Moves a task between two specified columns.
+   * Moves a task between two specified columns via drag and drop.
+   *
+   * @remarks This function uses the previous and current indexes to move the task and thus is optimized to only be used with the CdkDragDrop event.
    *
    * @param previousColumnId - The ID of the column where the task was previously located.
    * @param currentColumnId - The ID of the column where the task should be moved to.
    * @param previousIndexOfTask - The index of the task in the previous column.
    * @param currentIndexOfTask - The index where the task should be moved to in the current column.
    */
-  public moveTaskBetweenColumns(
+  public moveTaskBetweenColumnsViaDragdrop(
     previousColumnId: number,
     currentColumnId: number,
     previousIndexOfTask: number,
