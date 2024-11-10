@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
 @Component({
@@ -8,6 +8,7 @@ import { FormControl } from '@angular/forms';
   imports: [CommonModule],
   templateUrl: './checkbox.component.html',
   styleUrl: './checkbox.component.scss',
+  encapsulation: ViewEncapsulation.None,
 })
 export class CheckboxComponent {
   @Input() label: string = '';
