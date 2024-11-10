@@ -77,6 +77,16 @@ export class TaskDialogComponent {
   public columnsOnlyNames: string[] = [];
 
   /**
+   * The number of completed subtasks, used for displaying in the dialogue.
+   */
+  public numOfCompletedSubtasks: number | undefined;
+
+  /**
+   * The number of total subtasks, used for displaying in the dialogue.
+   */
+  public numOfTotalSubtasks: number | undefined;
+
+  /**
    * The columns of the board.
    * @required for making the user select which column the task should be created in.
    */
@@ -84,9 +94,7 @@ export class TaskDialogComponent {
 
   private selectedBoardSubscription?: Subscription;
 
-  public task: Task | undefined;
-
-  public completedSubtasks: number | undefined;
+  private task: Task | undefined;
 
   constructor(
     public dialogRef: DialogRef<string>,
@@ -138,6 +146,10 @@ export class TaskDialogComponent {
     } else if (this.dialogMode === 'view') {
       this.dialogTitle = this.task!.title || '';
       this.dialogDescription = this.task!.description || '';
+      this.numOfCompletedSubtasks = this.task!.subtasks.filter(
+        (subtask) => subtask.completed,
+      ).length;
+      this.numOfTotalSubtasks = this.task!.subtasks.length;
     }
   }
 

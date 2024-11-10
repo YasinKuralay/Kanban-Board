@@ -6,7 +6,10 @@
   }
 
   <div class="checkboxes-title">
-    Subtasks (x of {{ task?.subtasks?.length }} )
+    Subtasks
+    @if (numOfTotalSubtasks !== undefined && numOfTotalSubtasks > 0) {
+      {{ "(" + numOfCompletedSubtasks + " of " + numOfTotalSubtasks + ")" }}
+    }
   </div>
 
   <app-dropdown
