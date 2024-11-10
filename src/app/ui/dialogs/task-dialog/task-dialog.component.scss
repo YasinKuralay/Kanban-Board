@@ -10,16 +10,33 @@ app-task-dialog {
   user-select: none;
   transition: background-color var(--medium-transition-speed);
 
-  @media screen and (max-width: 768px) {
+  @media screen and (min-width: 768px) {
     padding: 32px;
-  }
-
-  [data-theme="dark"] & {
-    background-color: var(--dark-gray);
   }
 
   .task-dialog-title {
     margin: unset;
     @include font-heading-l;
+  }
+
+  .task-dialog-description {
+    @include font-body-l;
+    color: var(--medium-gray);
+  }
+
+  .checkboxes-title {
+    @include font-body-m;
+    color: var(--medium-gray);
+    margin-bottom: 1rem;
+  }
+
+  .checkboxes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  [data-theme="dark"] & {
+    background-color: var(--dark-gray);
   }
 }

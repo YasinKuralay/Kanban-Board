@@ -2,7 +2,7 @@
 
 @if (dialogMode === "view") {
   @if (dialogDescription) {
-    <div class="description">{{ dialogDescription }}</div>
+    <div class="task-dialog-description">{{ dialogDescription }}</div>
   }
 
   @if (numOfTotalSubtasks !== undefined && numOfTotalSubtasks > 0) {
@@ -12,12 +12,14 @@
         {{ "(" + numOfCompletedSubtasks + " of " + numOfTotalSubtasks + ")" }}
       </div>
 
-      @for (subtask of subtasks; track $index; let idx = $index) {
-        <app-checkbox
-          [label]="subtask.subTaskTitle"
-          [control]="subtaskCompletionStatusFormArray.controls[idx]"
-        />
-      }
+      <div class="checkboxes-container">
+        @for (subtask of subtasks; track $index; let idx = $index) {
+          <app-checkbox
+            [label]="subtask.subTaskTitle"
+            [control]="subtaskCompletionStatusFormArray.controls[idx]"
+          />
+        }
+      </div>
     </div>
   }
 

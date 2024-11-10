@@ -1,3 +1,5 @@
+@use "../../../../styles.scss" as *;
+
 .checkbox {
   display: flex;
   align-items: center;
@@ -49,6 +51,7 @@
   .checkbox-label {
     color: var(--black);
     transition: opacity var(--default-transition-speed);
+    @include font-body-m;
   }
 
   &[aria-checked="true"] {
