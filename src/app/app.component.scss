@@ -36,6 +36,7 @@
 
   .main-area {
     overflow-x: auto;
+    overflow-y: hidden; // This element needs no scrolling. This fixes: that the vertical scrollbar appears on Windows when the horizontal scrollbar is present.
     flex-grow: 1;
     background-color: var(--light-gray-light-bg);
     transition: background-color var(--medium-transition-speed);
