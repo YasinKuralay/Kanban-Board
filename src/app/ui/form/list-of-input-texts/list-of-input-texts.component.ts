@@ -1,7 +1,8 @@
 import {
+  ChangeDetectorRef,
   Component,
+  ElementRef,
   Input,
-  OnDestroy,
   OnInit,
   ViewEncapsulation,
 } from '@angular/core';
@@ -13,7 +14,6 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-list-of-input-texts',
@@ -45,6 +45,11 @@ export class ListOfInputTextsComponent implements OnInit {
    */
   @Input() public topLabel: string = '';
 
+  constructor(
+    private elRef: ElementRef,
+    private cdRef: ChangeDetectorRef,
+  ) {}
+
   ngOnInit(): void {
     // If the emptyNotAllowed flag is set to true, we add a validator to the FormArray that prevents the FormArray from being Valid when empty.
     if (this.emptyFormArrayNotAllowed) {
@@ -74,8 +79,19 @@ export class ListOfInputTextsComponent implements OnInit {
    * @remarks
    * All input fields are required by default, since empty fields can be removed by the user anyways.
    */
-  public addInputField() {
+  public addInputFieldAndFocus() {
     this.inputFormArray.push(new FormControl('', [Validators.required]));
+
+    // This is necessary to update the view, otherwise the new input field will not be focused as it is not created yet.
+    this.cdRef.detectChanges();
+
+    // Focus on the last input field that was added.
+    const lastInputFieldIndex = this.inputFormArray.length - 1;
+    const lastInputFieldElement =
+      this.elRef.nativeElement.querySelectorAll('input')[lastInputFieldIndex];
+    if (lastInputFieldElement) {
+      lastInputFieldElement.focus();
+    }
   }
 
   /**
