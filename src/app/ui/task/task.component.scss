@@ -18,6 +18,27 @@
     }
   }
 
+  &-inner-wrapper {
+    &:hover {
+      cursor: pointer;
+
+      @at-root body.cdk-drag-grabbing & {
+        cursor: grabbing;
+      }
+
+      .task-title,
+      .num-of-subtasks {
+        text-decoration: underline;
+        text-underline-offset: 0.25rem;
+
+        @at-root body.cdk-drag-grabbing & {
+          text-decoration: none;
+          cursor: grabbing;
+        }
+      }
+    }
+  }
+
   &-title {
     margin: 0 0 0.5rem 0;
     @include font-heading-m;
@@ -27,20 +48,6 @@
   .num-of-subtasks {
     @include font-body-m;
     color: var(--medium-gray);
-  }
-
-  &-title,
-  .num-of-subtasks {
-    &:hover {
-      text-decoration: underline;
-      text-underline-offset: 0.25rem;
-      cursor: pointer;
-
-      @at-root body.cdk-drag-grabbing & {
-        text-decoration: none;
-        cursor: grabbing;
-      }
-    }
   }
 }
 
