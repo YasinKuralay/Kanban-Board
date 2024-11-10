@@ -38,6 +38,9 @@ jobs:
           SITE_URL: ${{ inputs.site-url }}
         run: npm ci
 
+      - name: Build Project
+        run: npm run build
+
 # Please do not touch the following action
       - name: Store deployment content
         uses: ionos-deploy-now/artifact-action@v1
