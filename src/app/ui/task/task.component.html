@@ -1,7 +1,7 @@
-<div class="task-title">{{ taskTitle }}</div>
+<div class="task-title" (click)="onTitleOrSubtitleClick()">{{ taskTitle }}</div>
 
 @if (numOfTotalSubtasks > 0) {
-  <div class="num-of-subtasks">
+  <div class="num-of-subtasks" (click)="onTitleOrSubtitleClick()">
     {{ numOfDoneSubtasks }} of {{ numOfTotalSubtasks }} subtasks
   </div>
 }

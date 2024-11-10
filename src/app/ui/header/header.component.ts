@@ -68,6 +68,10 @@ export class HeaderComponent {
    *
    */
   public openCreateTaskDialog() {
-    this.dialogService.openTaskDialog('create', this.selectedBoard?.columns);
+    this.dialogService.openTaskDialog(
+      'create',
+      undefined,
+      this.selectedBoard?.columns,
+    );
   }
 }

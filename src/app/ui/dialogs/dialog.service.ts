@@ -5,7 +5,7 @@ import { Overlay } from '@angular/cdk/overlay';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { filter, fromEvent, takeUntil } from 'rxjs';
 import { BoardDialogComponent } from './board-dialog/board-dialog.component';
-import { Board, Column } from '../../data-layer/boards.service';
+import { Board, Column, Task } from '../../data-layer/boards.service';
 import { TaskDialogComponent } from './task-dialog/task-dialog.component';
 
 /**
@@ -126,7 +126,8 @@ export class DialogService {
    * Opens the "Task Dialog", which is used for Creating, Editing or Viewing a task.
    *
    * @param dialogMode - The mode of the dialog. This determines the behavior of the dialog.
-   * @param columns - The columns of the board. Used to make the user select which column the task should be created in.
+   * @param possibleColumnsForTask - The columns of the board. Used either to make the user select which column the task should be created in, or simply to display the current column the task is in.
+   * @param task - The task such as title, description, subtasks etc. are contained here. Only needed if the dialog is used for viewing or editing an existing task.
    *
    * @remarks
    * For further reference on the CDK, please visit: https://material.angular.io/cdk/dialog/overview
@@ -134,19 +135,26 @@ export class DialogService {
    */
   public openTaskDialog(
     dialogMode: 'create' | 'edit' | 'view',
-    columns: Column[] | undefined,
+    task?: Task,
+    columns?: Column[],
   ): void {
-    if (columns === undefined) {
-      console.error('Columns are required for creating a new task.');
-    } else {
-      this.dialog.open<TaskDialogComponent>(TaskDialogComponent, {
-        width: '100%',
-        maxWidth: 'min(480px, 94%)',
-        data: {
-          dialogMode: dialogMode,
-          columns: columns,
-        },
-      });
+    // The dataForDialog is defined separately, because it will optionally have an extra key which will be added into it.
+    let dataForDialog: any = {
+      dialogMode: dialogMode,
+    };
+
+    // If taskData is provided, it will be added into the dataForDialog object.
+    if (task) {
+      dataForDialog['task'] = task;
     }
+    if (columns) {
+      dataForDialog['columns'] = columns;
+    }
+
+    this.dialog.open<TaskDialogComponent>(TaskDialogComponent, {
+      width: '100%',
+      maxWidth: 'min(480px, 94%)',
+      data: dataForDialog,
+    });
   }
 }

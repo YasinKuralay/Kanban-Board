@@ -1,12 +1,29 @@
 <h2 class="task-dialog-title">{{ dialogTitle }}</h2>
 
-<app-input-text
-  label="Task Name"
-  placeholder="e.g. Take Coffee Break"
-  [internalFormControl]="taskNameFormControl"
-></app-input-text>
+@if (dialogMode === "view") {
+  @if (dialogDescription) {
+    <div class="description">{{ dialogDescription }}</div>
+  }
+
+  <div class="checkboxes-title">
+    Subtasks (x of {{ task?.subtasks?.length }} )
+  </div>
+
+  <app-dropdown
+    label="Current Status"
+    [options]="columnsOnlyNames"
+    [selectedOptionIndex]="selectedColumnIndex"
+    (selectedOptionIndexChange)="onSelectedColumnIndexChange($event, true)"
+  ></app-dropdown>
+}
 
 @if (dialogMode === "create" || dialogMode === "edit") {
+  <app-input-text
+    label="Task Name"
+    placeholder="e.g. Take Coffee Break"
+    [internalFormControl]="taskNameFormControl"
+  ></app-input-text>
+
   <app-input-textarea
     label="Description"
     placeholder="e.g. It’s always good to take a break. This 15 minute break will recharge the batteries a little."

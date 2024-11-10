@@ -11,6 +11,7 @@ import {
   Task,
 } from '../../../data-layer/boards.service';
 import { InputTextareaComponent } from '../../form/input-textarea/input-textarea.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-task-dialog',
@@ -30,6 +31,8 @@ export class TaskDialogComponent {
    * Dynamic title for the dialog, based on the dialogMode.
    */
   public dialogTitle!: string;
+
+  public dialogDescription?: string;
 
   /**
    * Dynamic action-button text for the dialog, based on the dialogMode.
@@ -77,7 +80,13 @@ export class TaskDialogComponent {
    * The columns of the board.
    * @required for making the user select which column the task should be created in.
    */
-  private columns: Column[];
+  private columns: Column[] = [];
+
+  private selectedBoardSubscription?: Subscription;
+
+  public task: Task | undefined;
+
+  public completedSubtasks: number | undefined;
 
   constructor(
     public dialogRef: DialogRef<string>,
@@ -85,20 +94,71 @@ export class TaskDialogComponent {
     @Inject(DIALOG_DATA) public data: any,
   ) {
     this.dialogMode = this.data.dialogMode || 'create';
-    this.columns = this.data.columns;
-    this.columnsOnlyNames = this.columns.map((column) => column.columnName);
+
+    if (this.dialogMode === 'view' || this.dialogMode === 'edit') {
+      this.task = this.data.task;
+
+      // Get all columnNames from the columns, and find out which column the Task is in.
+      this.selectedBoardSubscription =
+        this.boardsService.selectedBoard$.subscribe((board) => {
+          this.columns = board!.columns;
+
+          // Loop over all board columns: Save each columnName in the columnsOnlyNames array, and find out which column the Task is in.
+          // The .some instead of .forEach is used to break the loop once the Task is found.
+          this.columns.some((column) => {
+            // @Performance: This could be optimized by passing the currentColumnId to the TaskComponents.
+            // The .some instead of .forEach is used to break the loop once the Task is found.
+            return column.tasks.some((task) => {
+              if (task.uniqueId === this.task!.uniqueId) {
+                this.selectedColumnIndex = this.columns.findIndex(
+                  (col) => col.id === column.id,
+                );
+                this.task = task;
+                return true;
+              }
+              return false;
+            });
+          });
+
+          // Extract the column names from the columns.
+          this.columnsOnlyNames = board!.columns.map(
+            (column) => column.columnName,
+          );
+        });
+    }
 
     if (this.dialogMode === 'create') {
       this.dialogTitle = 'Add New Task';
       this.actionButtonText = 'Create Task';
+      this.columns = this.data.columns;
+      this.columnsOnlyNames = this.columns.map((column) => column.columnName);
+    } else if (this.dialogMode === 'edit') {
+      this.dialogTitle = 'Edit Task';
+      this.actionButtonText = 'Save Changes';
+    } else if (this.dialogMode === 'view') {
+      this.dialogTitle = this.task!.title || '';
+      this.dialogDescription = this.task!.description || '';
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.dialogMode === 'view') {
+      this.selectedBoardSubscription?.unsubscribe();
     }
   }
 
   /**
    * Event handler for when the user changes the selected column.
    */
-  public onSelectedColumnIndexChange(selectedColumnIdx: number) {
+  public onSelectedColumnIndexChange(
+    selectedColumnIdx: number,
+    changeImmediately?: boolean,
+  ) {
     this.selectedColumnIndex = selectedColumnIdx;
+
+    if (changeImmediately) {
+      // UpdateCurrentBoard
+    }
   }
 
   /**
@@ -135,8 +195,8 @@ export class TaskDialogComponent {
           this.columns[this.selectedColumnIndex].id,
           newTask,
         );
-      } else {
-        // Edit existing Task
+      } else if (this.dialogMode === 'edit') {
+        // Uses the formControls to edit the taskData and then updates the task by calling the BoardsService.editCurrentBoard.
       }
       this.dialogRef.close();
     }
