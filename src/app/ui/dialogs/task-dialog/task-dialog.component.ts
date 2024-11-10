@@ -12,6 +12,7 @@ import {
 } from '../../../data-layer/boards.service';
 import { InputTextareaComponent } from '../../form/input-textarea/input-textarea.component';
 import { Subscription } from 'rxjs';
+import { CheckboxComponent } from '../../form/checkbox/checkbox.component';
 
 @Component({
   selector: 'app-task-dialog',
@@ -21,6 +22,7 @@ import { Subscription } from 'rxjs';
     ListOfInputTextsComponent,
     DropdownComponent,
     InputTextareaComponent,
+    CheckboxComponent,
   ],
   templateUrl: './task-dialog.component.html',
   styleUrl: './task-dialog.component.scss',
@@ -55,6 +57,13 @@ export class TaskDialogComponent {
   public subtasksFormArray = new FormArray<FormControl<string | null>>([]);
 
   /**
+   * FormArray that holds the Subtasks' completion status. Used in View dialogMode.
+   */
+  public subtaskCompletionStatusFormArray = new FormArray<FormControl<boolean>>(
+    [],
+  );
+
+  /**
    * Based on the dialogMode, the dialog will either Create, Edit or View a Task.
    * This determines the behavior of the dialog.
    * The title and action-button text will be dynamically set based on this value.
@@ -86,6 +95,8 @@ export class TaskDialogComponent {
    */
   public numOfTotalSubtasks: number | undefined;
 
+  public subtasks: Subtask[] = [];
+
   /**
    * The columns of the board.
    * @required for making the user select which column the task should be created in.
@@ -105,6 +116,12 @@ export class TaskDialogComponent {
 
     if (this.dialogMode === 'view' || this.dialogMode === 'edit') {
       this.task = this.data.task;
+      this.subtasks = this.task!.subtasks;
+      this.subtasks.forEach((subtask) => {
+        this.subtaskCompletionStatusFormArray.push(
+          new FormControl<boolean>(subtask.completed, { nonNullable: true }),
+        );
+      });
 
       // Get all columnNames from the columns, and find out which column the Task is in.
       this.selectedBoardSubscription =
@@ -146,10 +163,10 @@ export class TaskDialogComponent {
     } else if (this.dialogMode === 'view') {
       this.dialogTitle = this.task!.title || '';
       this.dialogDescription = this.task!.description || '';
-      this.numOfCompletedSubtasks = this.task!.subtasks.filter(
+      this.numOfCompletedSubtasks = this.subtasks.filter(
         (subtask) => subtask.completed,
       ).length;
-      this.numOfTotalSubtasks = this.task!.subtasks.length;
+      this.numOfTotalSubtasks = this.subtasks.length;
     }
   }
 
@@ -161,6 +178,9 @@ export class TaskDialogComponent {
 
   /**
    * Event handler for when the user changes the selected column.
+   *
+   * @param selectedColumnIdx - The index of the selected column.
+   * @param changeImmediately - If true, the task will be moved to the new column immediately (and not when the actionButton is clicked).
    */
   public onSelectedColumnIndexChange(
     selectedColumnIdx: number,

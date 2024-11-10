@@ -5,12 +5,21 @@
     <div class="description">{{ dialogDescription }}</div>
   }
 
-  <div class="checkboxes-title">
-    Subtasks
-    @if (numOfTotalSubtasks !== undefined && numOfTotalSubtasks > 0) {
-      {{ "(" + numOfCompletedSubtasks + " of " + numOfTotalSubtasks + ")" }}
-    }
-  </div>
+  @if (numOfTotalSubtasks !== undefined && numOfTotalSubtasks > 0) {
+    <div class="checkboxes">
+      <div class="checkboxes-title">
+        Subtasks
+        {{ "(" + numOfCompletedSubtasks + " of " + numOfTotalSubtasks + ")" }}
+      </div>
+
+      @for (subtask of subtasks; track $index; let idx = $index) {
+        <app-checkbox
+          [label]="subtask.subTaskTitle"
+          [control]="subtaskCompletionStatusFormArray.controls[idx]"
+        />
+      }
+    </div>
+  }
 
   <app-dropdown
     label="Current Status"
