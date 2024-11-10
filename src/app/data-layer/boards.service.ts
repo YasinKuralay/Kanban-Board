@@ -607,6 +607,54 @@ export class BoardsService {
   }
 
   /**
+   * Toggles the completion status of a task. If the task is completed, it will be marked as incomplete, and vice versa.
+   *
+   * @param taskUniqueID - The uniqueId of the task that owns the subtask.
+   * @param subtaskIndex - The index of the subtask to be toggled.
+   */
+  public toggleSubtaskCompletionStatus(
+    taskUniqueID: string,
+    subtaskIndex: number,
+  ): void {
+    if (!this.db || !this.selectedBoardID) {
+      return;
+    }
+
+    const transaction = this.db.transaction('boards', 'readwrite');
+    const objectStore = transaction.objectStore('boards');
+    const request = objectStore.get(this.selectedBoardID);
+
+    request.onsuccess = () => {
+      const selectedBoard = request.result as Board;
+      const column = selectedBoard.columns.find((col) =>
+        col.tasks.some((task) => task.uniqueId === taskUniqueID),
+      );
+
+      if (column) {
+        const task = column.tasks.find(
+          (task) => task.uniqueId === taskUniqueID,
+        );
+
+        if (task) {
+          task.subtasks[subtaskIndex].completed =
+            !task.subtasks[subtaskIndex].completed;
+          const updateRequest = objectStore.put(selectedBoard);
+          updateRequest.onsuccess = () => {
+            this.selectedBoardSubject.next(selectedBoard);
+          };
+          updateRequest.onerror = (event) => {
+            console.error(`Error toggling subtask completion status: ${event}`);
+          };
+        }
+      }
+    };
+
+    request.onerror = (event) => {
+      console.error(`Error toggling subtask completion status: ${event}`);
+    };
+  }
+
+  /**
    * Changes a given Tasks column by adding it to the end of the column.
    *
    * @param taskUniqueID - The uniqueId of the task to be moved.

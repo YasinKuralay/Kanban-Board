@@ -11,7 +11,7 @@ import {
   Task,
 } from '../../../data-layer/boards.service';
 import { InputTextareaComponent } from '../../form/input-textarea/input-textarea.component';
-import { Subscription } from 'rxjs';
+import { pairwise, startWith, Subscription } from 'rxjs';
 import { CheckboxComponent } from '../../form/checkbox/checkbox.component';
 
 @Component({
@@ -34,6 +34,9 @@ export class TaskDialogComponent {
    */
   public dialogTitle!: string;
 
+  /**
+   * Dynamic description for the dialog, based on the dialogMode.
+   */
   public dialogDescription?: string;
 
   /**
@@ -95,6 +98,9 @@ export class TaskDialogComponent {
    */
   public numOfTotalSubtasks: number | undefined;
 
+  /**
+   * The subtasks of the task.
+   */
   public subtasks: Subtask[] = [];
 
   /**
@@ -103,9 +109,13 @@ export class TaskDialogComponent {
    */
   private columns: Column[] = [];
 
-  private selectedBoardSubscription?: Subscription;
-
+  /**
+   * The task that is being viewed or edited.
+   */
   private task: Task | undefined;
+
+  private selectedBoardSubscription?: Subscription;
+  private subtaskCompletionStatusSubscription?: Subscription;
 
   constructor(
     public dialogRef: DialogRef<string>,
@@ -167,12 +177,32 @@ export class TaskDialogComponent {
         (subtask) => subtask.completed,
       ).length;
       this.numOfTotalSubtasks = this.subtasks.length;
+      // Subscribe to get subtask completion status changes
+      this.subtaskCompletionStatusSubscription =
+        this.subtaskCompletionStatusFormArray.valueChanges
+          .pipe(
+            startWith(this.subtaskCompletionStatusFormArray.value),
+            pairwise(),
+          )
+          .subscribe(([previousValues, currentValues]) => {
+            // Change the corresponding subtask completion status.
+            const changedIndex = currentValues.findIndex(
+              (value, index) => value !== previousValues[index],
+            );
+            this.toggleSubtaskCompletionStatus(changedIndex);
+
+            // Update the number of completed subtasks.
+            this.numOfCompletedSubtasks = currentValues.filter(
+              (value) => value,
+            ).length;
+          });
     }
   }
 
   ngOnDestroy() {
     if (this.dialogMode === 'view') {
       this.selectedBoardSubscription?.unsubscribe();
+      this.subtaskCompletionStatusSubscription?.unsubscribe();
     }
   }
 
@@ -195,6 +225,22 @@ export class TaskDialogComponent {
         this.columns[selectedColumnIdx].id,
       );
     }
+  }
+
+  /**
+   * Toggles the completion status of a subtask.
+   *
+   * @param subtaskIndex - The index of the subtask to toggle.
+   */
+  public toggleSubtaskCompletionStatus(subtaskIndex: number) {
+    const subtask = this.subtasks[subtaskIndex];
+    subtask.completed = !subtask.completed;
+
+    // BoardsService toggles subtask completion status.
+    this.boardsService.toggleSubtaskCompletionStatus(
+      this.task!.uniqueId,
+      subtaskIndex,
+    );
   }
 
   /**
