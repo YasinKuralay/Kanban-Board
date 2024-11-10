@@ -10,6 +10,11 @@
   (cdkDropListDropped)="taskDragAndDropped($event)"
 >
   @for (task of columnData.tasks; track task.uniqueId) {
-    <app-task [task]="task" cdkDrag></app-task>
+    <app-task
+      [task]="task"
+      cdkDrag
+      (cdkDragStarted)="dragStarted()"
+      (cdkDragEnded)="dragEnded()"
+    ></app-task>
   }
 </div>

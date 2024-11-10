@@ -11,9 +11,11 @@
   transition: background-color var(--default-transition-speed);
 
   &:hover {
-    cursor: pointer;
-    filter: brightness(90%);
-    box-shadow: unset;
+    cursor: grab;
+
+    @at-root body.cdk-drag-grabbing & {
+      cursor: grabbing;
+    }
   }
 
   &-title {
@@ -25,6 +27,20 @@
   .num-of-subtasks {
     @include font-body-m;
     color: var(--medium-gray);
+  }
+
+  &-title,
+  .num-of-subtasks {
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.25rem;
+      cursor: pointer;
+
+      @at-root body.cdk-drag-grabbing & {
+        text-decoration: none;
+        cursor: grabbing;
+      }
+    }
   }
 }
 

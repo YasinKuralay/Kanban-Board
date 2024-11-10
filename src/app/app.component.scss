@@ -61,7 +61,7 @@
   border-radius: 6px;
   background: linear-gradient(
     180deg,
-    #e9effa 0%,
+    rgba(233, 239, 250, 0.85) 0%,
     rgba(233, 239, 250, 0.5) 100%
   );
   transition: filter var(--default-transition-speed);
@@ -70,6 +70,10 @@
   &:hover,
   &:focus-visible {
     filter: brightness(90%);
+
+    @at-root body.cdk-drag-grabbing & {
+      filter: brightness(100%);
+    }
   }
 }
 

@@ -34,11 +34,6 @@
   }
 }
 
-body {
-  margin: unset;
-  -webkit-tap-highlight-color: transparent;
-}
-
 /* FONTS */
 @mixin font-heading-s {
   font-size: 12px;
@@ -90,13 +85,29 @@ body {
 /* GLOBAL CSS */
 body {
   font-family: "Plus Jakarta Sans";
+  margin: unset;
+  -webkit-tap-highlight-color: transparent;
+
+  // Causes the cursor to change to a grabbing hand while the user is dragging an item.
+  &.cdk-drag-grabbing {
+    cursor: grabbing !important;
+  }
 
   * {
     box-sizing: border-box;
   }
 }
 
-/* GLOBAL CSS */
+div[role="button"],
+button {
+  cursor: pointer;
+
+  // While the user is dragging a task, everything else should have a cursor of "grab".
+  @at-root body.cdk-drag-grabbing & {
+    cursor: grabbing;
+  }
+}
+
 button {
   border: unset;
   background-color: unset;

@@ -2,6 +2,7 @@ import {
   Component,
   EventEmitter,
   HostBinding,
+  Inject,
   Input,
   Output,
   ViewEncapsulation,
@@ -15,6 +16,7 @@ import {
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import { TaskMovedBetweenColumns } from '../../interfaces/task-moved-between-columns.interface';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-tasks-column',
@@ -39,7 +41,24 @@ export class TasksColumnComponent {
   @Output() taskMovedBetweenColumns =
     new EventEmitter<TaskMovedBetweenColumns>();
 
-  constructor(private boardsService: BoardsService) {}
+  constructor(
+    private boardsService: BoardsService,
+    @Inject(DOCUMENT) private document: Document,
+  ) {}
+
+  /**
+   * When a task is dragged, this function is called. It adds a class to the body to change the cursor while the user is dragging.
+   */
+  dragStarted() {
+    this.document.body.classList.add('cdk-drag-grabbing');
+  }
+
+  /**
+   * When a task is dropped, this function is called. It removes the class that was added in dragStarted.
+   */
+  dragEnded() {
+    this.document.body.classList.remove('cdk-drag-grabbing');
+  }
 
   /**
    * When a task is dragged and dropped, this function is called.
