@@ -115,6 +115,7 @@ export class DialogService {
     this.dialog.open<BoardDialogComponent>(BoardDialogComponent, {
       width: '100%',
       maxWidth: 'min(480px, 94%)',
+      maxHeight: '90vh',
       data: {
         isCreateNewBoard: isCreateNewBoard,
         currentBoard: board || undefined,
@@ -154,6 +155,7 @@ export class DialogService {
     this.dialog.open<TaskDialogComponent>(TaskDialogComponent, {
       width: '100%',
       maxWidth: 'min(480px, 94%)',
+      maxHeight: '90vh',
       data: dataForDialog,
     });
   }
