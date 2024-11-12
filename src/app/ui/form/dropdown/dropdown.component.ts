@@ -21,6 +21,13 @@ import { Subscription } from 'rxjs';
 
 export const DROPDOWN_DATA = new InjectionToken<any>('DROPDOWN_DATA');
 
+/**
+ * The overlay reference to the dropdown-popup. Used to be able to close it from the component that is inside the overlay (in this case dropdown-popup).
+ */
+export const COMPONENT_OVERLAY_REF = new InjectionToken<OverlayRef>(
+  'COMPONENT_OVERLAY_REF',
+);
+
 @Component({
   selector: 'app-dropdown',
   standalone: true,
@@ -58,11 +65,6 @@ export class DropdownComponent implements OnDestroy {
    * Keeps track of whether the dropdown-list is open or closed.
    */
   public isOpen = false;
-
-  /**
-   * Keeps track of whether the focusOutListener is added or not. Used to removeEventListener when the component is destroyed.
-   */
-  private focusOutListener?: () => void;
 
   /**
    * Subscription to the detachments event of the overlay. Used to close the overlay when it is detached.
@@ -126,6 +128,7 @@ export class DropdownComponent implements OnDestroy {
         width: `${anchorWidth}px`,
         hasBackdrop: true, // Adds a backdrop to the overlay.
         backdropClass: 'cdk-overlay-transparent-backdrop', // Adds a transparent backdrop to the overlay.
+        scrollStrategy: this.overlay.scrollStrategies.block(), // Prevents scrolling behind the overlay
         positionStrategy: this.overlay
           .position()
           .flexibleConnectedTo(overlayAnchorPoint) // Connects the overlay to the anchor element.
@@ -152,6 +155,7 @@ export class DropdownComponent implements OnDestroy {
       const injector = Injector.create({
         providers: [
           { provide: DROPDOWN_DATA, useValue: { dropdownItems: this.options } },
+          { provide: COMPONENT_OVERLAY_REF, useValue: this.dropdownOverlayRef },
         ],
         parent: this.injector,
       });

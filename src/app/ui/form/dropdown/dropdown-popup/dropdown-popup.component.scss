@@ -18,21 +18,26 @@ app-dropdown-popup {
     border-color: rgba(130, 143, 163, 0.25);
   }
 
-  .dropdown-popup-item {
-    display: block;
-    border-radius: 4px;
-    padding: 0.25rem 0.25rem;
+  .dropdown-list {
+    padding: unset;
+    margin: unset;
 
-    &:hover {
-      background-color: lightgray;
-      cursor: pointer;
-    }
-
-    [data-theme="dark"] & {
-      background-color: var(--dark-gray);
+    &-item {
+      display: block;
+      border-radius: 4px;
+      padding: 0.25rem 0.25rem;
 
       &:hover {
-        background-color: var(--lines-dark);
+        background-color: lightgray;
+        cursor: pointer;
+      }
+
+      [data-theme="dark"] & {
+        background-color: var(--dark-gray);
+
+        &:hover {
+          background-color: var(--lines-dark);
+        }
       }
     }
   }
