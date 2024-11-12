@@ -110,6 +110,8 @@ export class DropdownComponent implements OnDestroy {
 
       const overlayConfig: OverlayConfig = {
         width: `${anchorWidth}px`,
+        hasBackdrop: true, // Adds a backdrop to the overlay.
+        backdropClass: 'cdk-overlay-transparent-backdrop', // Adds a transparent backdrop to the overlay.
         positionStrategy: this.overlay
           .position()
           .flexibleConnectedTo(overlayAnchorPoint) // Connects the overlay to the anchor element.
@@ -145,6 +147,9 @@ export class DropdownComponent implements OnDestroy {
       );
       this.componentRef = overlayRef.attach(dropdownPortal);
 
+      // Set the property showing that the overlay is open to true.
+      this.dropdownOverlayIsOpen = true;
+
       // Sets focus and a focusTrap on the overlay.
       // We need setTimeout as changedetection.detectChanges() doesn't work in this case. Otherwise, the focus trap won't work.
       setTimeout(() => {
@@ -157,34 +162,17 @@ export class DropdownComponent implements OnDestroy {
         focusTrap.focusInitialElement();
       }, 0);
 
-      // Close the overlay when it loses focus
-      this.focusOutListener =
-        this.componentRef.location.nativeElement.addEventListener(
-          'focusout',
-          (event: FocusEvent) => {
-            if (
-              !this.componentRef?.location.nativeElement.contains(
-                event.relatedTarget as Node,
-              )
-            ) {
-              overlayRef.dispose();
-              this.dropdownOverlayIsOpen = false;
-
-              // Unsubscriptions.
-              this.detachmentsSubscription?.unsubscribe();
-              this.componentRef?.location.nativeElement.removeEventListener(
-                'focusout',
-                this.focusOutListener,
-              );
-            }
-          },
-        );
-
-      // Set the property showing that the overlay is open to true.
-      this.dropdownOverlayIsOpen = true;
-
-      overlayRef.detachments().subscribe(() => {
+      // Close the overlay when the backdrop is clicked
+      overlayRef.backdropClick().subscribe(() => {
+        overlayRef.dispose();
         this.dropdownOverlayIsOpen = false;
+        this.detachmentsSubscription?.unsubscribe();
+      });
+
+      this.detachmentsSubscription = overlayRef.detachments().subscribe(() => {
+        this.dropdownOverlayIsOpen = false;
+        // Unsubscriptions.
+        this.detachmentsSubscription?.unsubscribe();
       });
     } else {
       this.dropdownOverlayRef.dispose();
@@ -210,8 +198,6 @@ export class DropdownComponent implements OnDestroy {
       const indexToFocus =
         this.selectedOptionIndex === -1 ? 0 : this.selectedOptionIndex;
       this.focusOption(indexToFocus);
-    } else {
-      // this.destroyPopperInstance();
     }
   }
 
