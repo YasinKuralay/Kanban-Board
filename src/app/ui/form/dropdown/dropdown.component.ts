@@ -64,19 +64,35 @@ export class DropdownComponent implements OnDestroy {
    */
   private focusOutListener?: () => void;
 
+  /**
+   * Subscription to the detachments event of the overlay. Used to close the overlay when it is detached.
+   */
   private detachmentsSubscription?: Subscription;
+
+  /**
+   * The ResizeObserver used to update the overlay size when the anchor element is resized. This variable is used to unobserve() the anchor element when needed.
+   */
+  private resizeObserver?: ResizeObserver;
+
+  /**
+   * Subscription to the backdropClick event of the overlay. Used to close the overlay when the backdrop is clicked. This variable is used to unsubscribe when needed.
+   */
+  private backdropClickSubscription?: Subscription;
 
   /**
    * Generates a unique ID for the input id attribute
    */
   public uniqueId = uuidv4();
 
+  /**
+   * Keeps track of whether the dropdown-overlay is open or closed.
+   */
   private dropdownOverlayIsOpen = false;
 
-  private resizeObserver?: ResizeObserver;
-
+  /**
+   * The overlay reference used to create the dropdown-list. Later used to close the overlay via dispose().
+   */
   private dropdownOverlayRef!: OverlayRef;
-  private componentRef?: ComponentRef<DropdownPopupComponent>;
 
   constructor(
     private overlay: Overlay,
@@ -89,11 +105,7 @@ export class DropdownComponent implements OnDestroy {
    * Removes event listeners when the component is destroyed.
    */
   ngOnDestroy() {
-    this.detachmentsSubscription?.unsubscribe();
-    this.componentRef?.location.nativeElement.removeEventListener(
-      'focusout',
-      this.focusOutListener,
-    );
+    this.removeAllSubscriptionsAndEventListeners();
   }
 
   /**
@@ -119,16 +131,18 @@ export class DropdownComponent implements OnDestroy {
           .flexibleConnectedTo(overlayAnchorPoint) // Connects the overlay to the anchor element.
           .withPositions([
             {
+              offsetY: 8,
               originX: 'start',
-              originY: 'bottom',
               overlayX: 'start',
+              originY: 'bottom',
               overlayY: 'top',
             },
             {
+              offsetY: -8,
               originX: 'start',
+              overlayX: 'start',
               originY: 'top',
-              overlayX: 'end',
-              overlayY: 'top',
+              overlayY: 'bottom',
             },
           ]),
       };
@@ -147,7 +161,7 @@ export class DropdownComponent implements OnDestroy {
         null,
         injector,
       );
-      this.componentRef = this.dropdownOverlayRef.attach(dropdownPortal);
+      const componentRef = this.dropdownOverlayRef.attach(dropdownPortal);
 
       // Set the property showing that the overlay is open to true.
       this.dropdownOverlayIsOpen = true;
@@ -157,7 +171,7 @@ export class DropdownComponent implements OnDestroy {
       setTimeout(() => {
         // Create a focus trap for the overlay
         const focusTrap: FocusTrap = this.focusTrapFactory.create(
-          this.componentRef!.location.nativeElement,
+          componentRef!.location.nativeElement,
         );
 
         // Set focus to the overlay
@@ -171,23 +185,22 @@ export class DropdownComponent implements OnDestroy {
           }
         }
       });
-
       this.resizeObserver.observe(this.dropdownHeader.nativeElement);
 
       // Close the overlay when the backdrop is clicked
-      this.dropdownOverlayRef.backdropClick().subscribe(() => {
-        this.dropdownOverlayRef.dispose();
-        this.dropdownOverlayIsOpen = false;
-        this.detachmentsSubscription?.unsubscribe();
-      });
+      this.backdropClickSubscription = this.dropdownOverlayRef
+        .backdropClick()
+        .subscribe(() => {
+          this.dropdownOverlayRef.dispose();
+          this.dropdownOverlayIsOpen = false;
+          this.removeAllSubscriptionsAndEventListeners();
+        });
 
       this.detachmentsSubscription = this.dropdownOverlayRef
         .detachments()
         .subscribe(() => {
           this.dropdownOverlayIsOpen = false;
-          // Unsubscriptions.
-          this.detachmentsSubscription?.unsubscribe();
-          this.resizeObserver?.unobserve(this.dropdownHeader.nativeElement);
+          this.removeAllSubscriptionsAndEventListeners();
         });
     } else {
       this.dropdownOverlayRef.dispose();
@@ -208,6 +221,15 @@ export class DropdownComponent implements OnDestroy {
   }
 
   /**
+   * Removes all subscriptions and event listeners.
+   */
+  private removeAllSubscriptionsAndEventListeners() {
+    this.detachmentsSubscription?.unsubscribe();
+    this.resizeObserver?.unobserve(this.dropdownHeader.nativeElement);
+    this.backdropClickSubscription?.unsubscribe();
+  }
+
+  /**
    * Toggles the dropdown-list visibility via the isOpen property, then focuses the selected option.
    * If the dropdown-list is opened, the Popper.js instance is created.
    * If the dropdown-list is closed, the Popper.js instance is destroyed.
@@ -220,7 +242,6 @@ export class DropdownComponent implements OnDestroy {
     if (this.isOpen) {
       this.toggleOverlayAndSubscribeToEvents(this.dropdownHeader);
       this.cdRef.detectChanges();
-      // this.createPopperInstance();
 
       // Set focus on the 'selected' element via selectedOptionIndex.
       const indexToFocus =
