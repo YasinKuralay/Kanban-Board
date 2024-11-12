@@ -73,6 +73,8 @@ export class DropdownComponent implements OnDestroy {
 
   private dropdownOverlayIsOpen = false;
 
+  private resizeObserver?: ResizeObserver;
+
   private dropdownOverlayRef!: OverlayRef;
   private componentRef?: ComponentRef<DropdownPopupComponent>;
 
@@ -131,7 +133,7 @@ export class DropdownComponent implements OnDestroy {
           ]),
       };
 
-      const overlayRef: OverlayRef = this.overlay.create(overlayConfig);
+      this.dropdownOverlayRef = this.overlay.create(overlayConfig);
 
       const injector = Injector.create({
         providers: [
@@ -145,7 +147,7 @@ export class DropdownComponent implements OnDestroy {
         null,
         injector,
       );
-      this.componentRef = overlayRef.attach(dropdownPortal);
+      this.componentRef = this.dropdownOverlayRef.attach(dropdownPortal);
 
       // Set the property showing that the overlay is open to true.
       this.dropdownOverlayIsOpen = true;
@@ -162,20 +164,46 @@ export class DropdownComponent implements OnDestroy {
         focusTrap.focusInitialElement();
       }, 0);
 
+      this.resizeObserver = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          if (entry.target === this.dropdownHeader.nativeElement) {
+            this.updateOverlaySize();
+          }
+        }
+      });
+
+      this.resizeObserver.observe(this.dropdownHeader.nativeElement);
+
       // Close the overlay when the backdrop is clicked
-      overlayRef.backdropClick().subscribe(() => {
-        overlayRef.dispose();
+      this.dropdownOverlayRef.backdropClick().subscribe(() => {
+        this.dropdownOverlayRef.dispose();
         this.dropdownOverlayIsOpen = false;
         this.detachmentsSubscription?.unsubscribe();
       });
 
-      this.detachmentsSubscription = overlayRef.detachments().subscribe(() => {
-        this.dropdownOverlayIsOpen = false;
-        // Unsubscriptions.
-        this.detachmentsSubscription?.unsubscribe();
-      });
+      this.detachmentsSubscription = this.dropdownOverlayRef
+        .detachments()
+        .subscribe(() => {
+          this.dropdownOverlayIsOpen = false;
+          // Unsubscriptions.
+          this.detachmentsSubscription?.unsubscribe();
+          this.resizeObserver?.unobserve(this.dropdownHeader.nativeElement);
+        });
     } else {
       this.dropdownOverlayRef.dispose();
+    }
+  }
+
+  /**
+   * Updates the size of the overlay to match the width of the anchor element.
+   *
+   * @remarks Used together with the ResizeObserver to update the overlay size when the anchor element is resized.
+   */
+  private updateOverlaySize() {
+    if (this.dropdownOverlayIsOpen && this.dropdownOverlayRef) {
+      const anchorWidth =
+        this.dropdownHeader.nativeElement.getBoundingClientRect().width;
+      this.dropdownOverlayRef.updateSize({ width: `${anchorWidth}px` });
     }
   }
 
