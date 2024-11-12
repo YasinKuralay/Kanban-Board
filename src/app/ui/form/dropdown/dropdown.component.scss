@@ -25,6 +25,7 @@
   transition:
     background-color var(--medium-transition-speed),
     color var(--medium-transition-speed);
+  cursor: pointer;
 
   [data-theme="dark"] & {
     color: var(--white);

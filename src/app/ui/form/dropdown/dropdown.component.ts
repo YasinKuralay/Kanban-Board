@@ -1,8 +1,11 @@
 import {
   ChangeDetectorRef,
   Component,
+  ComponentRef,
   ElementRef,
   EventEmitter,
+  InjectionToken,
+  Injector,
   Input,
   OnDestroy,
   Output,
@@ -10,7 +13,13 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
-import { createPopper } from '@popperjs/core';
+import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
+import { DropdownPopupComponent } from './dropdown-popup/dropdown-popup.component';
+import { ComponentPortal } from '@angular/cdk/portal';
+import { FocusTrap, FocusTrapFactory } from '@angular/cdk/a11y';
+import { Subscription } from 'rxjs';
+
+export const DROPDOWN_DATA = new InjectionToken<any>('DROPDOWN_DATA');
 
 @Component({
   selector: 'app-dropdown',
@@ -48,69 +57,137 @@ export class DropdownComponent implements OnDestroy {
   /**
    * Keeps track of whether the dropdown-list is open or closed.
    */
-  isOpen = false;
+  public isOpen = false;
 
   /**
-   * The Popper.js instance that manages the dropdown-list positioning.
+   * Keeps track of whether the focusOutListener is added or not. Used to removeEventListener when the component is destroyed.
    */
-  popperInstance: any;
+  private focusOutListener?: () => void;
+
+  private detachmentsSubscription?: Subscription;
 
   /**
    * Generates a unique ID for the input id attribute
    */
   public uniqueId = uuidv4();
 
-  constructor(private cdRef: ChangeDetectorRef) {}
+  private dropdownOverlayIsOpen = false;
+
+  private dropdownOverlayRef!: OverlayRef;
+  private componentRef?: ComponentRef<DropdownPopupComponent>;
+
+  constructor(
+    private overlay: Overlay,
+    private cdRef: ChangeDetectorRef,
+    private injector: Injector,
+    private focusTrapFactory: FocusTrapFactory,
+  ) {}
 
   /**
-   * The popper.js instance should be destroyed without ngOnDestroy anyways, but making 100% sure it's destroyed.
+   * Removes event listeners when the component is destroyed.
    */
   ngOnDestroy() {
-    this.destroyPopperInstance();
+    this.detachmentsSubscription?.unsubscribe();
+    this.componentRef?.location.nativeElement.removeEventListener(
+      'focusout',
+      this.focusOutListener,
+    );
   }
 
   /**
-   * Creates a new Popper.js instance to manage the dropdown-list positioning.
-   * The dropdown-list is positioned below the dropdown-header by default.
-   * If there is not enough space below, the dropdown-list is flipped to the top.
-   * This is done by the 'flip' modifier.
-   * The Popper.js instance is stored in the 'popperInstance' property.
-   * The instance is destroyed when the dropdown is closed.
+   * Launches the overlay and subscribes to the detachments and focusout events.
    *
+   * @param overlayAnchorPoint - The anchor point of the overlay: In this case, the dropdown-header.
    */
-  private createPopperInstance() {
-    if (this.dropdownHeader && this.dropdownList) {
-      this.popperInstance = createPopper(
-        this.dropdownHeader.nativeElement,
-        this.dropdownList.nativeElement,
-        {
-          placement: 'bottom', // Default placement
-          modifiers: [
-            {
-              name: 'flip',
-              options: {
-                fallbackPlacements: ['top'], // Flip to top if not enough space below
-              },
-            },
-            {
-              name: 'offset',
-              options: {
-                offset: [0, 18], // Adjust the second value to set the vertical spacing
-              },
-            },
-          ],
-        },
-      );
-    }
-  }
+  private toggleOverlayAndSubscribeToEvents(
+    overlayAnchorPoint: ElementRef,
+  ): void {
+    // Only open the overlay if it is not already open
+    if (!this.dropdownOverlayIsOpen) {
+      // Gets the width of the anchor element to match the width of the overlay.
+      const anchorWidth =
+        overlayAnchorPoint.nativeElement.getBoundingClientRect().width;
 
-  /**
-   * Destroys the Popper.js instance if it exists.
-   */
-  private destroyPopperInstance() {
-    if (this.popperInstance) {
-      this.popperInstance.destroy();
-      this.popperInstance = null;
+      const overlayConfig: OverlayConfig = {
+        width: `${anchorWidth}px`,
+        positionStrategy: this.overlay
+          .position()
+          .flexibleConnectedTo(overlayAnchorPoint) // Connects the overlay to the anchor element.
+          .withPositions([
+            {
+              originX: 'start',
+              originY: 'bottom',
+              overlayX: 'start',
+              overlayY: 'top',
+            },
+            {
+              originX: 'start',
+              originY: 'top',
+              overlayX: 'end',
+              overlayY: 'top',
+            },
+          ]),
+      };
+
+      const overlayRef: OverlayRef = this.overlay.create(overlayConfig);
+
+      const injector = Injector.create({
+        providers: [
+          { provide: DROPDOWN_DATA, useValue: { dropdownItems: this.options } },
+        ],
+        parent: this.injector,
+      });
+
+      const dropdownPortal = new ComponentPortal(
+        DropdownPopupComponent,
+        null,
+        injector,
+      );
+      this.componentRef = overlayRef.attach(dropdownPortal);
+
+      // Sets focus and a focusTrap on the overlay.
+      // We need setTimeout as changedetection.detectChanges() doesn't work in this case. Otherwise, the focus trap won't work.
+      setTimeout(() => {
+        // Create a focus trap for the overlay
+        const focusTrap: FocusTrap = this.focusTrapFactory.create(
+          this.componentRef!.location.nativeElement,
+        );
+
+        // Set focus to the overlay
+        focusTrap.focusInitialElement();
+      }, 0);
+
+      // Close the overlay when it loses focus
+      this.focusOutListener =
+        this.componentRef.location.nativeElement.addEventListener(
+          'focusout',
+          (event: FocusEvent) => {
+            if (
+              !this.componentRef?.location.nativeElement.contains(
+                event.relatedTarget as Node,
+              )
+            ) {
+              overlayRef.dispose();
+              this.dropdownOverlayIsOpen = false;
+
+              // Unsubscriptions.
+              this.detachmentsSubscription?.unsubscribe();
+              this.componentRef?.location.nativeElement.removeEventListener(
+                'focusout',
+                this.focusOutListener,
+              );
+            }
+          },
+        );
+
+      // Set the property showing that the overlay is open to true.
+      this.dropdownOverlayIsOpen = true;
+
+      overlayRef.detachments().subscribe(() => {
+        this.dropdownOverlayIsOpen = false;
+      });
+    } else {
+      this.dropdownOverlayRef.dispose();
     }
   }
 
@@ -125,15 +202,16 @@ export class DropdownComponent implements OnDestroy {
   public toggleDropdown() {
     this.isOpen = !this.isOpen;
     if (this.isOpen) {
+      this.toggleOverlayAndSubscribeToEvents(this.dropdownHeader);
       this.cdRef.detectChanges();
-      this.createPopperInstance();
+      // this.createPopperInstance();
 
       // Set focus on the 'selected' element via selectedOptionIndex.
       const indexToFocus =
         this.selectedOptionIndex === -1 ? 0 : this.selectedOptionIndex;
       this.focusOption(indexToFocus);
     } else {
-      this.destroyPopperInstance();
+      // this.destroyPopperInstance();
     }
   }
 

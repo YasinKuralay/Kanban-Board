@@ -1,0 +1,9 @@
+@for (dropdownItem of dropdownItems; track $index; let idx = $index) {
+  <div
+    class="dropdown-popup-item"
+    (click)="onDropdownItemClick(idx)"
+    tabindex="0"
+  >
+    {{ dropdownItem }}
+  </div>
+}
