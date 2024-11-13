@@ -1,0 +1,19 @@
+<!-- [attr.aria-labelledby]="uniqueId" -->
+<ul #dropdownList class="dropdown-list" role="listbox">
+  @for (
+    dropdownItem of dropdownItemsAsStrings;
+    track $index;
+    let idx = $index
+  ) {
+    <li
+      class="dropdown-list-item"
+      (click)="selectOption(idx)"
+      (keydown)="handleKeydownOnListItem($event, idx)"
+      role="option"
+      [attr.aria-selected]="selectedOptionIndex === idx"
+      tabindex="0"
+    >
+      {{ dropdownItem }}
+    </li>
+  }
+</ul>

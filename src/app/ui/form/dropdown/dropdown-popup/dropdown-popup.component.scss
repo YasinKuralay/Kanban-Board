@@ -1,0 +1,44 @@
+@use "../../../../../styles.scss" as *;
+
+app-dropdown-popup {
+  display: block;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem 0.75rem;
+  user-select: none;
+  transition: background-color var(--medium-transition-speed);
+  width: 100%;
+  @include font-body-l;
+  font-family: "Plus Jakarta Sans", sans-serif;
+
+  [data-theme="dark"] & {
+    color: var(--white);
+    background-color: var(--dark-gray);
+    border-color: rgba(130, 143, 163, 0.25);
+  }
+
+  .dropdown-list {
+    padding: unset;
+    margin: unset;
+
+    &-item {
+      display: block;
+      border-radius: 4px;
+      padding: 0.25rem 0.25rem;
+
+      &:hover {
+        background-color: lightgray;
+        cursor: pointer;
+      }
+
+      [data-theme="dark"] & {
+        background-color: var(--dark-gray);
+
+        &:hover {
+          background-color: var(--lines-dark);
+        }
+      }
+    }
+  }
+}

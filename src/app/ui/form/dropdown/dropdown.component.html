@@ -1,12 +1,8 @@
 @if (label !== "") {
-  <label class="dropdown-label" id="uniqueId">{{ label }}</label>
+  <label class="dropdown-label" [id]="uniqueId">{{ label }}</label>
 }
 
-<div
-  class="dropdown"
-  [class.open]="isOpen"
-  (focusout)="handleFocusOutOnList($event)"
->
+<div class="dropdown" [class.open]="isOpen">
   <div
     #dropdownHeader
     class="dropdown-header"
@@ -35,26 +31,4 @@
       />
     </svg>
   </div>
-
-  @if (isOpen) {
-    <ul
-      #dropdownList
-      class="dropdown-list"
-      role="listbox"
-      [attr.aria-labelledby]="uniqueId"
-    >
-      @for (option of options; track option; let idx = $index) {
-        <li
-          class="dropdown-list-item"
-          (click)="selectOption(idx)"
-          (keydown)="handleKeydownOnListItem($event, idx)"
-          role="option"
-          [attr.aria-selected]="selectedOptionIndex === idx"
-          tabindex="0"
-        >
-          {{ option }}
-        </li>
-      }
-    </ul>
-  }
 </div>

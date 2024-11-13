@@ -122,8 +122,9 @@ button {
 
 // Angular Material Dialog styling.
 .cdk-overlay-pane {
-  overflow-y: visible;
+  overflow-y: auto;
   border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* BUTTON CLASSES */

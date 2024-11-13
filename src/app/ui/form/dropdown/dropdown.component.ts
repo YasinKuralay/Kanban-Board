@@ -1,8 +1,11 @@
 import {
   ChangeDetectorRef,
   Component,
+  ComponentRef,
   ElementRef,
   EventEmitter,
+  InjectionToken,
+  Injector,
   Input,
   OnDestroy,
   Output,
@@ -10,7 +13,18 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
-import { createPopper } from '@popperjs/core';
+import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
+import { DropdownPopupComponent } from './dropdown-popup/dropdown-popup.component';
+import { ComponentPortal } from '@angular/cdk/portal';
+import { FocusTrap, FocusTrapFactory } from '@angular/cdk/a11y';
+import { Subscription } from 'rxjs';
+
+/**
+ * The overlay reference to the dropdown-popup. Used to be able to close it from the component that is inside the overlay (in this case dropdown-popup).
+ */
+export const COMPONENT_OVERLAY_REF = new InjectionToken<OverlayRef>(
+  'COMPONENT_OVERLAY_REF',
+);
 
 @Component({
   selector: 'app-dropdown',
@@ -48,70 +62,184 @@ export class DropdownComponent implements OnDestroy {
   /**
    * Keeps track of whether the dropdown-list is open or closed.
    */
-  isOpen = false;
+  public isOpen = false;
 
   /**
-   * The Popper.js instance that manages the dropdown-list positioning.
+   * Subscription to the detachments event of the overlay. Used to close the overlay when it is detached.
    */
-  popperInstance: any;
+  private detachmentsSubscription?: Subscription;
+
+  /**
+   * The ResizeObserver used to update the overlay size when the anchor element is resized. This property is used to unobserve() the anchor element when needed.
+   */
+  private resizeObserver?: ResizeObserver;
+
+  /**
+   * Subscription to the backdropClick event of the overlay. Used to close the overlay when the backdrop is clicked. This property is used to unsubscribe when needed.
+   */
+  private backdropClickSubscription?: Subscription;
+
+  /**
+   * Subscription to the optionSelected event of the dropdown-popup. Used to select the option when it is clicked.
+   */
+  private optionSelectedSubscription?: Subscription;
 
   /**
    * Generates a unique ID for the input id attribute
    */
   public uniqueId = uuidv4();
 
-  constructor(private cdRef: ChangeDetectorRef) {}
+  /**
+   * Keeps track of whether the dropdown-overlay is open or closed.
+   */
+  private dropdownOverlayIsOpen = false;
 
   /**
-   * The popper.js instance should be destroyed without ngOnDestroy anyways, but making 100% sure it's destroyed.
+   * The overlay reference used to create the dropdown-list. Later used to close the overlay via dispose().
+   */
+  private dropdownOverlayRef!: OverlayRef;
+
+  constructor(
+    private overlay: Overlay,
+    private cdRef: ChangeDetectorRef,
+    private injector: Injector,
+    private focusTrapFactory: FocusTrapFactory,
+  ) {}
+
+  /**
+   * Removes event listeners when the component is destroyed.
    */
   ngOnDestroy() {
-    this.destroyPopperInstance();
+    this.removeAllSubscriptionsAndEventListeners();
   }
 
   /**
-   * Creates a new Popper.js instance to manage the dropdown-list positioning.
-   * The dropdown-list is positioned below the dropdown-header by default.
-   * If there is not enough space below, the dropdown-list is flipped to the top.
-   * This is done by the 'flip' modifier.
-   * The Popper.js instance is stored in the 'popperInstance' property.
-   * The instance is destroyed when the dropdown is closed.
+   * Launches the overlay, passes all needed info into the ComponentPortal and subscribes to the detachments and backdropClick events.
    *
+   * @param overlayAnchorPoint - The anchor point of the overlay: In this case, the dropdown-header.
+   *
+   * @remarks
+   * The overlay is created with the dropdown-header as the anchor point.
+   * The dropdown-popup is attached to the overlay via a ComponentPortal.
+   * The overlay is closed when the backdrop is clicked or when the overlay is detached.
+   * The overlay is resized when the anchor element is resized.
+   * The focus is set back on the dropdownHeader when the overlay is closed.
    */
-  private createPopperInstance() {
-    if (this.dropdownHeader && this.dropdownList) {
-      this.popperInstance = createPopper(
-        this.dropdownHeader.nativeElement,
-        this.dropdownList.nativeElement,
-        {
-          placement: 'bottom', // Default placement
-          modifiers: [
+  private toggleOverlayAndSubscribeToEvents(
+    overlayAnchorPoint: ElementRef,
+  ): void {
+    // Only open the overlay if it is not already open
+    if (!this.dropdownOverlayIsOpen) {
+      // Gets the width of the anchor element to match the width of the overlay.
+      const anchorWidth =
+        overlayAnchorPoint.nativeElement.getBoundingClientRect().width;
+
+      const overlayConfig: OverlayConfig = {
+        width: `${anchorWidth}px`,
+        hasBackdrop: true, // Adds a backdrop to the overlay.
+        backdropClass: 'cdk-overlay-transparent-backdrop', // Adds a transparent backdrop to the overlay.
+        scrollStrategy: this.overlay.scrollStrategies.block(), // Prevents scrolling behind the overlay
+        positionStrategy: this.overlay
+          .position()
+          .flexibleConnectedTo(overlayAnchorPoint) // Connects the overlay to the anchor element.
+          .withPositions([
             {
-              name: 'flip',
-              options: {
-                fallbackPlacements: ['top'], // Flip to top if not enough space below
-              },
+              offsetY: 8,
+              originX: 'start',
+              overlayX: 'start',
+              originY: 'bottom',
+              overlayY: 'top',
             },
             {
-              name: 'offset',
-              options: {
-                offset: [0, 18], // Adjust the second value to set the vertical spacing
-              },
+              offsetY: -8,
+              originX: 'start',
+              overlayX: 'start',
+              originY: 'top',
+              overlayY: 'bottom',
             },
-          ],
-        },
+          ]),
+      };
+
+      this.dropdownOverlayRef = this.overlay.create(overlayConfig);
+
+      const injector = Injector.create({
+        providers: [
+          { provide: COMPONENT_OVERLAY_REF, useValue: this.dropdownOverlayRef }, // Provide the overlay reference to the dropdown-popup so that it can close the overlay from inside when needed.
+        ],
+        parent: this.injector,
+      });
+
+      // Creates a ComponentPortal to attach the dropdown-popup to the overlay.
+      const dropdownPortal = new ComponentPortal(
+        DropdownPopupComponent,
+        null,
+        injector,
       );
+      const componentRef = this.dropdownOverlayRef.attach(dropdownPortal);
+      componentRef.instance.selectedOptionIndex = this.selectedOptionIndex; // Pass the selected option index, so that the selected option can be focused when the overlay is opened.
+      componentRef.instance.dropdownItemsAsStrings = this.options; // Pass the options.
+      // Subscribe to the @Output event of the dropdown-popup to select the option when it is clicked.
+      componentRef.instance.optionSelected.subscribe((index: number) => {
+        this.selectOption(index);
+      });
+
+      // Set the property showing that the overlay is open to true.
+      this.dropdownOverlayIsOpen = true;
+
+      // Resize the overlay when the anchor element is resized.
+      this.resizeObserver = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          if (entry.target === this.dropdownHeader.nativeElement) {
+            this.updateOverlaySize();
+          }
+        }
+      });
+      this.resizeObserver.observe(this.dropdownHeader.nativeElement);
+
+      // Close the overlay when the backdrop is clicked
+      this.backdropClickSubscription = this.dropdownOverlayRef
+        .backdropClick()
+        .subscribe(() => {
+          this.dropdownOverlayRef.dispose();
+        });
+
+      // React to the closing (detachment) of the overlay.
+      this.detachmentsSubscription = this.dropdownOverlayRef
+        .detachments()
+        .subscribe(() => {
+          this.dropdownOverlayIsOpen = false;
+          this.removeAllSubscriptionsAndEventListeners();
+          // Set focus back on the dropdownHeader when the overlay is closed. (Otherwise the focus will be at the end of the page where the Portal is. Not good.)
+          this.dropdownHeader.nativeElement.focus();
+        });
+    } else {
+      this.dropdownOverlayRef.dispose();
+      this.isOpen = false;
     }
   }
 
   /**
-   * Destroys the Popper.js instance if it exists.
+   * Updates the size of the overlay to match the width of the anchor element.
+   *
+   * @remarks Used together with the ResizeObserver to update the overlay size when the anchor element is resized.
    */
-  private destroyPopperInstance() {
-    if (this.popperInstance) {
-      this.popperInstance.destroy();
-      this.popperInstance = null;
+  private updateOverlaySize() {
+    if (this.dropdownOverlayIsOpen && this.dropdownOverlayRef) {
+      const anchorWidth =
+        this.dropdownHeader.nativeElement.getBoundingClientRect().width;
+      this.dropdownOverlayRef.updateSize({ width: `${anchorWidth}px` });
     }
+  }
+
+  /**
+   * Removes all subscriptions and event listeners.
+   */
+  private removeAllSubscriptionsAndEventListeners() {
+    this.detachmentsSubscription?.unsubscribe();
+    this.resizeObserver?.unobserve(this.dropdownHeader.nativeElement);
+    this.backdropClickSubscription?.unsubscribe();
+    this.optionSelectedSubscription?.unsubscribe();
+    this.isOpen = false;
   }
 
   /**
@@ -125,15 +253,8 @@ export class DropdownComponent implements OnDestroy {
   public toggleDropdown() {
     this.isOpen = !this.isOpen;
     if (this.isOpen) {
+      this.toggleOverlayAndSubscribeToEvents(this.dropdownHeader);
       this.cdRef.detectChanges();
-      this.createPopperInstance();
-
-      // Set focus on the 'selected' element via selectedOptionIndex.
-      const indexToFocus =
-        this.selectedOptionIndex === -1 ? 0 : this.selectedOptionIndex;
-      this.focusOption(indexToFocus);
-    } else {
-      this.destroyPopperInstance();
     }
   }
 
@@ -149,35 +270,6 @@ export class DropdownComponent implements OnDestroy {
   }
 
   /**
-   * Handles the Space, and Enter, Tab, Arropup and Arropdown keydown events on the dropdown-list items.
-   * Either selects or focuses the option at the given index, by calling the selectOption or focusOption methods with the index.
-   */
-  public handleKeydownOnListItem(event: KeyboardEvent, idx: number) {
-    event.preventDefault();
-
-    if (event.key === ' ' || event.key === 'Enter' || event.key === 'Tab') {
-      this.selectOption(idx);
-    } else if (event.key === 'ArrowUp') {
-      idx = Math.max(0, idx - 1); // Ensures idx is not negative.
-      this.focusOption(idx);
-    } else if (event.key === 'ArrowDown') {
-      idx = Math.min(this.options.length - 1, idx + 1); // Ensures idx is not out of bounds.
-      this.focusOption(idx);
-    }
-  }
-
-  /**
-   * Focuses the option at the given index.
-   */
-  private focusOption(index: number) {
-    const optionElements =
-      this.dropdownList?.nativeElement.querySelectorAll('li');
-    if (optionElements && optionElements[index]) {
-      optionElements[index].focus();
-    }
-  }
-
-  /**
    * Selects the option at the given index, closes the dropdown-list and sets the focus back on the dropdownHeader.
    * Emits the selectedOptionIndexChange event with the index.
    */
@@ -186,26 +278,5 @@ export class DropdownComponent implements OnDestroy {
     this.selectedOptionIndexChange.emit(index);
     this.dropdownHeader.nativeElement.focus();
     this.isOpen = false;
-  }
-
-  /**
-   * Handles the focusout event on the dropdown-list:
-   * If the related target is not a child of the dropdown-list, the dropdown-list is closed.
-   *
-   * @remarks
-   * Since focusout events bubble, the child elements of the dropdown-list will trigger this event.
-   */
-  public handleFocusOutOnList(event: FocusEvent) {
-    // The event.relatedTarget (in FocusEvents) is the element that is gaining focus.
-    const relatedTarget = event.relatedTarget as HTMLElement;
-    const isRelatedTargetInDropdown =
-      this.dropdownList?.nativeElement.contains(relatedTarget);
-    const isRelatedTargetHeader =
-      relatedTarget === this.dropdownHeader.nativeElement;
-
-    // Check if the related target is within the dropdown list or the header itself.
-    if (!isRelatedTargetInDropdown && !isRelatedTargetHeader) {
-      this.isOpen = false;
-    }
   }
 }
