@@ -1,7 +1,11 @@
 <h2 class="task-dialog-title">{{ dialogTitle }}</h2>
 
 @if (dialogMode === "view") {
-  <button class="task-dialog-options">
+  <button
+    class="task-dialog-options"
+    #originOverlay
+    (click)="toggleTaskOptionsOverlay()"
+  >
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="5"
@@ -14,6 +18,24 @@
       <circle cx="2.30769" cy="17.6925" r="2.30769" fill="#828FA3" />
     </svg>
   </button>
+
+  <ng-template
+    cdk-connected-overlay
+    [cdkConnectedOverlayOrigin]="originOverlay"
+    [cdkConnectedOverlayOpen]="taskOptionsOverlayIsOpen"
+    [cdkConnectedOverlayWidth]="192"
+    [cdkConnectedOverlayHeight]="94"
+    [cdkConnectedOverlayViewportMargin]="6"
+    [cdkConnectedOverlayPositions]="taskOptionsOverlayPositions"
+    (detach)="toggleTaskOptionsOverlay(false)"
+    (overlayOutsideClick)="toggleTaskOptionsOverlay(false)"
+  >
+    <div class="edit-or-delete-overlay" cdkTrapFocus>
+      <button class="first-button" (click)="toggleTaskOptionsOverlay(false)">
+        button-1</button
+      ><button>button-2</button>
+    </div>
+  </ng-template>
 
   @if (dialogDescription) {
     <div class="task-dialog-description">{{ dialogDescription }}</div>

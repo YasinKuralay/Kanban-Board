@@ -37,6 +37,10 @@ app-task-dialog {
     &:hover {
       filter: brightness(0.5);
     }
+
+    &:focus {
+      outline-offset: 3px;
+    }
   }
 
   .task-dialog-description {
@@ -58,5 +62,16 @@ app-task-dialog {
 
   [data-theme="dark"] & {
     background-color: var(--dark-gray);
+  }
+}
+
+.edit-or-delete-overlay {
+  width: 100%;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  [data-theme="dark"] & {
+    background-color: var(--very-dark-gray);
   }
 }

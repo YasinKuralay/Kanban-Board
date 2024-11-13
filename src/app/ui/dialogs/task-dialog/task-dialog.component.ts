@@ -13,6 +13,8 @@ import {
 import { InputTextareaComponent } from '../../form/input-textarea/input-textarea.component';
 import { pairwise, startWith, Subscription } from 'rxjs';
 import { CheckboxComponent } from '../../form/checkbox/checkbox.component';
+import { ConnectionPositionPair, OverlayModule } from '@angular/cdk/overlay';
+import { A11yModule } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-task-dialog',
@@ -23,45 +25,33 @@ import { CheckboxComponent } from '../../form/checkbox/checkbox.component';
     DropdownComponent,
     InputTextareaComponent,
     CheckboxComponent,
+    OverlayModule,
+    A11yModule,
   ],
   templateUrl: './task-dialog.component.html',
   styleUrl: './task-dialog.component.scss',
   encapsulation: ViewEncapsulation.None,
 })
 export class TaskDialogComponent {
-  /**
-   * Dynamic title for the dialog, based on the dialogMode.
-   */
+  /** Dynamic title for the dialog, based on the dialogMode. */
   public dialogTitle!: string;
 
-  /**
-   * Dynamic description for the dialog, based on the dialogMode.
-   */
+  /** Dynamic description for the dialog, based on the dialogMode. */
   public dialogDescription?: string;
 
-  /**
-   * Dynamic action-button text for the dialog, based on the dialogMode.
-   */
+  /** Dynamic action-button text for the dialog, based on the dialogMode. */
   public actionButtonText!: string;
 
-  /**
-   * The FormControl for the Task Name. Used in Create and Edit dialogMode.
-   */
+  /** The FormControl for the Task Name. Used in Create and Edit dialogMode. */
   public taskNameFormControl = new FormControl('', [Validators.required]);
 
-  /**
-   * The FormControl for the Task Description. Used in Create and Edit dialogMode.
-   */
+  /** The FormControl for the Task Description. Used in Create and Edit dialogMode. */
   public taskDescriptionFormControl = new FormControl('');
 
-  /**
-   * FormArray that holds the Subtasks. Used in Create and Edit dialogMode.
-   */
+  /** FormArray that holds the Subtasks. Used in Create and Edit dialogMode. */
   public subtasksFormArray = new FormArray<FormControl<string | null>>([]);
 
-  /**
-   * FormArray that holds the Subtasks' completion status. Used in View dialogMode.
-   */
+  /** FormArray that holds the Subtasks' completion status. Used in View dialogMode. */
   public subtaskCompletionStatusFormArray = new FormArray<FormControl<boolean>>(
     [],
   );
@@ -88,20 +78,26 @@ export class TaskDialogComponent {
    */
   public columnsOnlyNames: string[] = [];
 
-  /**
-   * The number of completed subtasks, used for displaying in the dialogue.
-   */
+  /** The number of completed subtasks, used for displaying in the dialogue. */
   public numOfCompletedSubtasks: number | undefined;
 
-  /**
-   * The number of total subtasks, used for displaying in the dialogue.
-   */
+  /** The number of total subtasks, used for displaying in the dialogue. */
   public numOfTotalSubtasks: number | undefined;
 
-  /**
-   * The subtasks of the task.
-   */
+  /** The subtasks of the task. */
   public subtasks: Subtask[] = [];
+
+  /** Keeps track of whether the taskOptionsOverlay Overlay is open. Used to open and close it. */
+  public taskOptionsOverlayIsOpen = false;
+
+  public taskOptionsOverlayPositions = [
+    new ConnectionPositionPair(
+      { originX: 'center', originY: 'bottom' },
+      { overlayX: 'center', overlayY: 'top' },
+      0,
+      8,
+    ),
+  ];
 
   /**
    * The columns of the board.
@@ -109,9 +105,7 @@ export class TaskDialogComponent {
    */
   private columns: Column[] = [];
 
-  /**
-   * The task that is being viewed or edited.
-   */
+  /** The task that is being viewed or edited. */
   private task: Task | undefined;
 
   private selectedBoardSubscription?: Subscription;
@@ -185,13 +179,13 @@ export class TaskDialogComponent {
             pairwise(),
           )
           .subscribe(([previousValues, currentValues]) => {
-            // Change the corresponding subtask completion status.
+            // Change the corresponding subtask completion status. changedIndex is the index of the subtask that was changed.
             const changedIndex = currentValues.findIndex(
               (value, index) => value !== previousValues[index],
             );
             this.toggleSubtaskCompletionStatus(changedIndex);
 
-            // Update the number of completed subtasks.
+            // Update the number of completed subtasks to display in correctly.
             this.numOfCompletedSubtasks = currentValues.filter(
               (value) => value,
             ).length;
@@ -281,6 +275,35 @@ export class TaskDialogComponent {
         // Uses the formControls to edit the taskData and then updates the task by calling the BoardsService.editCurrentBoard.
       }
       this.dialogRef.close();
+    }
+  }
+
+  /**
+   * Toggles the Edit or Delete Overlay, which is used to provide two options in a popup: Edit Task and Delete Task.
+   *
+   * @param toggleTo - If true, the overlay will be opened. If false, it will be closed. If not provided, it will be toggled.
+   */
+  public toggleTaskOptionsOverlay(toggleTo?: boolean) {
+    if (toggleTo === true) {
+      this.taskOptionsOverlayIsOpen = true;
+    } else if (toggleTo === false) {
+      this.taskOptionsOverlayIsOpen = false;
+    } else {
+      this.taskOptionsOverlayIsOpen = !this.taskOptionsOverlayIsOpen;
+    }
+
+    if (this.taskOptionsOverlayIsOpen) {
+      // Move focus to the first button in the overlay.
+      setTimeout(() => {
+        (document.querySelector('.first-button') as HTMLElement)?.focus();
+      }, 0);
+    } else {
+      // Move focus back to the task-dialog-options button.
+      setTimeout(() => {
+        (
+          document.querySelector('.task-dialog-options') as HTMLElement
+        )?.focus();
+      }, 0);
     }
   }
 }
