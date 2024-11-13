@@ -196,15 +196,16 @@ export class DropdownComponent implements OnDestroy {
         .backdropClick()
         .subscribe(() => {
           this.dropdownOverlayRef.dispose();
-          this.dropdownOverlayIsOpen = false;
-          this.removeAllSubscriptionsAndEventListeners();
         });
 
+      // React to the closing (detachment) of the overlay.
       this.detachmentsSubscription = this.dropdownOverlayRef
         .detachments()
         .subscribe(() => {
           this.dropdownOverlayIsOpen = false;
           this.removeAllSubscriptionsAndEventListeners();
+          // Set focus back on the dropdownHeader when the overlay is closed. (Otherwise the focus will be at the end of the page where the Portal is. Not good.)
+          this.dropdownHeader.nativeElement.focus();
         });
     } else {
       this.dropdownOverlayRef.dispose();
