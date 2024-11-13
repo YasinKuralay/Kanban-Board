@@ -19,8 +19,6 @@ import { ComponentPortal } from '@angular/cdk/portal';
 import { FocusTrap, FocusTrapFactory } from '@angular/cdk/a11y';
 import { Subscription } from 'rxjs';
 
-export const DROPDOWN_DATA = new InjectionToken<any>('DROPDOWN_DATA');
-
 /**
  * The overlay reference to the dropdown-popup. Used to be able to close it from the component that is inside the overlay (in this case dropdown-popup).
  */
@@ -72,14 +70,19 @@ export class DropdownComponent implements OnDestroy {
   private detachmentsSubscription?: Subscription;
 
   /**
-   * The ResizeObserver used to update the overlay size when the anchor element is resized. This variable is used to unobserve() the anchor element when needed.
+   * The ResizeObserver used to update the overlay size when the anchor element is resized. This property is used to unobserve() the anchor element when needed.
    */
   private resizeObserver?: ResizeObserver;
 
   /**
-   * Subscription to the backdropClick event of the overlay. Used to close the overlay when the backdrop is clicked. This variable is used to unsubscribe when needed.
+   * Subscription to the backdropClick event of the overlay. Used to close the overlay when the backdrop is clicked. This property is used to unsubscribe when needed.
    */
   private backdropClickSubscription?: Subscription;
+
+  /**
+   * Subscription to the optionSelected event of the dropdown-popup. Used to select the option when it is clicked.
+   */
+  private optionSelectedSubscription?: Subscription;
 
   /**
    * Generates a unique ID for the input id attribute
@@ -111,9 +114,16 @@ export class DropdownComponent implements OnDestroy {
   }
 
   /**
-   * Launches the overlay and subscribes to the detachments and focusout events.
+   * Launches the overlay, passes all needed info into the ComponentPortal and subscribes to the detachments and backdropClick events.
    *
    * @param overlayAnchorPoint - The anchor point of the overlay: In this case, the dropdown-header.
+   *
+   * @remarks
+   * The overlay is created with the dropdown-header as the anchor point.
+   * The dropdown-popup is attached to the overlay via a ComponentPortal.
+   * The overlay is closed when the backdrop is clicked or when the overlay is detached.
+   * The overlay is resized when the anchor element is resized.
+   * The focus is set back on the dropdownHeader when the overlay is closed.
    */
   private toggleOverlayAndSubscribeToEvents(
     overlayAnchorPoint: ElementRef,
@@ -154,34 +164,29 @@ export class DropdownComponent implements OnDestroy {
 
       const injector = Injector.create({
         providers: [
-          { provide: DROPDOWN_DATA, useValue: { dropdownItems: this.options } },
-          { provide: COMPONENT_OVERLAY_REF, useValue: this.dropdownOverlayRef },
+          { provide: COMPONENT_OVERLAY_REF, useValue: this.dropdownOverlayRef }, // Provide the overlay reference to the dropdown-popup so that it can close the overlay from inside when needed.
         ],
         parent: this.injector,
       });
 
+      // Creates a ComponentPortal to attach the dropdown-popup to the overlay.
       const dropdownPortal = new ComponentPortal(
         DropdownPopupComponent,
         null,
         injector,
       );
       const componentRef = this.dropdownOverlayRef.attach(dropdownPortal);
+      componentRef.instance.selectedOptionIndex = this.selectedOptionIndex; // Pass the selected option index, so that the selected option can be focused when the overlay is opened.
+      componentRef.instance.dropdownItemsAsStrings = this.options; // Pass the options.
+      // Subscribe to the @Output event of the dropdown-popup to select the option when it is clicked.
+      componentRef.instance.optionSelected.subscribe((index: number) => {
+        this.selectOption(index);
+      });
 
       // Set the property showing that the overlay is open to true.
       this.dropdownOverlayIsOpen = true;
 
-      // Sets focus and a focusTrap on the overlay.
-      // We need setTimeout as changedetection.detectChanges() doesn't work in this case. Otherwise, the focus trap won't work.
-      setTimeout(() => {
-        // Create a focus trap for the overlay
-        const focusTrap: FocusTrap = this.focusTrapFactory.create(
-          componentRef!.location.nativeElement,
-        );
-
-        // Set focus to the overlay
-        focusTrap.focusInitialElement();
-      }, 0);
-
+      // Resize the overlay when the anchor element is resized.
       this.resizeObserver = new ResizeObserver((entries) => {
         for (let entry of entries) {
           if (entry.target === this.dropdownHeader.nativeElement) {
@@ -209,6 +214,7 @@ export class DropdownComponent implements OnDestroy {
         });
     } else {
       this.dropdownOverlayRef.dispose();
+      this.isOpen = false;
     }
   }
 
@@ -232,6 +238,8 @@ export class DropdownComponent implements OnDestroy {
     this.detachmentsSubscription?.unsubscribe();
     this.resizeObserver?.unobserve(this.dropdownHeader.nativeElement);
     this.backdropClickSubscription?.unsubscribe();
+    this.optionSelectedSubscription?.unsubscribe();
+    this.isOpen = false;
   }
 
   /**
@@ -247,11 +255,6 @@ export class DropdownComponent implements OnDestroy {
     if (this.isOpen) {
       this.toggleOverlayAndSubscribeToEvents(this.dropdownHeader);
       this.cdRef.detectChanges();
-
-      // Set focus on the 'selected' element via selectedOptionIndex.
-      const indexToFocus =
-        this.selectedOptionIndex === -1 ? 0 : this.selectedOptionIndex;
-      this.focusOption(indexToFocus);
     }
   }
 
@@ -267,35 +270,6 @@ export class DropdownComponent implements OnDestroy {
   }
 
   /**
-   * Handles the Space, and Enter, Tab, Arropup and Arropdown keydown events on the dropdown-list items.
-   * Either selects or focuses the option at the given index, by calling the selectOption or focusOption methods with the index.
-   */
-  public handleKeydownOnListItem(event: KeyboardEvent, idx: number) {
-    event.preventDefault();
-
-    if (event.key === ' ' || event.key === 'Enter' || event.key === 'Tab') {
-      this.selectOption(idx);
-    } else if (event.key === 'ArrowUp') {
-      idx = Math.max(0, idx - 1); // Ensures idx is not negative.
-      this.focusOption(idx);
-    } else if (event.key === 'ArrowDown') {
-      idx = Math.min(this.options.length - 1, idx + 1); // Ensures idx is not out of bounds.
-      this.focusOption(idx);
-    }
-  }
-
-  /**
-   * Focuses the option at the given index.
-   */
-  private focusOption(index: number) {
-    const optionElements =
-      this.dropdownList?.nativeElement.querySelectorAll('li');
-    if (optionElements && optionElements[index]) {
-      optionElements[index].focus();
-    }
-  }
-
-  /**
    * Selects the option at the given index, closes the dropdown-list and sets the focus back on the dropdownHeader.
    * Emits the selectedOptionIndexChange event with the index.
    */
@@ -304,26 +278,5 @@ export class DropdownComponent implements OnDestroy {
     this.selectedOptionIndexChange.emit(index);
     this.dropdownHeader.nativeElement.focus();
     this.isOpen = false;
-  }
-
-  /**
-   * Handles the focusout event on the dropdown-list:
-   * If the related target is not a child of the dropdown-list, the dropdown-list is closed.
-   *
-   * @remarks
-   * Since focusout events bubble, the child elements of the dropdown-list will trigger this event.
-   */
-  public handleFocusOutOnList(event: FocusEvent) {
-    // The event.relatedTarget (in FocusEvents) is the element that is gaining focus.
-    const relatedTarget = event.relatedTarget as HTMLElement;
-    const isRelatedTargetInDropdown =
-      this.dropdownList?.nativeElement.contains(relatedTarget);
-    const isRelatedTargetHeader =
-      relatedTarget === this.dropdownHeader.nativeElement;
-
-    // Check if the related target is within the dropdown list or the header itself.
-    if (!isRelatedTargetInDropdown && !isRelatedTargetHeader) {
-      this.isOpen = false;
-    }
   }
 }

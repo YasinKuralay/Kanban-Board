@@ -1,12 +1,8 @@
 @if (label !== "") {
-  <label class="dropdown-label" id="uniqueId">{{ label }}</label>
+  <label class="dropdown-label" [id]="uniqueId">{{ label }}</label>
 }
 
-<div
-  class="dropdown"
-  [class.open]="isOpen"
-  (focusout)="handleFocusOutOnList($event)"
->
+<div class="dropdown" [class.open]="isOpen">
   <div
     #dropdownHeader
     class="dropdown-header"
@@ -35,6 +31,4 @@
       />
     </svg>
   </div>
-
-  @if (false) {}
 </div>

@@ -1,14 +1,16 @@
 import {
   Component,
   ElementRef,
+  EventEmitter,
   HostListener,
   Inject,
   Input,
+  Output,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { DROPDOWN_DATA, COMPONENT_OVERLAY_REF } from '../dropdown.component';
 import { OverlayRef } from '@angular/cdk/overlay';
+import { COMPONENT_OVERLAY_REF } from '../dropdown.component';
 
 @Component({
   selector: 'app-dropdown-popup',
@@ -19,8 +21,15 @@ import { OverlayRef } from '@angular/cdk/overlay';
   encapsulation: ViewEncapsulation.None,
 })
 export class DropdownPopupComponent {
+  /**
+   * The reference to the dropdown-list element.
+   * Used to focus the options in the list.
+   */
   @ViewChild('dropdownList') dropdownList?: ElementRef;
-
+  /**
+   * The event emitted when an option from the list is selected.
+   */
+  @Output() optionSelected = new EventEmitter<number>();
   /**
    * The index of the selected option.
    * If no option is selected, the index is -1.
@@ -28,26 +37,36 @@ export class DropdownPopupComponent {
   @Input() selectedOptionIndex: number = -1;
 
   /** A string-only array of dropdownItems, used to render the options in the dropdown. */
-  public dropdownItemsAsStrings: string[] = [];
+  @Input() dropdownItemsAsStrings: string[] = [];
 
   constructor(
-    @Inject(DROPDOWN_DATA) public data: any,
     @Inject(COMPONENT_OVERLAY_REF) private overlayRef: OverlayRef, // The overlay reference to the dropdown-popup. Used to be able to close it from within here.
   ) {}
 
-  ngOnInit() {
-    this.dropdownItemsAsStrings = this.data.dropdownItems;
+  // Focus the selected or first option after the view has been initialized.
+  ngAfterViewInit() {
+    // Set focus on the seleted option, if there is one.
+    if (this.selectedOptionIndex !== -1) {
+      // We need to use setTimeout because of an ExpressionChangedAfterItHasBeenCheckedError. Unfortunately, using ChangeDetectorRef.detectChanges() does not work.
+      setTimeout(() => {
+        this.focusOption(this.selectedOptionIndex);
+      }, 0);
+    } else {
+      // Otherwise, focus the first option.
+      setTimeout(() => {
+        this.focusOption(0);
+      }, 0);
+    }
   }
 
+  // Close the dropdown-popup on ESC keydown.
   @HostListener('document:keydown.escape', ['$event'])
   handleEscapeKey(event: KeyboardEvent) {
     this.overlayRef.dispose();
   }
 
-  public onDropdownItemClick(index: number) {}
-
   /**
-   * Handles the Space, and Enter, Tab, Arropup and Arropdown keydown events on the dropdown-list items.
+   * Handles the Space, and Enter, Tab, Arrowup and Arrowdown keydown events on the dropdown-list items.
    * Either selects or focuses the option at the given index, by calling the selectOption or focusOption methods with the index.
    */
   public handleKeydownOnListItem(event: KeyboardEvent, idx: number) {
@@ -56,10 +75,10 @@ export class DropdownPopupComponent {
     if (event.key === ' ' || event.key === 'Enter' || event.key === 'Tab') {
       this.selectOption(idx);
     } else if (event.key === 'ArrowUp') {
-      idx = Math.max(0, idx - 1); // Ensures idx is not negative.
+      idx = Math.max(0, idx - 1); // Ensures index is not negative.
       this.focusOption(idx);
     } else if (event.key === 'ArrowDown') {
-      idx = Math.min(this.dropdownItemsAsStrings.length - 1, idx + 1); // Ensures idx is not out of bounds.
+      idx = Math.min(this.dropdownItemsAsStrings.length - 1, idx + 1); // Ensures index is not out of bounds.
       this.focusOption(idx);
     }
   }
@@ -76,18 +95,10 @@ export class DropdownPopupComponent {
   }
 
   /**
-   * Selects the option at the given index, closes the dropdown-list and sets the focus back on the dropdownHeader.
-   * Emits the selectedOptionIndexChange event with the index.
+   * Emits the option at the given index, closes the dropdown-list and sets the focus back on the dropdownHeader.
    */
   public selectOption(index: number) {
     this.overlayRef.dispose();
-    // this.selectedOptionIndex = index;
-    // this.selectedOptionIndexChange.emit(index);
-    // this.dropdownHeader.nativeElement.focus();
-    // this.isOpen = false;
+    this.optionSelected.emit(index);
   }
-
-  // public closeDialog() {
-  // this.dialogRef.close();
-  // }
 }
