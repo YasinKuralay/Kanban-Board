@@ -118,6 +118,16 @@ export class TaskDialogComponent {
   /** The task that is being viewed or edited. */
   private task: Task | undefined;
 
+  /**
+   * This property is used only by the 'edit' mode, for when the user wants to change the dialog.
+   * This property exists because the user might not actually click 'save changes' after changing the column via the dropdown. So instead of immediately moving the task to the new column, we save the fact that the user wants to move the task to a new column.
+   *
+   * @remarks
+   * The actual index (or future index) of the column is saved in the selectedColumnIndex property.
+   *
+   */
+  private moveTaskToNewColumnInEditMode?: boolean = false;
+
   private selectedBoardSubscription?: Subscription;
   private subtaskCompletionStatusSubscription?: Subscription;
 
@@ -224,11 +234,13 @@ export class TaskDialogComponent {
     this.selectedColumnIndex = selectedColumnIdx;
 
     if (changeImmediately) {
-      // UpdateCurrentBoard
       this.boardsService.changeTaskColumn(
         this.task!.uniqueId,
         this.columns[selectedColumnIdx].id,
       );
+    } else {
+      // Save the column to witch the task should be moved. THis will be used when the actionButton is clicked.
+      this.moveTaskToNewColumnInEditMode = true;
     }
   }
 
@@ -258,7 +270,7 @@ export class TaskDialogComponent {
    * @remarks
    * This button is always the final action button in the dialog, and causes it to close.
    */
-  public actionButton() {
+  public async actionButton() {
     if (this.taskNameFormControl.valid) {
       // Check if Create, Edit or View Task
       if (this.dialogMode === 'create') {
@@ -283,6 +295,14 @@ export class TaskDialogComponent {
           newTask,
         );
       } else if (this.dialogMode === 'edit') {
+        // Check if the Task should be moved to a different column. If it should, move it first, and wait for the method to finish. Otherwise, you can't move the task and edit it at the same time.
+        if (this.moveTaskToNewColumnInEditMode === true) {
+          await this.boardsService.changeTaskColumn(
+            this.task!.uniqueId,
+            this.columns[this.selectedColumnIndex].id,
+          );
+        }
+
         // Uses the formControls to edit the taskData and then updates the task by calling the BoardsService.editTask()
         const editedTask: Task = {
           uniqueId: this.task!.uniqueId,

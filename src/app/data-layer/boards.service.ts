@@ -655,50 +655,61 @@ export class BoardsService {
    * @param taskUniqueID - The uniqueId of the task to be moved.
    * @param newColumnId - The ID of the column where the task should be moved to.
    */
-  public changeTaskColumn(taskUniqueID: string, newColumnId: number): void {
-    if (!this.db || !this.selectedBoardID) {
-      return;
-    }
-
-    const transaction = this.db.transaction('boards', 'readwrite');
-    const objectStore = transaction.objectStore('boards');
-    const request = objectStore.get(this.selectedBoardID);
-
-    request.onsuccess = () => {
-      const selectedBoard = request.result as Board;
-      const oldColumn = selectedBoard.columns.find((col) =>
-        col.tasks.some((task) => task.uniqueId === taskUniqueID),
-      );
-      const newColumn = selectedBoard.columns.find(
-        (col) => col.id === newColumnId,
-      );
-
-      if (oldColumn && newColumn) {
-        // Find the task in the old column.
-        const [task] = oldColumn.tasks.filter(
-          (task) => task.uniqueId === taskUniqueID,
-        );
-
-        // Remove the task from the old column and add it to the new column.
-        oldColumn.tasks = oldColumn.tasks.filter(
-          (task) => task.uniqueId !== taskUniqueID,
-        );
-
-        newColumn.tasks.push(task);
-
-        const updateRequest = objectStore.put(selectedBoard);
-        updateRequest.onsuccess = () => {
-          this.selectedBoardSubject.next(selectedBoard);
-        };
-        updateRequest.onerror = (event) => {
-          console.error(`Error changing task column: ${event}`);
-        };
+  public changeTaskColumn(
+    taskUniqueID: string,
+    newColumnId: number,
+  ): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (!this.db || !this.selectedBoardID) {
+        reject('Database or selected board not available.');
+        return;
       }
-    };
 
-    request.onerror = (event) => {
-      console.error(`Error changing task column: ${event}`);
-    };
+      const transaction = this.db.transaction('boards', 'readwrite');
+      const objectStore = transaction.objectStore('boards');
+      const request = objectStore.get(this.selectedBoardID);
+
+      request.onsuccess = () => {
+        const selectedBoard = request.result as Board;
+        const oldColumn = selectedBoard.columns.find((col) =>
+          col.tasks.some((task) => task.uniqueId === taskUniqueID),
+        );
+        const newColumn = selectedBoard.columns.find(
+          (col) => col.id === newColumnId,
+        );
+
+        if (oldColumn && newColumn) {
+          // Find the task in the old column.
+          const [task] = oldColumn.tasks.filter(
+            (task) => task.uniqueId === taskUniqueID,
+          );
+
+          // Remove the task from the old column and add it to the new column.
+          oldColumn.tasks = oldColumn.tasks.filter(
+            (task) => task.uniqueId !== taskUniqueID,
+          );
+
+          newColumn.tasks.push(task);
+
+          const updateRequest = objectStore.put(selectedBoard);
+          updateRequest.onsuccess = () => {
+            this.selectedBoardSubject.next(selectedBoard);
+            resolve();
+          };
+          updateRequest.onerror = (event) => {
+            console.error(`Error changing task column: ${event}`);
+            reject();
+          };
+        }
+
+        reject('Column not found.');
+      };
+
+      request.onerror = (event) => {
+        console.error(`Error changing task column: ${event}`);
+        reject();
+      };
+    });
   }
 
   /**
