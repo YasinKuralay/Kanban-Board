@@ -340,7 +340,7 @@ export class TaskDialogComponent {
    * @remarks
    * After this method is called, the dialog will edit the task instead of just viewing it.
    */
-  public editTaskClickHandler() {
+  public switchToEditModeClickHandler() {
     this.dialogTitle = 'Edit Task';
     this.actionButtonText = 'Save Changes';
     this.taskNameFormControl.setValue(this.task!.title);
