@@ -16,7 +16,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { DropdownPopupComponent } from './dropdown-popup/dropdown-popup.component';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { FocusTrap, FocusTrapFactory } from '@angular/cdk/a11y';
 import { Subscription } from 'rxjs';
 
 /**
@@ -103,7 +102,6 @@ export class DropdownComponent implements OnDestroy {
     private overlay: Overlay,
     private cdRef: ChangeDetectorRef,
     private injector: Injector,
-    private focusTrapFactory: FocusTrapFactory,
   ) {}
 
   /**
@@ -272,10 +270,15 @@ export class DropdownComponent implements OnDestroy {
   /**
    * Selects the option at the given index, closes the dropdown-list and sets the focus back on the dropdownHeader.
    * Emits the selectedOptionIndexChange event with the index.
+   *
+   * @remarks
+   * If the already selected option is clicked, no event is emitted.
    */
   public selectOption(index: number) {
+    if (index !== this.selectedOptionIndex) {
+      this.selectedOptionIndexChange.emit(index);
+    }
     this.selectedOptionIndex = index;
-    this.selectedOptionIndexChange.emit(index);
     this.dropdownHeader.nativeElement.focus();
     this.isOpen = false;
   }
