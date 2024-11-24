@@ -1,7 +1,12 @@
-import { Component, Inject, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  ViewEncapsulation,
+} from '@angular/core';
 import { InputTextComponent } from '../../form/input-text/input-text.component';
 import { ListOfInputTextsComponent } from '../../form/list-of-input-texts/list-of-input-texts.component';
-import { FormArray, FormControl, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { DropdownComponent } from '../../form/dropdown/dropdown.component';
 import {
@@ -48,8 +53,13 @@ export class TaskDialogComponent {
   /** The FormControl for the Task Description. Used in Create and Edit dialogMode. */
   public taskDescriptionFormControl = new FormControl('');
 
-  /** FormArray that holds the Subtasks. Used in Create and Edit dialogMode. */
-  public subtasksFormArray = new FormArray<FormControl<string | null>>([]);
+  /** FormArray that holds the Subtasks, including their title and completed status. This will be used to edit a Task, since we want to keep the completed status even if the title changes. Used in Create and Edit dialogMode. */
+  public subtasksFormArray = new FormArray<
+    FormGroup<{
+      subTaskTitle: FormControl<string | null>;
+      completed: FormControl<boolean>;
+    }>
+  >([]);
 
   /** FormArray that holds the Subtasks' completion status. Used in View dialogMode. */
   public subtaskCompletionStatusFormArray = new FormArray<FormControl<boolean>>(
@@ -64,7 +74,7 @@ export class TaskDialogComponent {
   public dialogMode: 'create' | 'edit' | 'view';
 
   /**
-   * The index of the column where the Task should be created.
+   * The index of the column where the Task should be created or edited.
    * Please keep in mind that index in the columns array will probably not correspond to the id of the column!
    *
    * @remarks
@@ -114,6 +124,7 @@ export class TaskDialogComponent {
   constructor(
     public dialogRef: DialogRef<string>,
     private boardsService: BoardsService,
+    private cdRef: ChangeDetectorRef,
     @Inject(DIALOG_DATA) public data: any,
   ) {
     this.dialogMode = this.data.dialogMode || 'create';
@@ -272,7 +283,22 @@ export class TaskDialogComponent {
           newTask,
         );
       } else if (this.dialogMode === 'edit') {
-        // Uses the formControls to edit the taskData and then updates the task by calling the BoardsService.editCurrentBoard.
+        // Uses the formControls to edit the taskData and then updates the task by calling the BoardsService.editTask()
+        const editedTask: Task = {
+          uniqueId: this.task!.uniqueId,
+          title: this.taskNameFormControl.value as string,
+          description: this.taskDescriptionFormControl.value as string,
+          subtasks: this.subtasksFormArray.controls.map((control, index) => ({
+            id: index + 1,
+            subTaskTitle: control.value.subTaskTitle as string,
+            completed: control.value.completed ? true : false,
+          })),
+        };
+
+        const columnIdOfTaskBeingEdited =
+          this.columns[this.selectedColumnIndex].id;
+
+        this.boardsService.editTask(columnIdOfTaskBeingEdited, editedTask);
       }
       this.dialogRef.close();
     }
@@ -295,7 +321,7 @@ export class TaskDialogComponent {
     if (this.taskOptionsOverlayIsOpen) {
       // Move focus to the first button in the overlay.
       setTimeout(() => {
-        (document.querySelector('.first-button') as HTMLElement)?.focus();
+        (document.querySelector('.edit-task-button') as HTMLElement)?.focus();
       }, 0);
     } else {
       // Move focus back to the task-dialog-options button.
@@ -305,5 +331,51 @@ export class TaskDialogComponent {
         )?.focus();
       }, 0);
     }
+  }
+
+  /**
+   * Event handler for when the user clicks the Edit Task button in the Task Options Overlay.
+   * It sets all necessary variables for edit-mode and sets the dialogMode to 'edit'.
+   *
+   * @remarks
+   * After this method is called, the dialog will edit the task instead of just viewing it.
+   */
+  public editTaskClickHandler() {
+    this.dialogTitle = 'Edit Task';
+    this.actionButtonText = 'Save Changes';
+    this.taskNameFormControl.setValue(this.task!.title);
+    this.taskDescriptionFormControl.setValue(this.task!.description || '');
+    // Clear the current subtasksFormArray and set new values based on the subtasks array.
+    this.subtasksFormArray.clear();
+    this.subtasks.forEach((subtask) => {
+      this.subtasksFormArray.push(
+        new FormGroup({
+          subTaskTitle: new FormControl(
+            subtask.subTaskTitle,
+            Validators.required,
+          ),
+          completed: new FormControl(subtask.completed, { nonNullable: true }),
+        }),
+      );
+    });
+
+    this.toggleTaskOptionsOverlay(false);
+    // The actual action that turns the dialog into edit mode.
+    this.dialogMode = 'edit';
+
+    // Needed for being able to set focus on one of the newly created elements (because the complete view changes to edit mode).
+    this.cdRef.detectChanges();
+
+    // Set focus here
+    (document.querySelector('.input-text') as HTMLElement)?.focus();
+  }
+
+  /**
+   * Event handler for when the user clicks the Delete Task button in the Task Options Overlay.
+   * It closes the overlay and deletes the task.
+   */
+  public deleteTaskClickHandler() {
+    this.toggleTaskOptionsOverlay(false);
+    this.dialogRef.close();
   }
 }

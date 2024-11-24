@@ -30,10 +30,12 @@
     (detach)="toggleTaskOptionsOverlay(false)"
     (overlayOutsideClick)="toggleTaskOptionsOverlay(false)"
   >
-    <div class="edit-or-delete-overlay" cdkTrapFocus>
-      <button class="first-button" (click)="toggleTaskOptionsOverlay(false)">
-        button-1</button
-      ><button>button-2</button>
+    <div class="task-options-overlay" cdkTrapFocus>
+      <button class="edit-task-button" (click)="editTaskClickHandler()">
+        Edit Task</button
+      ><button class="delete-task-button" (click)="deleteTaskClickHandler()">
+        Delete Task
+      </button>
     </div>
   </ng-template>
 
@@ -70,6 +72,7 @@
 @if (dialogMode === "create" || dialogMode === "edit") {
   <app-input-text
     label="Task Name"
+    class="task-name-input"
     placeholder="e.g. Take Coffee Break"
     [internalFormControl]="taskNameFormControl"
   ></app-input-text>

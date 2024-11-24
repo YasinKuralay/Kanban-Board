@@ -507,14 +507,9 @@ export class BoardsService {
    * Edits an existing task in the specified column of the selected board.
    *
    * @param columnId - The ID of the column where the task is located.
-   * @param taskId - The uniqueId of the task to be edited.
    * @param updatedTask - The updated task object.
    */
-  public editTask(
-    columnId: number,
-    taskId: string,
-    updatedTask: Task,
-  ): Promise<void> {
+  public editTask(columnId: number, updatedTask: Task): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (!this.db || !this.selectedBoardID) {
         reject('Database or selected board not available.');
@@ -531,7 +526,7 @@ export class BoardsService {
 
         if (column) {
           const taskIndex = column.tasks.findIndex(
-            (task) => task.uniqueId === taskId,
+            (task) => task.uniqueId === updatedTask.uniqueId,
           );
           if (taskIndex !== -1) {
             column.tasks[taskIndex] = { ...updatedTask };

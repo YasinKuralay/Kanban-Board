@@ -1,7 +1,7 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { Component, Inject, Input, ViewEncapsulation } from '@angular/core';
 import { InputTextComponent } from '../../form/input-text/input-text.component';
-import { FormArray, FormControl, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ListOfInputTextsComponent } from '../../form/list-of-input-texts/list-of-input-texts.component';
 import { Board, BoardsService } from '../../../data-layer/boards.service';
 
@@ -25,9 +25,12 @@ interface BoardDialogData {
 })
 export class BoardDialogComponent {
   public boardNameFormControl = new FormControl('', [Validators.required]);
-  public listOfInputTextsFormArray = new FormArray<FormControl<string | null>>(
-    [],
-  );
+  public listOfInputTextsFormArray = new FormArray<
+    FormGroup<{
+      subTaskTitle: FormControl<string | null>;
+      completed: FormControl<boolean>;
+    }>
+  >([]);
   public dialogMode: 'create' | 'edit';
 
   constructor(
@@ -50,7 +53,13 @@ export class BoardDialogComponent {
       // Fill in the current column names
       this.data.currentBoard?.columns.forEach((column) => {
         this.listOfInputTextsFormArray.push(
-          new FormControl(column.columnName, [Validators.required]),
+          // new FormControl(column.columnName, [Validators.required]),
+          new FormGroup({
+            subTaskTitle: new FormControl(column.columnName, [
+              Validators.required,
+            ]),
+            completed: new FormControl(false, { nonNullable: true }),
+          }),
         );
       });
     }

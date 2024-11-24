@@ -6,7 +6,7 @@
 ) {
   <div class="container">
     <app-input-text
-      [internalFormControl]="internalFormControl"
+      [internalFormControl]="internalFormControl.controls.subTaskTitle"
     ></app-input-text>
     <button class="remove-input-button" (click)="removeInputField(i)">
       <svg

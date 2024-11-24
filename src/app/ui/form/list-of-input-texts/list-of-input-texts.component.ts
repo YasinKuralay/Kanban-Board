@@ -11,6 +11,7 @@ import {
   AbstractControl,
   FormArray,
   FormControl,
+  FormGroup,
   ValidationErrors,
   Validators,
 } from '@angular/forms';
@@ -26,8 +27,15 @@ import {
 export class ListOfInputTextsComponent implements OnInit {
   /**
    * The FormArray that holds the form controls for the dynamically generated input fields.
+   *
+   * @remarks Has been temporarily changed to a FormArray of FormGroups to allow for the addition of a 'completed' field. This eases subtask creation logic. Might be changed in the future to make this component more generic.
    */
-  @Input() public inputFormArray!: FormArray<FormControl<string | null>>;
+  @Input() public inputFormArray!: FormArray<
+    FormGroup<{
+      subTaskTitle: FormControl<string | null>;
+      completed: FormControl<boolean>;
+    }>
+  >;
 
   /**
    * An optional flag that determines whether the FormArray will be valid if there are no input fields.
@@ -80,7 +88,12 @@ export class ListOfInputTextsComponent implements OnInit {
    * All input fields are required by default, since empty fields can be removed by the user anyways.
    */
   public addInputFieldAndFocus() {
-    this.inputFormArray.push(new FormControl('', [Validators.required]));
+    this.inputFormArray.push(
+      new FormGroup({
+        subTaskTitle: new FormControl('', [Validators.required]),
+        completed: new FormControl(false, { nonNullable: true }), // Initialize 'completed' to false
+      }),
+    );
 
     // This is necessary to update the view, otherwise the new input field will not be focused as it is not created yet.
     this.cdRef.detectChanges();
