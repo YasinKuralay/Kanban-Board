@@ -700,9 +700,9 @@ export class BoardsService {
             console.error(`Error changing task column: ${event}`);
             reject();
           };
+        } else {
+          reject('Column not found.');
         }
-
-        reject('Column not found.');
       };
 
       request.onerror = (event) => {
