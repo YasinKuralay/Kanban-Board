@@ -69,12 +69,28 @@ app-task-dialog {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding: 1rem;
   width: 100%;
   background-color: var(--white);
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
   button {
+    @include font-body-l;
+    text-align: left;
+    transition: filter var(--default-transition-speed);
+
+    &:hover {
+      filter: brightness(0.8);
+    }
+
+    &.edit-task-button {
+      color: var(--medium-gray);
+    }
+
+    &.delete-task-button {
+      color: var(--red);
+    }
   }
 
   [data-theme="dark"] & {
